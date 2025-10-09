@@ -1,0 +1,19 @@
+import { IoIosWarning } from "react-icons/io";
+export default function Notice() {
+    return (
+        <section className="flex justify-center">
+            <div className="flex gap-4 items-start bg-amber-50 border border-amber-300 text-amber-900 p-4 rounded-xl max-w-6xl my-7">
+                <div className="text-xl"><IoIosWarning /></div>
+                <div>
+                    <h3 className="m-0 mb-1 font-semibold">Important Notice</h3>
+                    <p className="m-0">
+                        This tool provides verification based on official FDA Philippines and Business Registry databases.
+                        Always purchase products from authorized retailers and report suspicious products to the proper authorities.
+                    </p>
+                </div>
+            </div>
+        </section>
+    )
+}
+
+
