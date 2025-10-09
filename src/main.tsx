@@ -5,6 +5,8 @@ import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import Products from './pages/Products.tsx'
+import BatchVerify from './pages/BatchVerify.tsx'
+import About from './pages/About.tsx'
 
 const queryClinet = new QueryClient()
 
@@ -13,9 +15,9 @@ const routes = createBrowserRouter([
     path: "/", element: <App />,
     children: [
       { path: "products", element: <Products /> },
-      { path: "batch-verify", element: "" },
+      { path: "batch-verify", element: <BatchVerify /> },
       { path: "analytics", element: "" },
-      { path: "about", element: "" },
+      { path: "about", element: <About /> },
       { path: "report", element: "" },
     ]
   },
