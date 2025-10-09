@@ -18,7 +18,7 @@ export default function Navbar() {
                     <div className="flex items-center justify-center w-8 h-8 bg-gray-900 rounded">
                         <FaShieldAlt className="text-white text-sm" />
                     </div>
-                    <span className="text-lg">FDA Product Checker</span>
+                    <NavLink to={NavData[0].link} className="text-lg">FDA Product Checker</NavLink>
                 </div>
                 <nav className="hidden lg:flex items-center gap-6 text-slate-700">
                     {NavData.map((item) => (
