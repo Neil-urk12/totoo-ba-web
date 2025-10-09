@@ -9,11 +9,13 @@ import { Outlet, useLocation } from 'react-router-dom'
 function App() {
   const location = useLocation();
   const isProductsPage = location.pathname === '/products';
+  const isBatchVerify = location.pathname === '/batch-verify';
+  const isAboutPage = location.pathname === '/about';
 
   return (
     <div className="flex flex-col min-h-screen text-slate-900 bg-white">
       <Navbar />
-      {!isProductsPage && (
+      {!isProductsPage && !isBatchVerify && !isAboutPage && (
         <main className="px-4">
           <Hero />
           <SearchForm />
