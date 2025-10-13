@@ -180,8 +180,8 @@ export default function Products() {
         <main className="max-w-7xl mx-auto px-4 py-8">
             {/* Header */}
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">All Registered Products</h1>
-                <p className="text-gray-600">Browse all FDA-registered products in the Philippines database</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>All Registered Products</h1>
+                <p className="text-gray-600 dark:text-slate-300" style={{ color: "var(--fg)" }}>Browse all FDA-registered products in the Philippines database</p>
             </header>
 
             {/* Search and Filter Bar */}
@@ -195,8 +195,8 @@ export default function Products() {
                             placeholder="Search products, manufacturers, or registration numbers..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} />
                     </div>
 
                     {/* Filter Dropdowns */}
@@ -204,7 +204,7 @@ export default function Products() {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
                         >
                             {categories.map(category => (
                                 <option key={category} value={category}>{category}</option>
@@ -214,7 +214,7 @@ export default function Products() {
                         <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
                         >
                             {statuses.map(status => (
                                 <option key={status} value={status}>{status}</option>
@@ -224,7 +224,7 @@ export default function Products() {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
                         >
                             {sortOptions.map(option => (
                                 <option key={option} value={option}>{option}</option>
@@ -236,7 +236,7 @@ export default function Products() {
                     <div className="flex gap-2">
                         <button
                             onClick={() => setViewMode('grid')}
-                            className={`p-3 border rounded-lg ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                            className={`p-3 border rounded-lg ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white  text-gray-600 hover:bg-gray-50'}`}
                         >
                             <CiGrid41 className="w-6 h-6" />
                         </button>
@@ -250,7 +250,7 @@ export default function Products() {
                 </div>
 
                 {/* Results Count */}
-                <p className="text-sm text-gray-600">
+                <p className="text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                     Showing {filteredProducts.length} of {sampleProducts.length} products
                 </p>
             </section>
@@ -265,8 +265,8 @@ export default function Products() {
             {/* No Results */}
             {filteredProducts.length === 0 && (
                 <section className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
-                    <p className="text-gray-400 text-sm mt-2">Try adjusting your search terms or filters.</p>
+                    <p className="text-gray-500 dark:text-slate-400 text-lg">No products found matching your criteria.</p>
+                    <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">Try adjusting your search terms or filters.</p>
                 </section>
             )}
         </main>
