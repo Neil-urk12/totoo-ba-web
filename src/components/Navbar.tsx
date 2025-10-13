@@ -1,41 +1,46 @@
 import { FaShieldAlt } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
+import { ThemeToggle } from "../hooks/ThemeToggle";
 
 const NavData = [
     { label: "Home", link: "/" },
-    { label: "Products", link: "products" },
-    { label: "Batch Verify", link: "batch-verify" },
-    { label: "Analytics", link: "analytics" },
-    { label: "About", link: "about" },
-    { label: "Report", link: "report" },
+    { label: "Products", link: "/products" },
+    { label: "Batch Verify", link: "/batch-verify" },
+    { label: "Analytics", link: "/analytics" },
+    { label: "About", link: "/about" },
+    { label: "Report", link: "/report" },
 ]
 
 export default function Navbar() {
+
     return (
-        <header className="sticky top-0 z-10 bg-white border-b border-slate-200">
+        <header className="sticky top-0 z-10" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3 font-bold">
-                    <div className="flex items-center justify-center w-8 h-8 bg-gray-900 rounded">
-                        <FaShieldAlt className="text-white text-sm" />
+                    <div className="flex items-center justify-center w-8 h-8 rounded" style={{ backgroundColor: "var(--fg)" }}>
+                        <FaShieldAlt className="text-sm" style={{ color: "var(--bg)" }} />
                     </div>
-                    <NavLink to={NavData[0].link} className="text-lg">FDA Product Checker</NavLink>
+                    <NavLink to={NavData[0].link} className="text-lg" style={{ color: "var(--fg)" }}>FDA Product Checker</NavLink>
                 </div>
-                <nav className="hidden lg:flex items-center gap-6 text-slate-700">
+                <nav className="hidden lg:flex items-center gap-6" style={{ color: "var(--muted)" }}>
                     {NavData.map((item) => (
                         <NavLink
                             key={item.label}
                             to={item.link}
                             className={({ isActive }) =>
-                                `${isActive ? "text-blue-600 font-medium" : "text-gray-400"} hover:text-gray-900 transition-colors`
+                                `${isActive ? "text-app" : ""} hover:[color:var(--fg)] transition-colors`
                             }
                         >
                             {item.label}
                         </NavLink>
                     ))}
                 </nav>
-                <button className="hidden sm:inline-flex items-center bg-gray-900 text-white rounded-lg h-9 px-4 text-sm font-medium hover:bg-gray-800 transition-colors">
-                    My Bookmarks
-                </button>
+                <div className="flex items-center gap-3">
+                    <button className="hidden sm:inline-flex items-center rounded-lg h-9 px-4 text-sm font-medium transition-colors" style={{ backgroundColor: "var(--fg)", color: "var(--bg)" }}>
+                        My Bookmarks
+                    </button>
+                    <ThemeToggle />
+                </div>
             </div>
         </header>
     )
