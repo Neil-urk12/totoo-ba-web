@@ -5,7 +5,6 @@ import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import Products from './pages/Products.tsx'
-import BatchVerify from './pages/BatchVerify.tsx'
 import About from './pages/About.tsx'
 import { ThemeProvider } from 'next-themes'
 
@@ -17,7 +16,6 @@ const routes = createBrowserRouter([
     element: <App />,
     children: [
       { path: 'products', element: <Products /> },
-      { path: 'batch-verify', element: <BatchVerify /> },
       { path: 'analytics', element: <div className='text-center'>Coming soon</div> },
       { path: 'about', element: <About /> },
       { path: 'report', element: <div className='text-center'>Coming soon</div> },
