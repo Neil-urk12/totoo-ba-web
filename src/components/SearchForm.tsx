@@ -6,7 +6,7 @@ export default function SearchForm() {
 
     return (
         <section className="flex justify-center">
-            <div className="w-full max-w-3xl bg-white border rounded-xl shadow-sm p-5 my-6">
+            <div className="w-full max-w-3xl border rounded-xl shadow-sm p-5 my-6 bg-card border-app">
                 <label className="text-sm font-semibold mb-2 block">Search Product or Registration Number</label>
                 <div className="relative mb-4">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60">🔎</span>
@@ -14,7 +14,7 @@ export default function SearchForm() {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Enter product name, brand, or FDA registration number..."
-                        className="w-full h-11 border rounded-lg pl-9 pr-3 text-base"
+                        className="w-full h-11 border bg-app text-base rounded-lg pl-9 pr-3 placeholder:text-muted border-app"
                     />
                 </div>
 
@@ -23,7 +23,7 @@ export default function SearchForm() {
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-56 h-9 border rounded-md"
+                        className="w-56 h-9 border rounded-md bg-app border-app"
                     >
                         <option>All Categories</option>
                         <option>Food</option>
@@ -33,11 +33,11 @@ export default function SearchForm() {
                     </select>
                 </div>
 
-                <button className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg bg-primary text-black font-semibold cursor-pointer transition-all duration-300 hover:bg-gray-100/50">
+                <button className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
                     Verify Product
                 </button>
 
-                <p className="text-center text-slate-600 text-sm mt-4">Our system checks against official FDA Philippines and Business Registry databases</p>
+                <p className="text-center text-muted text-sm mt-4">Our system checks against official FDA Philippines and Business Registry databases</p>
             </div>
         </section>
     )
