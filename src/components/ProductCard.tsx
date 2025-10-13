@@ -43,9 +43,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow bg-card border-app">
             <div className="flex items-start justify-between mb-4">
-                <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
+                <h3 className="font-semibold text-lg">{product.name}</h3>
                 <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
                     {getStatusIcon()}
                     {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
@@ -53,33 +53,33 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             <div className="mb-4">
-                <span className="text-sm text-gray-600">{product.category}</span>
+                <span className="text-sm text-muted">{product.category}</span>
             </div>
 
             <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Registration No.</span>
-                    <span className="font-medium text-gray-900">{product.registrationNo}</span>
+                    <span className="text-muted">Registration No.</span>
+                    <span className="font-medium">{product.registrationNo}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Manufacturer</span>
-                    <span className="font-medium text-gray-900">{product.manufacturer}</span>
+                    <span className="text-muted">Manufacturer</span>
+                    <span className="font-medium">{product.manufacturer}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Registered</span>
-                    <span className="font-medium text-gray-900">{product.registered}</span>
+                    <span className="text-muted">Registered</span>
+                    <span className="font-medium">{product.registered}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Expires</span>
-                    <span className="font-medium text-gray-900">{product.expires}</span>
+                    <span className="text-muted">Expires</span>
+                    <span className="font-medium">{product.expires}</span>
                 </div>
             </div>
 
             <div className="flex gap-2">
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
+                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`} >
                     {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
                 </div>
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
+                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`} >
                     {getActionIcon()}
                     {product.action === 'active' ? 'Active' : 'Suspended'}
                 </div>
