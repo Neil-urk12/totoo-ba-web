@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+:root {
+  --bg: rgb(255, 255, 255);
+  --fg: rgb(15, 23, 42);
+  --muted: rgb(100, 116, 139);
+  --card: rgb(255, 255, 255);
+  --border: rgb(226, 232, 240);
+}
+
+[data-theme="dark"] {
+  --bg: rgb(15, 23, 42);
+  --fg: rgb(226, 232, 240);
+  --muted: rgb(148, 163, 184);
+  --card: rgb(11, 18, 32);
+  --border: rgb(51, 65, 85);
+}
+
+html, body {
+  background-color: var(--bg);
+  color: var(--fg);
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bg-app { background-color: var(--bg); }
+.text-app { color: var(--fg); }
+.text-muted { color: var(--muted); }
+.bg-card { background-color: var(--card); }
+.border-app { border-color: var(--border); }
+.btn-invert { background-color: var(--fg); color: var(--bg); }
+.hover-text-app:hover { color: var(--fg); }
