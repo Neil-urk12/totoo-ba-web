@@ -9,7 +9,6 @@ import { Outlet, useLocation } from 'react-router-dom'
 function App() {
   const location = useLocation();
   const isProductsPage = location.pathname === '/products';
-  const isBatchVerify = location.pathname === '/batch-verify';
   const isAnalytics = location.pathname === '/analytics';
   const isAboutPage = location.pathname === '/about';
   const isReport = location.pathname === '/report';
@@ -17,7 +16,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-800" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
       <Navbar />
-      {!isProductsPage && !isBatchVerify && !isAboutPage && !isAnalytics && !isReport && (
+      {!isProductsPage && !isAboutPage && !isAnalytics && !isReport && (
         <main className="px-4">
           <Hero />
           <SearchForm />
