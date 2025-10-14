@@ -5,7 +5,6 @@ import { ThemeToggle } from "../hooks/ThemeToggle";
 const NavData = [
     { label: "Home", link: "/" },
     { label: "Products", link: "/products" },
-    { label: "Batch Verify", link: "/batch-verify" },
     { label: "Analytics", link: "/analytics" },
     { label: "About", link: "/about" },
     { label: "Report", link: "/report" },
