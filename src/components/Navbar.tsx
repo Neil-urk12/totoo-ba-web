@@ -4,10 +4,10 @@ import { ThemeToggle } from "../hooks/ThemeToggle";
 
 const NavData = [
     { label: "Home", link: "/" },
-    { label: "Products", link: "products" },
-    { label: "Analytics", link: "analytics" },
-    { label: "About", link: "about" },
-    { label: "Report", link: "report" },
+    { label: "Products", link: "/products" },
+    { label: "Analytics", link: "/analytics" },
+    { label: "About", link: "/about" },
+    { label: "Report", link: "/report" }
 ];
 
 export default function Navbar() {
