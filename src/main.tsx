@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import Products from './pages/Products.tsx'
 import About from './pages/About.tsx'
+import Analytics from './pages/Analytics.tsx'
 import { ThemeProvider } from 'next-themes'
 
 const queryClient = new QueryClient()
@@ -16,7 +17,7 @@ const routes = createBrowserRouter([
     element: <App />,
     children: [
       { path: 'products', element: <Products /> },
-      { path: 'analytics', element: <div className='text-center'>Coming soon</div> },
+      { path: 'analytics', element: <Analytics /> },
       { path: 'about', element: <About /> },
       { path: 'report', element: <div className='text-center'>Coming soon</div> },
     ],
