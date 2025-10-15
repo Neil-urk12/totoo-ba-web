@@ -1,19 +1,46 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function SearchForm() {
     const [query, setQuery] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [category, setCategory] = useState('All Categories')
+    const navigate = useNavigate()
+
+    const onSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            setIsSubmitting(true)
+            const q = query.trim()
+            if (!q) return
+
+            // Build search URL with query and category parameters
+            const searchParams = new URLSearchParams()
+            searchParams.set('q', q)
+
+            // Only add category if it's not "All Categories"
+            if (category && category !== 'All Categories') {
+                searchParams.set('category', category)
+            }
+
+            navigate(`/verify?${searchParams.toString()}`)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     return (
         <section className="flex justify-center">
-            <div className="w-full max-w-3xl border rounded-xl shadow-sm p-5 my-6 bg-card border-app">
+            <form onSubmit={onSubmit} className="w-full max-w-3xl border rounded-xl shadow-sm p-5 my-6 bg-card border-app">
                 <label className="text-sm font-semibold mb-2 block">Search Product or Registration Number</label>
                 <div className="relative mb-4">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60">🔎</span>
                     <input
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Enter product name, brand, or FDA registration number..."
+                        placeholder="Enter FDA registration number..."
                         className="w-full h-11 border bg-app text-base rounded-lg pl-9 pr-3 placeholder:text-muted border-app"
                     />
                 </div>
@@ -25,20 +52,21 @@ export default function SearchForm() {
                         onChange={(e) => setCategory(e.target.value)}
                         className="w-56 h-9 border rounded-md bg-app border-app"
                     >
-                        <option>All Categories</option>
-                        <option>Food</option>
-                        <option>Cosmetics</option>
-                        <option>Drugs</option>
-                        <option>Devices</option>
+                        <option value="All Categories">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Cosmetics">Cosmetics</option>
+                        <option value="Drugs">Drugs</option>
                     </select>
                 </div>
-
-                <button className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
+                {query.length == 0 ? <button type="submit" disabled className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
                     Verify Product
+                </button> : <button type="submit" className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
+                    {isSubmitting ? "Verifying..." : "Verify Product"}
                 </button>
+                }
 
                 <p className="text-center text-muted text-sm mt-4">Our system checks against official FDA Philippines and Business Registry databases</p>
-            </div>
+            </form>
         </section>
     )
 }
