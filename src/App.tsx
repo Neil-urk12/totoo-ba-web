@@ -12,11 +12,12 @@ function App() {
   const isAnalytics = location.pathname === '/analytics';
   const isAboutPage = location.pathname === '/about';
   const isReport = location.pathname === '/report';
+  const isVerify = location.pathname === "/verify";
 
   return (
     <div className="flex flex-col min-h-screen text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-800" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
       <Navbar />
-      {!isProductsPage && !isAboutPage && !isAnalytics && !isReport && (
+      {!isProductsPage && !isAboutPage && !isAnalytics && !isReport && !isVerify && (
         <main className="px-4">
           <Hero />
           <SearchForm />
