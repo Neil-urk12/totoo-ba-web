@@ -8,6 +8,7 @@ import Products from './pages/Products.tsx'
 import About from './pages/About.tsx'
 import Analytics from './pages/Analytics.tsx'
 import { ThemeProvider } from 'next-themes'
+import Verify from './pages/Verify.tsx'
 
 const queryClient = new QueryClient()
 
@@ -18,6 +19,7 @@ const routes = createBrowserRouter([
     children: [
       { path: 'products', element: <Products /> },
       { path: 'analytics', element: <Analytics /> },
+      { path: 'verify', element: <Verify /> },
       { path: 'about', element: <About /> },
       { path: 'report', element: <div className='text-center'>Coming soon</div> },
     ],
