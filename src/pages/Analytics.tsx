@@ -4,7 +4,7 @@ import { HiArrowUpRight } from "react-icons/hi2";
 
 // Mock data for analytics
 const mockAnalyticsData = {
-    totalProducts: 45678,
+    totalProducts: 240000,
     verifiedToday: 1234,
     complianceRate: 94.5,
     activeBusinesses: 8901,
