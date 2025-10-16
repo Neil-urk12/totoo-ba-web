@@ -41,28 +41,28 @@ export default function About() {
                             <div className="flex justify-center mb-4">
                                 <FaSearch className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{color: "var(--fg)"}}>1. Search</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>1. Search</h3>
                             <p className="text-muted">Enter the product name, brand, or registration number you want to verify.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app">
                             <div className="flex justify-center mb-4">
                                 <FaDatabase className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{color: "var(--fg)"}}>2. Verify</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>2. Verify</h3>
                             <p className="text-muted">Our AI queries official FDA and business registry databases in real-time.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app">
                             <div className="flex justify-center mb-4">
                                 <FaCheckCircle className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{color: "var(--fg)"}}>3. Analyze</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>3. Analyze</h3>
                             <p className="text-muted">AI matches and normalizes data to provide comprehensive verification results.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app">
                             <div className="flex justify-center mb-4">
                                 <FaShieldAlt className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{color: "var(--fg)"}}>4. Results</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>4. Results</h3>
                             <p className="text-muted">Get instant compliance status with detailed registration and business information.</p>
                         </div>
                     </div>
@@ -106,23 +106,24 @@ export default function About() {
                 <section className="mb-16">
                     <h2 className="text-2xl font-bold mb-8">Official Data Sources</h2>
                     <div className="rounded-xl p-6 mb-6 bg-card border border-app">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4" style={{color: "var(--fg)"}}>FDA Philippines Verification Portal</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>FDA Philippines Verification Portal</h3>
                         <p className="text-muted mb-4">
                             We query the official Food and Drug Administration verification portal to check product registration status, registration numbers, expiry dates, and manufacturer information.
                         </p>
-                        <a href="#"
+                        <a
+                            href="https://verification.fda.gov.ph/Home.php"
                             target="_blank"
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer">
                             verification.fda.gov.ph/Businesses <FaExternalLinkAlt className="ml-1 text-xs" />
                         </a>
                     </div>
                     <div className="rounded-xl p-6 bg-card border border-app">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4" style={{color: "var(--fg)"}}>Philippine Business Registry</h3>
+                        <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Philippine Business Registry</h3>
                         <p className="text-muted mb-4">
                             We cross-reference manufacturer information with the official Philippine business registry to verify that companies are legitimate, registered business entities.
                         </p>
                         <a
-                            href="#"
+                            href="https://databank.business.gov.ph/"
                             target="_blank"
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
                         >
