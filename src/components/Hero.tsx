@@ -3,7 +3,7 @@ export default function Hero() {
         <section className="max-w-5xl mx-auto text-center mt-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-card shadow-sm text-sm border-app" style={{ color: "var(--muted)" }}>
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "var(--muted)" }}></span>
-                Official FDA Philippines Verification
+                Class A FDA Philippines Verification
             </div>
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mt-4 whitespace-pre-line">
                 {`Verify Product\nSafety in Seconds`}
