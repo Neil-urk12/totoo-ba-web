@@ -9,6 +9,7 @@ import About from './pages/About.tsx'
 import Analytics from './pages/Analytics.tsx'
 import { ThemeProvider } from 'next-themes'
 import Verify from './pages/Verify.tsx'
+import Report from './pages/Report.tsx'
 
 const queryClient = new QueryClient()
 
@@ -21,7 +22,7 @@ const routes = createBrowserRouter([
       { path: 'analytics', element: <Analytics /> },
       { path: 'verify', element: <Verify /> },
       { path: 'about', element: <About /> },
-      { path: 'report', element: <div className='text-center'>Coming soon</div> },
+      { path: 'report', element: <Report /> },
     ],
   },
 ])
