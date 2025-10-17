@@ -5,9 +5,9 @@ const ProductVerify = async (product_id: string) => {
     const BASE_URL = ((import.meta.env.VITE_API_BASE_URL as string) || "")
       .replace('0.0.0.0', '127.0.0.1')
       .replace(/\/$/, '');
-    const endpoint = `/api/v1/products/verify/${encodeURIComponent(product_id)}`;
+    const endpoint = `/api/v1/products/verify`;
 
-    const res = await fetch(`${BASE_URL}${endpoint}`, { method: "GET" });
+    const res = await fetch(`${BASE_URL}${endpoint}/${encodeURIComponent(product_id)}`, { method: "GET" });
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.message || "Failed to fetch.");
