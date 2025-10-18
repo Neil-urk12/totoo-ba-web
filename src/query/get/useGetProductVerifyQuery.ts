@@ -185,6 +185,13 @@ const ProductVerify = async (product_id: string, category?: string) => {
 
   // Run FTS with websearch; if it errors, fall back to plain
   const runFts = async (table: 'food_products' | 'drug_products') => {
+    // Skip FTS if query contains special characters (rely on exact match only)
+    const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(q);
+    if (hasSpecialChars) {
+      console.warn(`[FTS] Skipping FTS for "${q}" - contains special characters that could cause tsquery errors`);
+      return [];
+    }
+
     const base = supabase.from(table).select('*', { count: 'exact' });
 
     // Try websearch first with explicit config
