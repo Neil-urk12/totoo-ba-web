@@ -1,42 +1,10 @@
 import React from 'react'
-
-type MatchedData = {
-    product_id?: string
-    is_verified?: boolean
-    message?: string
-    details?: {
-        verification_method?: string
-        total_matches?: number
-        confidence_score?: number
-        exact_match?: boolean
-        product_info?: {
-            id?: string
-            relevance_score?: number
-            matched_fields?: string[]
-            type?: string
-            registration_number?: string
-            product_name?: string | null
-            company_name?: string
-        }
-        verified_product?: {
-            id?: string
-            brand_name?: string
-            generic_name?: string
-            manufacturer?: string
-            registration_number?: string
-            type?: string
-            matched_fields?: string[]
-            relevance_score?: number
-        }
-    }
-    registrationDate?: string
-    expiryDate?: string
-}
+import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery'
 
 interface ProductDetailsModalProps {
     open: boolean
     onClose: () => void
-    data?: MatchedData | null
+    data?: VerifyResponse | null
 }
 
 export default function ProductDetailsModal({ open, onClose, data }: ProductDetailsModalProps) {
@@ -122,5 +90,4 @@ function Field({ label, value, mono, wrap, emphasize }: { label: string, value: 
         </div>
     )
 }
-
 

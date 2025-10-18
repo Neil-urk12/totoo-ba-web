@@ -31,7 +31,7 @@ interface DrugProduct {
   expiry_date?: string | null;
 }
 
-type VerifiedProduct = {
+export type VerifiedProduct = {
   id?: string;
   brand_name?: string | null;
   generic_name?: string | null;
@@ -40,9 +40,12 @@ type VerifiedProduct = {
   type?: string | null;
   matched_fields?: string[];
   relevance_score?: number | null;
+  // Food industry specific optional fields
+  license_number?: string | null;
+  name_of_establishment?: string | null;
 };
 
-type ProductInfo = {
+export type ProductInfo = {
   id?: string;
   product_name?: string | null;
   company_name?: string | null;
@@ -52,13 +55,19 @@ type ProductInfo = {
   relevance_score?: number | null;
 };
 
-type VerifyResponse = {
+export type VerifyResponse = {
   product_id: string | null;
   is_verified: boolean;
   message: string;
   details: {
     verification_method: string;
     total_matches: number;
+    // Back-compat optional fields used in UI
+    search_results_count?: number;
+    suggestions?: string[];
+    confidence_score?: number;
+    exact_match?: boolean;
+    matched_field?: string;
     product_info: ProductInfo | null;
     verified_product: VerifiedProduct | null;
   };
@@ -97,6 +106,14 @@ const buildResponse = ({
     details: {
       verification_method: 'Full-Text Search in FDA Database',
       total_matches: totalMatches,
+      search_results_count: totalMatches,
+      confidence_score: is_exact_registration ? 100 : (totalMatches > 0 ? 60 : 0),
+      exact_match: is_exact_registration,
+      suggestions: totalMatches === 0 ? [
+        'Check for typos or spacing in the registration number',
+        'Try searching by brand or generic name',
+        'Verify the product category (Food vs Drug) and try again'
+      ] : undefined,
       product_info: null,
       verified_product: null,
     },

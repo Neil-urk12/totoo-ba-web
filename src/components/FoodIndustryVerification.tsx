@@ -1,32 +1,19 @@
 import { FaCheck, FaBuilding, FaIdCard, FaCertificate, FaSearch } from 'react-icons/fa';
 import { FaShield } from 'react-icons/fa6';
+import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery';
 
 interface FoodIndustryVerificationProps {
-    data: {
-        is_verified: boolean;
-        message: string;
-        product_id: string;
-        details: {
-            confidence_score: number;
-            exact_match: boolean;
-            matched_field: string;
-            search_results_count: number;
-            verification_method: string;
-            verified_product: {
-                id: string;
-                license_number: string;
-                matched_fields: string[];
-                name_of_establishment: string;
-                relevance_score: number;
-                type: string;
-            };
-        };
-    };
+    data: VerifyResponse;
 }
 
 export default function FoodIndustryVerification({ data }: FoodIndustryVerificationProps) {
     const { details } = data;
     const { verified_product } = details;
+
+    if (!verified_product) return null;
+
+    const confidence = details.confidence_score ?? 0;
+    const searchCount = details.search_results_count ?? details.total_matches ?? 0;
 
     return (
         <div className="mt-8 space-y-6">
@@ -46,7 +33,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Establishment Name</div>
                         </div>
                         <div className="text-lg font-semibold text-blue-700">
-                            {verified_product.name_of_establishment}
+                            {verified_product.name_of_establishment || '—'}
                         </div>
                     </div>
 
@@ -57,7 +44,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                             <div className="text-[11px] uppercase tracking-wide opacity-70">License Number</div>
                         </div>
                         <div className="font-mono text-sm bg-green-50 p-2 rounded" style={{ backgroundColor: "var(--bg)" }}>
-                            {verified_product.license_number}
+                            {verified_product.license_number || '—'}
                         </div>
                     </div>
 
@@ -68,7 +55,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Product ID</div>
                         </div>
                         <div className="font-mono text-sm bg-purple-50 p-2 rounded" style={{ backgroundColor: "var(--bg)" }}>
-                            {data.product_id}
+                            {data.product_id || '—'}
                         </div>
                     </div>
 
@@ -91,12 +78,12 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="text-2xl font-bold text-indigo-600">
-                                {details.confidence_score}%
+                                {confidence}%
                             </div>
                             <div className="w-20 bg-gray-200 rounded-full h-2">
                                 <div
                                     className="bg-indigo-600 h-2 rounded-full"
-                                    style={{ width: `${details.confidence_score}%` }}
+                                    style={{ width: `${confidence}%` }}
                                 ></div>
                             </div>
                         </div>
@@ -118,7 +105,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     <div>
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Search Results</div>
                         <div className="font-medium">
-                            {details.search_results_count} result{details.search_results_count !== 1 ? 's' : ''}
+                            {searchCount} result{searchCount !== 1 ? 's' : ''}
                         </div>
                     </div>
 
@@ -126,7 +113,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     <div>
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Relevance Score</div>
                         <div className="font-medium">
-                            {verified_product.relevance_score.toFixed(2)}
+                            {(verified_product.relevance_score ?? 0).toFixed(2)}
                         </div>
                     </div>
 
@@ -134,7 +121,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     <div className="sm:col-span-2">
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Matched Fields</div>
                         <div className="flex flex-wrap gap-2">
-                            {verified_product.matched_fields.map((field, index) => (
+                            {(verified_product.matched_fields ?? []).map((field, index) => (
                                 <span
                                     key={index}
                                     className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
@@ -150,7 +137,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Industry Type</div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-700 border border-orange-200">
                             <FaBuilding className="text-xs" />
-                            {verified_product.type.replace(/_/g, ' ').toUpperCase()}
+                            {(verified_product.type || '').replace(/_/g, ' ').toUpperCase()}
                         </div>
                     </div>
                 </div>
