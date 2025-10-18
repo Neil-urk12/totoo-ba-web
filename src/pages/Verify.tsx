@@ -74,7 +74,37 @@ export default function Verify() {
                     </div>
                 )}
 
-                {q && data && (
+                {q && data && data.message && data.message.includes("not found in FDA database") && (
+                    <div className="mt-8">
+                        <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-8 text-center">
+                            <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                <RxCross2 className="text-2xl text-orange-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-orange-700 mb-2">Product Not Found</h3>
+                            <p className="text-orange-600 mb-4">
+                                {data.message}
+                            </p>
+                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-left">
+                                <h4 className="font-semibold text-orange-800 mb-2">Suggestions:</h4>
+                                <ul className="text-sm text-orange-700 space-y-1">
+                                    {data.details?.suggestions?.map((suggestion: string, index: number) => (
+                                        <li key={index}>• {suggestion}</li>
+                                    ))}
+                                </ul>
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="text-xs text-orange-600">
+                                        <strong>Search Results:</strong> {data.details?.search_results_count || 0} matches found
+                                    </div>
+                                    <div className="text-xs text-orange-600">
+                                        <strong>Verification Method:</strong> {data.details?.verification_method || 'N/A'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {q && data && (!data.message || !data.message.includes("not found in FDA database")) && (
                     <div className="mt-8 space-y-6">
                         {/* Check if it's a food industry verification */}
                         {data.details?.verified_product?.type === 'food_industry' ? (
