@@ -12,8 +12,9 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 export default function Verify() {
     const [params] = useSearchParams()
     const q = (params.get('q') || '').trim()
+    const category = (params.get('category') || '').trim() || undefined
 
-    const options = useGetProductVerifyQuery(q)
+    const options = useGetProductVerifyQuery(q, category)
     const { data, isLoading, isError, error } = useQuery(options)
 
     const verified = data?.is_verified === true
