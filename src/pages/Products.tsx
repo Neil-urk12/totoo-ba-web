@@ -1,180 +1,149 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { FaSearch, FaList } from 'react-icons/fa';
 import { CiGrid41 } from "react-icons/ci";
 import ProductCard from '../components/ProductCard';
+import { useGetProductsInfiniteQuery } from '../query/get/useGetFoodProductsQuery';
+import type { Product, ProductsResponse } from '../query/get/useGetFoodProductsQuery';
 
-// Mock Data
-const sampleProducts = [
-    {
-        id: '1',
-        name: 'Acne Treatment Gel',
-        status: 'not-verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000055443322',
-        manufacturer: 'Beauty Essentials Corp.',
-        registered: '2022-09-15',
-        expires: '2025-09-14',
-        compliance: 'non-compliant' as const,
-        action: 'suspended' as const,
-    },
-    {
-        id: '2',
-        name: 'Anti-Aging Serum',
+const transformProduct = (product: Product) => {
+    // Check if it's a drug product by looking for drug-specific fields
+    if ('brand_name' in product || 'generic_name' in product) {
+        const drugProduct = product as import('../query/get/useGetFoodProductsQuery').DrugProduct;
+        return {
+            id: drugProduct.id || drugProduct.registration_number,
+            name: drugProduct.brand_name || drugProduct.generic_name || 'Unknown Drug',
+            status: 'verified' as const,
+            category: 'Pharmaceutical' as const,
+            registrationNo: drugProduct.registration_number,
+            manufacturer: drugProduct.manufacturer || drugProduct.company_name || 'Unknown Manufacturer',
+            registered: drugProduct.issuance_date || 'Unknown',
+            expires: drugProduct.expiry_date || 'Unknown',
+            compliance: 'compliant' as const,
+            action: 'active' as const,
+        };
+    }
+
+    // It's a food product
+    const foodProduct = product as import('../query/get/useGetFoodProductsQuery').FoodProduct;
+    return {
+        id: foodProduct.id || foodProduct.registration_number,
+        name: foodProduct.product_name || 'Unknown Product',
         status: 'verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000099887766',
-        manufacturer: 'Premium Skincare Co.',
-        registered: '2023-02-14',
-        expires: '2026-02-13',
+        category: foodProduct.type_of_product || 'Food',
+        registrationNo: foodProduct.registration_number,
+        manufacturer: foodProduct.company_name || 'Unknown Manufacturer',
+        registered: foodProduct.issuance_date || 'Unknown',
+        expires: foodProduct.expiry_date || 'Unknown',
         compliance: 'compliant' as const,
         action: 'active' as const,
-    },
-    {
-        id: '3',
-        name: 'Calcium + Vitamin D Tablets',
-        status: 'verified' as const,
-        category: 'Food Supplement',
-        registrationNo: 'FR-4000022110099',
-        manufacturer: 'HealthCare Philippines Inc.',
-        registered: '2022-12-05',
-        expires: '2025-12-04',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '4',
-        name: 'Collagen Drink Mix',
-        status: 'not-verified' as const,
-        category: 'Food Supplement',
-        registrationNo: 'FR-4000044332211',
-        manufacturer: 'HealthCare Philippines Inc.',
-        registered: '2023-01-20',
-        expires: '2026-01-19',
-        compliance: 'non-compliant' as const,
-        action: 'suspended' as const,
-    },
-    {
-        id: '5',
-        name: 'Herbal Shampoo',
-        status: 'verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000077665544',
-        manufacturer: 'Natural Beauty Products',
-        registered: '2023-03-10',
-        expires: '2026-03-09',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '6',
-        name: 'Multivitamin Complex',
-        status: 'verified' as const,
-        category: 'Food Supplement',
-        registrationNo: 'FR-4000055667788',
-        manufacturer: 'Wellness Labs Inc.',
-        registered: '2022-11-30',
-        expires: '2025-11-29',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '7',
-        name: 'Moisturizing Cream',
-        status: 'verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000033221100',
-        manufacturer: 'Skin Care Solutions',
-        registered: '2023-04-15',
-        expires: '2026-04-14',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '8',
-        name: 'Protein Powder',
-        status: 'not-verified' as const,
-        category: 'Food Supplement',
-        registrationNo: 'FR-4000066778899',
-        manufacturer: 'Fitness Nutrition Co.',
-        registered: '2023-02-28',
-        expires: '2026-02-27',
-        compliance: 'non-compliant' as const,
-        action: 'suspended' as const,
-    },
-    {
-        id: '9',
-        name: 'Hair Growth Serum',
-        status: 'verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000088990011',
-        manufacturer: 'Hair Care Innovations',
-        registered: '2023-01-10',
-        expires: '2026-01-09',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '10',
-        name: 'Omega-3 Capsules',
-        status: 'verified' as const,
-        category: 'Food Supplement',
-        registrationNo: 'FR-4000011223344',
-        manufacturer: 'Vital Health Corp.',
-        registered: '2022-10-20',
-        expires: '2025-10-19',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-    {
-        id: '11',
-        name: 'Sunscreen Lotion',
-        status: 'not-verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000099887766',
-        manufacturer: 'Sun Protection Ltd.',
-        registered: '2023-05-01',
-        expires: '2026-04-30',
-        compliance: 'non-compliant' as const,
-        action: 'suspended' as const,
-    },
-    {
-        id: '12',
-        name: 'Vitamin C Serum',
-        status: 'verified' as const,
-        category: 'Cosmetic',
-        registrationNo: 'NC-4000044556677',
-        manufacturer: 'Bright Skin Co.',
-        registered: '2023-03-25',
-        expires: '2026-03-24',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    },
-];
+    };
+};
 
 export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
     const [selectedStatus, setSelectedStatus] = useState('All Status');
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-    const categories = ['All Categories', 'Cosmetic', 'Food Supplement', 'Medical Device', 'Pharmaceutical'];
+    const {
+        data,
+        isLoading,
+        isFetchingNextPage,
+        hasNextPage,
+        fetchNextPage,
+        error,
+        isError
+    } = useGetProductsInfiniteQuery(searchQuery, selectedCategory);
+
+    const categories = ['All Categories', 'Food', 'Food Supplement', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
 
-    const filteredProducts = useMemo(() => sampleProducts.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.registrationNo.toLowerCase().includes(searchTerm.toLowerCase());
+    // Handle search submission
+    const handleSearchSubmit = () => {
+        setSearchQuery(searchTerm.trim());
+    };
 
-        const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
+    // Handle clear search
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setSearchQuery('');
+    };
 
-        const matchesStatus = selectedStatus === 'All Status' ||
-            (selectedStatus === 'Verified' && product.status === 'verified') ||
-            (selectedStatus === 'Not Verified' && product.status === 'not-verified');
+    // Handle Enter key press
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearchSubmit();
+        }
+    };
 
-        return matchesSearch && matchesCategory && matchesStatus;
-    }), [searchTerm, selectedStatus, selectedCategory]);
+    const allProducts = useMemo(() => {
+        if (!data?.pages) return [];
+        return data.pages.flatMap((page: ProductsResponse) => page.data);
+    }, [data]);
+
+    const filteredProducts = useMemo(() => {
+        if (!allProducts.length) return [];
+
+        const transformedProducts = allProducts.map(transformProduct);
+
+        // Filter by status
+        const statusFilteredProducts = transformedProducts.filter(product => {
+            const matchesStatus = selectedStatus === 'All Status' ||
+                (selectedStatus === 'Verified' && product.status === 'verified');
+
+            return matchesStatus;
+        });
+
+        // Sort products based on selected sort option
+        const sortedProducts = [...statusFilteredProducts].sort((a, b) => {
+            switch (sortBy) {
+                case 'Name':
+                    return a.name.localeCompare(b.name);
+                case 'Registration Date': {
+                    const dateA = a.registered === 'Unknown' ? new Date(0) : new Date(a.registered);
+                    const dateB = b.registered === 'Unknown' ? new Date(0) : new Date(b.registered);
+                    return dateB.getTime() - dateA.getTime();
+                }
+                case 'Expiry Date': {
+                    const expiryA = a.expires === 'Unknown' ? new Date(0) : new Date(a.expires);
+                    const expiryB = b.expires === 'Unknown' ? new Date(0) : new Date(b.expires);
+                    return expiryA.getTime() - expiryB.getTime();
+                }
+                case 'Manufacturer':
+                    return a.manufacturer.localeCompare(b.manufacturer);
+                default:
+                    return 0;
+            }
+        });
+
+        return sortedProducts;
+    }, [allProducts, selectedStatus, sortBy]);
+
+    // Get total count from the first page
+    const totalCount = (data?.pages?.[0] as ProductsResponse)?.totalCount || 0;
+
+    // Intersection observer for automatic loading
+    const loadMoreRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (loadMoreRef.current) {
+            observer.observe(loadMoreRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
         <main className="max-w-7xl mx-auto px-4 py-8">
@@ -195,8 +164,15 @@ export default function Products() {
                             placeholder="Search products, manufacturers, or registration numbers..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            onKeyPress={handleKeyPress}
+                            className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
                             style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} />
+                        <button
+                            onClick={handleSearchSubmit}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            Search
+                        </button>
                     </div>
 
                     {/* Filter Dropdowns */}
@@ -249,21 +225,73 @@ export default function Products() {
                     </div>
                 </div>
 
-                {/* Results Count */}
-                <p className="text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
-                    Showing {filteredProducts.length} of {sampleProducts.length} products
-                </p>
+                {/* Results Count and Clear Search */}
+                <div className="flex justify-between items-center">
+                    <p className="text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
+                        {isLoading ? 'Loading products...' :
+                            isError ? 'Error loading products' :
+                                searchQuery ?
+                                    `Showing ${filteredProducts.length} of ${totalCount} products for "${searchQuery}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
+                                    `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
+                    </p>
+                    {searchQuery && (
+                        <button
+                            onClick={handleClearSearch}
+                            className="text-sm text-blue-500 hover:text-blue-600 underline"
+                        >
+                            Clear search
+                        </button>
+                    )}
+                </div>
             </section>
+
+            {/* Loading State */}
+            {isLoading && (
+                <section className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-500 dark:text-slate-400 text-lg">Loading products...</p>
+                </section>
+            )}
+
+            {/* Error State */}
+            {isError && (
+                <section className="text-center py-12">
+                    <p className="text-red-500 dark:text-red-400 text-lg">Error loading products</p>
+                    <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">{error?.message}</p>
+                </section>
+            )}
 
             {/* Products Grid */}
-            <section className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-                {filteredProducts.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </section>
+            {!isLoading && !isError && (
+                <section className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                    {filteredProducts.map(product => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
+                </section>
+            )}
+
+            {/* Loading More Products */}
+            {!isLoading && !isError && isFetchingNextPage && (
+                <section className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-500 dark:text-slate-400">Loading more products...</p>
+                </section>
+            )}
+
+            {/* Load More Products */}
+            {!isLoading && !isError && hasNextPage && (
+                <div ref={loadMoreRef} className="h-4"></div>
+            )}
+
+            {/* No More Products */}
+            {!isLoading && !isError && !hasNextPage && allProducts.length > 0 && (
+                <section className="text-center py-8">
+                    <p className="text-gray-500 dark:text-slate-400">All products loaded</p>
+                </section>
+            )}
 
             {/* No Results */}
-            {filteredProducts.length === 0 && (
+            {!isLoading && !isError && filteredProducts.length === 0 && (
                 <section className="text-center py-12">
                     <p className="text-gray-500 dark:text-slate-400 text-lg">No products found matching your criteria.</p>
                     <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">Try adjusting your search terms or filters.</p>
