@@ -7,13 +7,6 @@ const NotFound = () => {
             <div className="max-w-2xl w-full">
                 {/* Main Content Card */}
                 <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 text-center relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-5">
-                        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500 rounded-full"></div>
-                        <div className="absolute bottom-10 right-10 w-24 h-24 bg-indigo-500 rounded-full"></div>
-                        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-purple-500 rounded-full"></div>
-                    </div>
-
                     {/* 404 Animation */}
                     <div className="relative mb-8">
                         <div className="text-8xl md:text-9xl font-black bg-clip-text bg-gradient-to-r text-red-400 mb-4 animate-pulse">
