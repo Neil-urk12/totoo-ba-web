@@ -15,7 +15,10 @@ export default function Verify() {
     const category = (params.get('category') || '').trim() || undefined
 
     const options = useGetProductVerifyQuery(q, category)
-    const { data, isLoading, isError, error } = useQuery(options)
+    const { data, isLoading, isError, error } = useQuery({
+        ...options,
+        enabled: !!q  // Only run query when there's a search term
+    })
 
     const verified = data?.is_verified === true
     const info = data?.details?.product_info
