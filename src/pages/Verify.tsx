@@ -15,7 +15,10 @@ export default function Verify() {
     const category = (params.get('category') || '').trim() || undefined
 
     const options = useGetProductVerifyQuery(q, category)
-    const { data, isLoading, isError, error } = useQuery(options)
+    const { data, isLoading, isError, error, isFetching } = useQuery({
+        ...options,
+        enabled: !!q
+    })
 
     const verified = data?.is_verified === true
     const info = data?.details?.product_info
@@ -57,15 +60,9 @@ export default function Verify() {
                     </div>
                 )}
 
-                {q && isLoading && (
-                    <div className="mt-8 animate-pulse space-y-4">
-                        <div className="h-10 rounded-lg bg-app/40" />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="h-20 rounded-lg bg-app/30" />
-                            <div className="h-20 rounded-lg bg-app/30" />
-                            <div className="h-20 rounded-lg bg-app/30" />
-                            <div className="h-20 rounded-lg bg-app/30" />
-                        </div>
+                {q && (isLoading || isFetching) && (
+                    <div className="mt-8 flex flex-col justify-center items-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600/30 border-t-gray-600"></div>
                     </div>
                 )}
 
