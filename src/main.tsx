@@ -1,16 +1,18 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import Products from './pages/Products.tsx'
-import About from './pages/About.tsx'
-import Analytics from './pages/Analytics.tsx'
 import { ThemeProvider } from 'next-themes'
-import Verify from './pages/Verify.tsx'
-import Report from './pages/Report.tsx'
-import NotFound from './pages/NotFound.tsx'
+
+// Lazy load route components
+const Products = lazy(() => import('./pages/Products.tsx'))
+const About = lazy(() => import('./pages/About.tsx'))
+const Analytics = lazy(() => import('./pages/Analytics.tsx'))
+const Verify = lazy(() => import('./pages/Verify.tsx'))
+const Report = lazy(() => import('./pages/Report.tsx'))
+const NotFound = lazy(() => import('./pages/NotFound.tsx'))
 
 const queryClient = new QueryClient()
 
@@ -33,7 +35,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} storageKey="theme" disableTransitionOnChange>
-        <RouterProvider router={routes} />
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div>}>
+          <RouterProvider router={routes} />
+        </Suspense>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,
