@@ -11,6 +11,7 @@ import { ThemeProvider } from 'next-themes'
 import Verify from './pages/Verify.tsx'
 import Report from './pages/Report.tsx'
 import NotFound from './pages/NotFound.tsx'
+import { SearchTrackingProvider } from './contexts/SearchTrackingContext'
 
 const queryClient = new QueryClient()
 
@@ -33,7 +34,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} storageKey="theme" disableTransitionOnChange>
-        <RouterProvider router={routes} />
+        <SearchTrackingProvider>
+          <RouterProvider router={routes} />
+        </SearchTrackingProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,
