@@ -48,14 +48,8 @@ export type AllDataResponse = {
 }
 
 
-function buildFtsOrFilter(columns: string[], rawQuery: string): string {
-  const query = rawQuery.trim().replace(/,/g, " ");
-  return columns
-    .map((column) => `${column}.wfts.english.${query}`)
-    .join(",");
-}
 
-const fetchProducts = async (searchQuery?: string, category?: string): Promise<ProductsResponse> => {
+const fetchProducts = async (category?: string): Promise<ProductsResponse> => {
   const shouldQueryFood = !category || category === 'All Categories' || category === 'Food' || category === 'Food Supplement' || category === 'Cosmetic' || category === 'Medical Device';
   const shouldQueryDrug =
     !category ||
@@ -69,22 +63,10 @@ const fetchProducts = async (searchQuery?: string, category?: string): Promise<P
 
   // Query food products
   if (shouldQueryFood) {
-    let foodQuery = supabase
+    const { data: foodData, error: foodError, count: foodCount } = await supabase
       .from('food_products')
       .select('*', { count: 'planned' })
       .order('product_name', { ascending: true });
-
-    // Add full-text search if searchQuery is provided
-    if (searchQuery && searchQuery.trim()) {
-      const ftsFilter = buildFtsOrFilter([
-        'product_name',
-        'company_name',
-        'registration_number',
-      ], searchQuery);
-      foodQuery = foodQuery.or(ftsFilter);
-    }
-
-    const { data: foodData, error: foodError, count: foodCount } = await foodQuery;
     
     if (foodError) {
       throw new Error(`Failed to fetch food products: ${foodError.message}`);
@@ -96,24 +78,10 @@ const fetchProducts = async (searchQuery?: string, category?: string): Promise<P
 
   // Query drug products
   if (shouldQueryDrug) {
-    let drugQuery = supabase
+    const { data: drugData, error: drugError, count: drugCount } = await supabase
       .from('drug_products')
       .select('*', { count: 'planned' })
       .order('brand_name', { ascending: true });
-
-    // Add full-text search if searchQuery is provided
-    if (searchQuery && searchQuery.trim()) {
-      const ftsFilter = buildFtsOrFilter([
-        'brand_name',
-        'generic_name',
-        'manufacturer',
-        'company_name',
-        'registration_number',
-      ], searchQuery);
-      drugQuery = drugQuery.or(ftsFilter);
-    }
-
-    const { data: drugData, error: drugError, count: drugCount } = await drugQuery;
     
     if (drugError) {
       throw new Error(`Failed to fetch drug products: ${drugError.message}`);
@@ -137,10 +105,10 @@ const fetchProducts = async (searchQuery?: string, category?: string): Promise<P
   };
 };
 
-export const useGetProductsInfiniteQuery = (searchQuery?: string, category?: string) => {
+export const useGetProductsInfiniteQuery = (category?: string) => {
   return useInfiniteQuery({
-    queryKey: ["products-infinite", searchQuery, category],
-    queryFn: async () => await fetchProducts(searchQuery, category),
+    queryKey: ["products-infinite", category],
+    queryFn: async () => await fetchProducts(category),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length : undefined;
     },
@@ -150,15 +118,15 @@ export const useGetProductsInfiniteQuery = (searchQuery?: string, category?: str
   });
 };
 
-export const useGetFoodProductsInfiniteQuery = (searchQuery?: string) => {
-  return useGetProductsInfiniteQuery(searchQuery, 'Food');
+export const useGetFoodProductsInfiniteQuery = () => {
+  return useGetProductsInfiniteQuery('Food');
 };
 
 export const useGetProductsQuery = (category?: string) => {
   return queryOptions({
     queryKey: ["products", category],
     queryFn: async () => {
-      const response = await fetchProducts(undefined, category);
+      const response = await fetchProducts(category);
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
