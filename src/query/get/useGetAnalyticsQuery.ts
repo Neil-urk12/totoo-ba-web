@@ -27,7 +27,7 @@ export type AnalyticsData = {
   }>;
 };
 
-const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
+const fetchAnalyticsData = async (searchCount: number = 0): Promise<AnalyticsData> => {
   // Get total products count from both tables
   const [foodCountResult, drugCountResult] = await Promise.all([
     supabase.from('food_products').select('*', { count: 'exact', head: true }),
@@ -38,16 +38,10 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   const totalDrugProducts = drugCountResult.count || 0;
   const totalProducts = totalFoodProducts + totalDrugProducts;
 
-  // Get products verified today (products with issuance_date today)
-  const today = new Date().toISOString().split('T')[0];
-  const [foodTodayResult, drugTodayResult] = await Promise.all([
-    supabase.from('food_products').select('*', { count: 'exact', head: true }).eq('issuance_date', today),
-    supabase.from('drug_products').select('*', { count: 'exact', head: true }).eq('issuance_date', today)
-  ]);
-
-  const verifiedToday = (foodTodayResult.count || 0) + (drugTodayResult.count || 0);
+  const verifiedToday = searchCount;
 
   // Get products expiring soon (within 30 days)
+  const today = new Date().toISOString().split('T')[0];
   const thirtyDaysFromNow = new Date();
   thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
   const expiryThreshold = thirtyDaysFromNow.toISOString().split('T')[0];
@@ -178,10 +172,10 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   };
 };
 
-export const useGetAnalyticsQuery = () => {
+export const useGetAnalyticsQuery = (searchCount: number = 0) => {
   return queryOptions({
-    queryKey: ["analytics"],
-    queryFn: fetchAnalyticsData,
+    queryKey: ["analytics", searchCount],
+    queryFn: () => fetchAnalyticsData(searchCount),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
