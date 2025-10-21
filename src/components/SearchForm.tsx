@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSearchTracking } from '../hooks/useSearchTracking'
 
 export default function SearchForm() {
     const [query, setQuery] = useState('')
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [category, setCategory] = useState('All Categories')
     const navigate = useNavigate()
+    const { incrementSearchCount } = useSearchTracking()
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -13,6 +15,9 @@ export default function SearchForm() {
             setIsSubmitting(true)
             const q = query.trim()
             if (!q) return
+
+            // Increment search count when user submits a search
+            incrementSearchCount()
 
             // Build search URL with query and category parameters
             const searchParams = new URLSearchParams()
