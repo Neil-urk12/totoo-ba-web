@@ -55,7 +55,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetProductsInfiniteQuery(undefined);
+    } = useGetProductsInfiniteQuery(selectedCategory);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
