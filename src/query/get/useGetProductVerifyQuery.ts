@@ -14,6 +14,7 @@ const tableForCategory = (category?: string) => {
 interface FoodProduct {
   id?: string;
   registration_number: string;
+  brand_name?: string | null; // Brand name field exists in food_products table
   company_name?: string | null;
   product_name?: string | null;
   type_of_product?: string | null;
@@ -149,7 +150,7 @@ const buildResponse = ({
     if (row) {
       base.details.product_info = {
         id: row.id || undefined,
-        product_name: row.product_name || null,
+        product_name: row.brand_name || row.product_name || null, // Prioritize brand_name for food products
         company_name: row.company_name || null,
         registration_number: row.registration_number || null,
         type: row.type_of_product || 'food',

@@ -55,7 +55,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetProductsInfiniteQuery(selectedCategory);
+    } = useGetProductsInfiniteQuery(selectedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
@@ -63,7 +63,7 @@ export default function Products() {
 
     // Apply search only on click/Enter
     const handleSearchSubmit = () => {
-        setAppliedSearch(searchTerm.trim().toLowerCase());
+        setAppliedSearch(searchTerm.trim());
     };
 
     // Handle clear search
@@ -90,25 +90,8 @@ export default function Products() {
             return matchesStatus;
         });
 
-        // Client-side search filter (applied via Search button/Enter)
-        const query = appliedSearch.trim().toLowerCase();
-        const searchFilteredProducts = query
-            ? statusFilteredProducts.filter((product) => {
-                const name = product.name?.toLowerCase() || '';
-                const manufacturer = product.manufacturer?.toLowerCase() || '';
-                const registrationNo = product.registrationNo?.toLowerCase() || '';
-                const category = product.category?.toString().toLowerCase() || '';
-                return (
-                    name.includes(query) ||
-                    manufacturer.includes(query) ||
-                    registrationNo.includes(query) ||
-                    category.includes(query)
-                );
-            })
-            : statusFilteredProducts;
-
         // Sort products based on selected sort option
-        const sortedProducts = [...searchFilteredProducts].sort((a, b) => {
+        const sortedProducts = [...statusFilteredProducts].sort((a, b) => {
             switch (sortBy) {
                 case 'Name':
                     return a.name.localeCompare(b.name);
@@ -130,7 +113,7 @@ export default function Products() {
         });
 
         return sortedProducts;
-    }, [allProducts, selectedStatus, sortBy, appliedSearch]);
+    }, [allProducts, selectedStatus, sortBy]);
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as ProductsResponse)?.totalCount || 0;

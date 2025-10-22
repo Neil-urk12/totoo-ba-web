@@ -4,11 +4,13 @@ import { supabase } from "../../db/supabaseClient";
 export type FoodProduct = {
   id?: string;
   registration_number: string;
+  brand_name?: string | null; // Brand name field exists in food_products table
   company_name?: string | null;
   product_name?: string | null;
   type_of_product?: string | null;
   issuance_date?: string | null;
   expiry_date?: string | null;
+  search_vector?: string | null; // Full-text search vector
 }
 
 export type DrugProduct = {
@@ -20,6 +22,7 @@ export type DrugProduct = {
   company_name?: string | null;
   issuance_date?: string | null;
   expiry_date?: string | null;
+  search_vector?: string | null; // Full-text search vector
 }
 
 export type Product = FoodProduct | DrugProduct;
@@ -49,11 +52,30 @@ export type AllDataResponse = {
   };
 }
 
+/**
+ * Validates and sanitizes search query input
+ * @param searchQuery - Raw search query string
+ * @returns Sanitized search query or null if invalid
+ */
+const validateAndSanitizeSearchQuery = (searchQuery?: string): string | null => {
+  if (!searchQuery || typeof searchQuery !== 'string') {
+    return null;
+  }
 
+  // Trim whitespace
+  const trimmed = searchQuery.trim();
+  
+  // Check minimum length (at least 2 characters)
+  if (trimmed.length < 2) {
+    return null;
+  }
+
+  return trimmed;
+};
 
 const ITEMS_PER_PAGE = 30;
 
-const fetchProducts = async (category?: string, page: number = 0): Promise<ProductsResponse> => {
+const fetchProducts = async (category?: string, page: number = 0, searchQuery?: string): Promise<ProductsResponse> => {
   const shouldQueryFood = !category || category === 'All Categories' || category === 'Food' || category === 'Food Supplement' || category === 'Cosmetic' || category === 'Medical Device';
   const shouldQueryDrug =
     !category ||
@@ -62,55 +84,132 @@ const fetchProducts = async (category?: string, page: number = 0): Promise<Produ
     category === 'Drugs' ||
     category === 'Drug';
 
+  const sanitizedSearchQuery = validateAndSanitizeSearchQuery(searchQuery);
+  const startIndex = page * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE - 1;
+
   let allData: Product[] = [];
   let totalCount = 0;
 
-  // Query food products
-  if (shouldQueryFood) {
-    const { data: foodData, error: foodError, count: foodCount } = await supabase
+  // When querying both tables, we need to fetch counts first to properly paginate
+  if (shouldQueryFood && shouldQueryDrug) {
+    // Get counts for both tables
+    let foodCountQuery = supabase
       .from('food_products')
-      .select('*', { count: 'exact' })
+      .select('*', { count: 'exact', head: true });
+    
+    let drugCountQuery = supabase
+      .from('drug_products')
+      .select('*', { count: 'exact', head: true });
+    
+    if (sanitizedSearchQuery) {
+      foodCountQuery = foodCountQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
+      drugCountQuery = drugCountQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
+    }
+
+    const [foodCountRes, drugCountRes] = await Promise.all([
+      foodCountQuery,
+      drugCountQuery
+    ]);
+
+    if (foodCountRes.error) {
+      throw new Error(`Failed to fetch food products count: ${foodCountRes.error.message}`);
+    }
+    if (drugCountRes.error) {
+      throw new Error(`Failed to fetch drug products count: ${drugCountRes.error.message}`);
+    }
+
+    const foodCount = foodCountRes.count || 0;
+    const drugCount = drugCountRes.count || 0;
+    totalCount = foodCount + drugCount;
+
+    // Fetch data from both tables and combine
+    let foodQuery = supabase
+      .from('food_products')
+      .select('*')
       .order('product_name', { ascending: true });
     
-    if (foodError) {
-      throw new Error(`Failed to fetch food products: ${foodError.message}`);
-    }
-    
-    allData = allData.concat(foodData || []);
-    totalCount += foodCount || 0;
-  }
-
-  // Query drug products
-  if (shouldQueryDrug) {
-    const { data: drugData, error: drugError, count: drugCount } = await supabase
+    let drugQuery = supabase
       .from('drug_products')
-      .select('*', { count: 'exact' })
+      .select('*')
       .order('brand_name', { ascending: true });
     
-    if (drugError) {
-      throw new Error(`Failed to fetch drug products: ${drugError.message}`);
+    if (sanitizedSearchQuery) {
+      foodQuery = foodQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
+      drugQuery = drugQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
     }
-    
-    allData = allData.concat(drugData || []);
-    totalCount += drugCount || 0;
+
+    const [foodRes, drugRes] = await Promise.all([
+      foodQuery.range(0, Math.max(endIndex, ITEMS_PER_PAGE * 2)),
+      drugQuery.range(0, Math.max(endIndex, ITEMS_PER_PAGE * 2))
+    ]);
+
+    if (foodRes.error) {
+      throw new Error(`Failed to fetch food products: ${foodRes.error.message}`);
+    }
+    if (drugRes.error) {
+      throw new Error(`Failed to fetch drug products: ${drugRes.error.message}`);
+    }
+
+    // Combine and sort results
+    allData = [...(foodRes.data || []), ...(drugRes.data || [])];
+    allData.sort((a, b) => {
+      const nameA = 'product_name' in a ? a.product_name : 'brand_name' in a ? a.brand_name : '';
+      const nameB = 'product_name' in b ? b.product_name : 'brand_name' in b ? b.brand_name : '';
+      return (nameA || '').localeCompare(nameB || '');
+    });
+
+    // Apply pagination on combined sorted results
+    allData = allData.slice(startIndex, endIndex + 1);
+  } else {
+    // Single table query - can use server-side pagination directly
+    if (shouldQueryFood) {
+      let foodQuery = supabase
+        .from('food_products')
+        .select('*', { count: 'exact' })
+        .order('product_name', { ascending: true });
+      
+      if (sanitizedSearchQuery) {
+        foodQuery = foodQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
+      }
+
+      const { data: foodData, error: foodError, count: foodCount } = await foodQuery.range(startIndex, endIndex);
+      
+      if (foodError) {
+        throw new Error(`Failed to fetch food products: ${foodError.message}`);
+      }
+      
+      allData = foodData || [];
+      totalCount = foodCount || 0;
+    }
+
+    if (shouldQueryDrug) {
+      let drugQuery = supabase
+        .from('drug_products')
+        .select('*', { count: 'exact' })
+        .order('brand_name', { ascending: true });
+      
+      if (sanitizedSearchQuery) {
+        drugQuery = drugQuery.textSearch('search_vector', sanitizedSearchQuery, { type: 'websearch', config: 'english' });
+      }
+
+      const { data: drugData, error: drugError, count: drugCount } = await drugQuery.range(startIndex, endIndex);
+      
+      if (drugError) {
+        throw new Error(`Failed to fetch drug products: ${drugError.message}`);
+      }
+      
+      allData = drugData || [];
+      totalCount = drugCount || 0;
+    }
   }
 
-  // Sort combined results
-  allData.sort((a, b) => {
-    const nameA = 'product_name' in a ? a.product_name : 'brand_name' in a ? a.brand_name : '';
-    const nameB = 'product_name' in b ? b.product_name : 'brand_name' in b ? b.brand_name : '';
-    return (nameA || '').localeCompare(nameB || '');
-  });
-
-  // Calculate pagination
+  // Calculate pagination metadata
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-  const startIndex = page * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedData = allData.slice(startIndex, endIndex);
-  const hasMore = endIndex < totalCount;
+  const hasMore = (page + 1) * ITEMS_PER_PAGE < totalCount;
 
   return {
-    data: paginatedData,
+    data: allData,
     hasMore,
     totalCount,
     currentPage: page,
@@ -118,10 +217,10 @@ const fetchProducts = async (category?: string, page: number = 0): Promise<Produ
   };
 };
 
-export const useGetProductsInfiniteQuery = (category?: string) => {
+export const useGetProductsInfiniteQuery = (category?: string, searchQuery?: string) => {
   return useInfiniteQuery({
-    queryKey: ["products-infinite", category],
-    queryFn: async ({ pageParam }) => await fetchProducts(category, pageParam),
+    queryKey: ["products-infinite", category, searchQuery],
+    queryFn: async ({ pageParam }) => await fetchProducts(category, pageParam, searchQuery),
     getNextPageParam: (lastPage) => {
       return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
     },
@@ -131,15 +230,15 @@ export const useGetProductsInfiniteQuery = (category?: string) => {
   });
 };
 
-export const useGetFoodProductsInfiniteQuery = () => {
-  return useGetProductsInfiniteQuery('Food');
+export const useGetFoodProductsInfiniteQuery = (searchQuery?: string) => {
+  return useGetProductsInfiniteQuery('Food', searchQuery);
 };
 
-export const useGetProductsQuery = (category?: string, page: number = 0) => {
+export const useGetProductsQuery = (category?: string, page: number = 0, searchQuery?: string) => {
   return queryOptions({
-    queryKey: ["products", category, page],
+    queryKey: ["products", category, page, searchQuery],
     queryFn: async () => {
-      const response = await fetchProducts(category, page);
+      const response = await fetchProducts(category, page, searchQuery);
       return response;
     },
     staleTime: 5 * 60 * 1000,
@@ -147,16 +246,16 @@ export const useGetProductsQuery = (category?: string, page: number = 0) => {
   });
 };
 
-export const useGetFoodProductsQuery = () => {
-  return useGetProductsQuery('Food');
+export const useGetFoodProductsQuery = (searchQuery?: string) => {
+  return useGetProductsQuery('Food', 0, searchQuery);
 };
 
 // Fetch all rows from all relevant tables without pagination
 const fetchAllTablesData = async (): Promise<AllDataResponse> => {
   const [foodProductsRes, drugProductsRes, foodIndustryRes, drugIndustryRes] = await Promise.all([
     supabase.from('food_products').select('*', { count: 'exact' }),
-    supabase.from('Drug Industry').select('*', { count: 'exact' }),
-    supabase.from('Food Industry').select('*', { count: 'exact' }),
+    supabase.from('drug_products').select('*', { count: 'exact' }),
+    supabase.from('food_industry').select('*', { count: 'exact' }),
     supabase.from('drug_industry').select('*', { count: 'exact' }),
   ]);
 
