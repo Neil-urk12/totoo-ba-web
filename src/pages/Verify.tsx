@@ -1,7 +1,7 @@
 import { useSearchParams, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useGetProductVerifyQuery } from '../query/get/useGetProductVerifyQuery'
+import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useGetProductVerifyQuery'
 import ProductDetailsModal from '../components/ProductDetailsModal'
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
 import ImageVerificationResult from '../components/ImageVerificationResult'
@@ -224,6 +224,33 @@ export default function Verify() {
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* Alternative Matches (Text/Search verification) */}
+                                {Array.isArray(data.details?.alternative_matches) && data.details.alternative_matches.length > 0 && (
+                                    <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30">
+                                        <h3 className="text-lg font-semibold mb-4">Alternative Products</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                            {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
+                                                <div key={idx} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <h4 className="font-semibold text-sm line-clamp-2 pr-2">{alt.product_name}</h4>
+                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`}>
+                                                            {(alt.type || '—').toString().toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-xs text-muted mb-2 line-clamp-1">{alt.company_name}</div>
+                                                    <div className="flex items-center justify-between text-[11px]">
+                                                        <span className="opacity-70">Reg. No.</span>
+                                                        <span className="font-mono">{alt.registration_number}</span>
+                                                    </div>
+                                                    {typeof alt.relevance_score === 'number' && (
+                                                        <div className="mt-2 text-right text-[11px] text-muted">{Math.round(alt.relevance_score)}% match</div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
