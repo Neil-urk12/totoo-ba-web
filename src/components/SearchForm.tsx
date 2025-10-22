@@ -58,12 +58,13 @@ export default function SearchForm() {
                         <option value="Drugs">Drugs</option>
                     </select>
                 </div>
-                {query.length == 0 ? <button type="submit" disabled className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
-                    Verify Product
-                </button> : <button type="submit" className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app">
+                <button 
+                    type="submit" 
+                    disabled={isSubmitting || !query.trim()} 
+                    className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app"
+                >
                     {isSubmitting ? "Verifying..." : "Verify Product"}
                 </button>
-                }
 
                 <p className="text-center text-muted text-sm mt-4">Our system checks against official FDA Philippines and Business Registry databases</p>
             </form>

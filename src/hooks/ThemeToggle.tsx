@@ -29,7 +29,6 @@ export const ThemeToggle: FC = () => {
     const next = isDark ? "light" : "dark";
     setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
-    console.log("Switch to", next);
   };
 
   if (!isReady) {

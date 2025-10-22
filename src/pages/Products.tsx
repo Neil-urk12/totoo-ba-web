@@ -41,7 +41,7 @@ const transformProduct = (product: Product) => {
 
 export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
     const [selectedStatus, setSelectedStatus] = useState('All Status');
     const [sortBy, setSortBy] = useState('Name');
@@ -55,28 +55,21 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetProductsInfiniteQuery(searchQuery, selectedCategory);
+    } = useGetProductsInfiniteQuery(selectedCategory);
 
-    const categories = ['All Categories', 'Food', 'Food Supplement', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
+    const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
 
-    // Handle search submission
+    // Apply search only on click/Enter
     const handleSearchSubmit = () => {
-        setSearchQuery(searchTerm.trim());
+        setAppliedSearch(searchTerm.trim().toLowerCase());
     };
 
     // Handle clear search
     const handleClearSearch = () => {
         setSearchTerm('');
-        setSearchQuery('');
-    };
-
-    // Handle Enter key press
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSearchSubmit();
-        }
+        setAppliedSearch('');
     };
 
     const allProducts = useMemo(() => {
@@ -97,8 +90,25 @@ export default function Products() {
             return matchesStatus;
         });
 
+        // Client-side search filter (applied via Search button/Enter)
+        const query = appliedSearch.trim().toLowerCase();
+        const searchFilteredProducts = query
+            ? statusFilteredProducts.filter((product) => {
+                const name = product.name?.toLowerCase() || '';
+                const manufacturer = product.manufacturer?.toLowerCase() || '';
+                const registrationNo = product.registrationNo?.toLowerCase() || '';
+                const category = product.category?.toString().toLowerCase() || '';
+                return (
+                    name.includes(query) ||
+                    manufacturer.includes(query) ||
+                    registrationNo.includes(query) ||
+                    category.includes(query)
+                );
+            })
+            : statusFilteredProducts;
+
         // Sort products based on selected sort option
-        const sortedProducts = [...statusFilteredProducts].sort((a, b) => {
+        const sortedProducts = [...searchFilteredProducts].sort((a, b) => {
             switch (sortBy) {
                 case 'Name':
                     return a.name.localeCompare(b.name);
@@ -120,7 +130,7 @@ export default function Products() {
         });
 
         return sortedProducts;
-    }, [allProducts, selectedStatus, sortBy]);
+    }, [allProducts, selectedStatus, sortBy, appliedSearch]);
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as ProductsResponse)?.totalCount || 0;
@@ -164,7 +174,7 @@ export default function Products() {
                             placeholder="Search products, manufacturers, or registration numbers..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyPress={handleKeyPress}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleSearchSubmit(); }}
                             className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
                             style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} />
                         <button
@@ -230,11 +240,11 @@ export default function Products() {
                     <p className="text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
                             isError ? 'Error loading products' :
-                                searchQuery ?
-                                    `Showing ${filteredProducts.length} of ${totalCount} products for "${searchQuery}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
+                                appliedSearch.trim() ?
+                                    `Showing ${filteredProducts.length} of ${totalCount} products for "${appliedSearch.trim()}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
                                     `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
                     </p>
-                    {searchQuery && (
+                    {appliedSearch.trim() && (
                         <button
                             onClick={handleClearSearch}
                             className="text-sm text-blue-500 hover:text-blue-600 underline"
@@ -248,7 +258,7 @@ export default function Products() {
             {/* Loading State */}
             {isLoading && (
                 <section className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-slate-400 text-lg">Loading products...</p>
                 </section>
             )}
@@ -265,7 +275,7 @@ export default function Products() {
             {!isLoading && !isError && (
                 <section className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                     {filteredProducts.map(product => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} viewMode={viewMode} />
                     ))}
                 </section>
             )}
@@ -273,7 +283,7 @@ export default function Products() {
             {/* Loading More Products */}
             {!isLoading && !isError && isFetchingNextPage && (
                 <section className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-slate-400">Loading more products...</p>
                 </section>
             )}
