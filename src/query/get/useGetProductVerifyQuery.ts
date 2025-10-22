@@ -1,6 +1,124 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
 
+// Fuzzy matching utilities
+const levenshteinDistance = (str1: string, str2: string): number => {
+  const s1 = str1.toLowerCase();
+  const s2 = str2.toLowerCase();
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= s2.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= s1.length; j++) {
+    matrix[0][j] = j;
+  }
+  for (let i = 1; i <= s2.length; i++) {
+    for (let j = 1; j <= s1.length; j++) {
+      if (s2.charAt(i - 1) === s1.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+  return matrix[s2.length][s1.length];
+};
+
+const calculateSimilarity = (str1: string, str2: string): number => {
+  if (!str1 || !str2) return 0;
+  const maxLen = Math.max(str1.length, str2.length);
+  if (maxLen === 0) return 100;
+  const distance = levenshteinDistance(str1, str2);
+  return Math.round(((maxLen - distance) / maxLen) * 100);
+};
+
+// Calculate match score for a product against query
+const calculateMatchScore = (
+  query: string,
+  product: FoodProduct | DrugProduct,
+  isDrug: boolean
+): { score: number; matchedFields: string[] } => {
+  const q = query.toLowerCase().trim();
+  const matchedFields: string[] = [];
+  let totalScore = 0;
+  let fieldCount = 0;
+
+  // Check registration number (highest weight)
+  const regNum = product.registration_number?.toLowerCase() || '';
+  if (regNum) {
+    const regScore = calculateSimilarity(q, regNum);
+    if (regScore > 50) {
+      totalScore += regScore * 3; // 3x weight
+      matchedFields.push(`registration_number(${regScore}%)`);
+      fieldCount += 3;
+    }
+  }
+
+  if (isDrug) {
+    const drugProduct = product as DrugProduct;
+    // Brand name
+    const brandName = drugProduct.brand_name?.toLowerCase() || '';
+    if (brandName) {
+      const brandScore = calculateSimilarity(q, brandName);
+      if (brandScore > 40) {
+        totalScore += brandScore * 2; // 2x weight
+        matchedFields.push(`brand_name(${brandScore}%)`);
+        fieldCount += 2;
+      }
+    }
+    // Generic name
+    const genericName = drugProduct.generic_name?.toLowerCase() || '';
+    if (genericName) {
+      const genericScore = calculateSimilarity(q, genericName);
+      if (genericScore > 40) {
+        totalScore += genericScore * 2; // 2x weight
+        matchedFields.push(`generic_name(${genericScore}%)`);
+        fieldCount += 2;
+      }
+    }
+    // Manufacturer
+    const manufacturer = (drugProduct.manufacturer || drugProduct.company_name)?.toLowerCase() || '';
+    if (manufacturer) {
+      const mfgScore = calculateSimilarity(q, manufacturer);
+      if (mfgScore > 30) {
+        totalScore += mfgScore;
+        matchedFields.push(`manufacturer(${mfgScore}%)`);
+        fieldCount += 1;
+      }
+    }
+  } else {
+    const foodProduct = product as FoodProduct;
+    // Product name
+    const productName = foodProduct.product_name?.toLowerCase() || '';
+    if (productName) {
+      const nameScore = calculateSimilarity(q, productName);
+      if (nameScore > 40) {
+        totalScore += nameScore * 2; // 2x weight
+        matchedFields.push(`product_name(${nameScore}%)`);
+        fieldCount += 2;
+      }
+    }
+    // Company name
+    const companyName = foodProduct.company_name?.toLowerCase() || '';
+    if (companyName) {
+      const companyScore = calculateSimilarity(q, companyName);
+      if (companyScore > 30) {
+        totalScore += companyScore;
+        matchedFields.push(`company_name(${companyScore}%)`);
+        fieldCount += 1;
+      }
+    }
+  }
+
+  const averageScore = fieldCount > 0 ? Math.round(totalScore / fieldCount) : 0;
+  return { score: averageScore, matchedFields };
+};
+
 // Map UI category to table names
 const tableForCategory = (category?: string) => {
   const c = (category || '').toLowerCase();
@@ -55,6 +173,22 @@ export type ProductInfo = {
   relevance_score?: number | null;
 };
 
+export type AlternativeMatch = {
+  id?: string;
+  product_name?: string | null;
+  company_name?: string | null;
+  registration_number?: string | null;
+  type?: string | null;
+  similarity_score: number;
+  matched_fields: string[];
+  issuance_date?: string | null;
+  expiry_date?: string | null;
+  // Drug-specific fields
+  brand_name?: string | null;
+  generic_name?: string | null;
+  manufacturer?: string | null;
+};
+
 export type VerifyResponse = {
   product_id: string | null;
   is_verified: boolean;
@@ -70,6 +204,7 @@ export type VerifyResponse = {
     matched_field?: string;
     product_info: ProductInfo | null;
     verified_product: VerifiedProduct | null;
+    alternative_matches?: AlternativeMatch[];
   };
   registrationDate: string | null;
   expiryDate: string | null;
@@ -81,33 +216,89 @@ const buildResponse = ({
   exactDrug,
   foodMatches,
   drugMatches,
+  query,
 }: {
   exactFood: FoodProduct | null;
   exactDrug: DrugProduct | null;
   foodMatches: FoodProduct[];
   drugMatches: DrugProduct[];
+  query: string;
 }): VerifyResponse => {
   const exact = exactFood || exactDrug || null;
   const isDrug = !!exactDrug || (!exact && drugMatches.length > 0);
-  const topFood = foodMatches[0] || null;
-  const topDrug = drugMatches[0] || null;
   const totalMatches = foodMatches.length + drugMatches.length;
 
   const is_exact_registration = !!exact;
 
+  // Score and rank all matches using fuzzy matching
+  const scoredMatches: Array<{ product: FoodProduct | DrugProduct; score: number; matchedFields: string[]; isDrug: boolean }> = [];
+
+  // Score food matches
+  for (const food of foodMatches) {
+    const { score, matchedFields } = calculateMatchScore(query, food, false);
+    scoredMatches.push({ product: food, score, matchedFields, isDrug: false });
+  }
+
+  // Score drug matches
+  for (const drug of drugMatches) {
+    const { score, matchedFields } = calculateMatchScore(query, drug, true);
+    scoredMatches.push({ product: drug, score, matchedFields, isDrug: true });
+  }
+
+  // Sort by score descending
+  scoredMatches.sort((a, b) => b.score - a.score);
+
+  // Get top match (or use exact if available)
+  const topMatch = scoredMatches[0] || null;
+  const topScore = topMatch?.score || 0;
+
+  // Build alternative matches array
+  const alternativeMatches: AlternativeMatch[] = scoredMatches.map(({ product, score, matchedFields, isDrug }) => {
+    if (isDrug) {
+      const drug = product as DrugProduct;
+      return {
+        id: drug.id,
+        product_name: drug.brand_name || drug.generic_name,
+        company_name: drug.manufacturer || drug.company_name,
+        registration_number: drug.registration_number,
+        type: 'drug',
+        similarity_score: score,
+        matched_fields: matchedFields,
+        issuance_date: drug.issuance_date,
+        expiry_date: drug.expiry_date,
+        brand_name: drug.brand_name,
+        generic_name: drug.generic_name,
+        manufacturer: drug.manufacturer || drug.company_name,
+      };
+    } else {
+      const food = product as FoodProduct;
+      return {
+        id: food.id,
+        product_name: food.product_name,
+        company_name: food.company_name,
+        registration_number: food.registration_number,
+        type: food.type_of_product || 'food',
+        similarity_score: score,
+        matched_fields: matchedFields,
+        issuance_date: food.issuance_date,
+        expiry_date: food.expiry_date,
+      };
+    }
+  });
+
   const base: VerifyResponse = {
-    product_id: exact?.registration_number || topFood?.registration_number || topDrug?.registration_number || null,
+    product_id: exact?.registration_number || topMatch?.product.registration_number || null,
     is_verified: is_exact_registration,
     message: is_exact_registration
-      ? 'Product verified via FTS from FDA database.'
+      ? 'Product verified via exact registration match from FDA database.'
       : totalMatches > 0
-        ? 'No exact registration match found. Showing closest matches from FDA database.'
+        ? `Found ${totalMatches} potential match${totalMatches > 1 ? 'es' : ''}. Best match has ${topScore}% similarity score.`
         : 'Product not found in FDA database.',
     details: {
-      verification_method: 'Full-Text Search in FDA Database',
+      verification_method: is_exact_registration ? 'Exact Registration Match' : 'Fuzzy Matching with FTS',
       total_matches: totalMatches,
       search_results_count: totalMatches,
-      confidence_score: is_exact_registration ? 100 : (totalMatches > 0 ? 60 : 0),
+      confidence_score: is_exact_registration ? 100 : topScore,
       exact_match: is_exact_registration,
       suggestions: totalMatches === 0 ? [
         'Check for typos or spacing in the registration number',
@@ -116,45 +307,79 @@ const buildResponse = ({
       ] : undefined,
       product_info: null,
       verified_product: null,
+      alternative_matches: alternativeMatches.length > 0 ? alternativeMatches : undefined,
     },
-    registrationDate: exact?.issuance_date || topFood?.issuance_date || topDrug?.issuance_date || null,
-    expiryDate: exact?.expiry_date || topFood?.expiry_date || topDrug?.expiry_date || null,
+    registrationDate: exact?.issuance_date || topMatch?.product.issuance_date || null,
+    expiryDate: exact?.expiry_date || topMatch?.product.expiry_date || null,
   };
 
-  if (isDrug) {
-    const row = exactDrug || topDrug;
-    if (row) {
+  // Use exact match if available, otherwise use top scored match
+  if (exact) {
+    // Use exact match
+    if (exactDrug) {
       base.details.verified_product = {
-        id: row.id || undefined,
-        brand_name: row.brand_name || null,
-        generic_name: row.generic_name || null,
-        manufacturer: row.manufacturer || row.company_name || null,
-        registration_number: row.registration_number || null,
+        id: exactDrug.id || undefined,
+        brand_name: exactDrug.brand_name || null,
+        generic_name: exactDrug.generic_name || null,
+        manufacturer: exactDrug.manufacturer || exactDrug.company_name || null,
+        registration_number: exactDrug.registration_number || null,
         type: 'drug',
-        matched_fields: [],
-        relevance_score: null,
+        matched_fields: ['registration_number(100%)'],
+        relevance_score: 100,
       };
       base.details.product_info = {
-        id: row.id || undefined,
-        product_name: row.brand_name || row.generic_name || null,
-        company_name: row.manufacturer || row.company_name || null,
-        registration_number: row.registration_number || null,
+        id: exactDrug.id || undefined,
+        product_name: exactDrug.brand_name || exactDrug.generic_name || null,
+        company_name: exactDrug.manufacturer || exactDrug.company_name || null,
+        registration_number: exactDrug.registration_number || null,
         type: 'drug',
-        matched_fields: [],
-        relevance_score: null,
+        matched_fields: ['registration_number(100%)'],
+        relevance_score: 100,
+      };
+    } else if (exactFood) {
+      base.details.product_info = {
+        id: exactFood.id || undefined,
+        product_name: exactFood.product_name || null,
+        company_name: exactFood.company_name || null,
+        registration_number: exactFood.registration_number || null,
+        type: exactFood.type_of_product || 'food',
+        matched_fields: ['registration_number(100%)'],
+        relevance_score: 100,
       };
     }
-  } else {
-    const row = exactFood || topFood;
-    if (row) {
+  } else if (topMatch) {
+    // Use top scored match from fuzzy matching
+    if (topMatch.isDrug) {
+      const drug = topMatch.product as DrugProduct;
+      base.details.verified_product = {
+        id: drug.id || undefined,
+        brand_name: drug.brand_name || null,
+        generic_name: drug.generic_name || null,
+        manufacturer: drug.manufacturer || drug.company_name || null,
+        registration_number: drug.registration_number || null,
+        type: 'drug',
+        matched_fields: topMatch.matchedFields,
+        relevance_score: topMatch.score,
+      };
       base.details.product_info = {
-        id: row.id || undefined,
-        product_name: row.product_name || null,
-        company_name: row.company_name || null,
-        registration_number: row.registration_number || null,
-        type: row.type_of_product || 'food',
-        matched_fields: [],
-        relevance_score: null,
+        id: drug.id || undefined,
+        product_name: drug.brand_name || drug.generic_name || null,
+        company_name: drug.manufacturer || drug.company_name || null,
+        registration_number: drug.registration_number || null,
+        type: 'drug',
+        matched_fields: topMatch.matchedFields,
+        relevance_score: topMatch.score,
+      };
+    } else {
+      const food = topMatch.product as FoodProduct;
+      base.details.product_info = {
+        id: food.id || undefined,
+        product_name: food.product_name || null,
+        company_name: food.company_name || null,
+        registration_number: food.registration_number || null,
+        type: food.type_of_product || 'food',
+        matched_fields: topMatch.matchedFields,
+        relevance_score: topMatch.score,
       };
     }
   }
@@ -240,7 +465,7 @@ const ProductVerify = async (product_id: string, category?: string) => {
     drugMatches = await runFts('drug_products');
   }
 
-  return buildResponse({ exactFood, exactDrug, foodMatches, drugMatches });
+  return buildResponse({ exactFood, exactDrug, foodMatches, drugMatches, query: q });
 };
 
 export const useGetProductVerifyQuery = (product_id: string, category?: string) => {
