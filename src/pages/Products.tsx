@@ -24,9 +24,15 @@ export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
+    const [appliedCategory, setAppliedCategory] = useState('All Categories');
     const [selectedStatus, setSelectedStatus] = useState('All Status');
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+    // Load initial products on mount
+    useEffect(() => {
+        setAppliedCategory('All Categories');
+    }, []);
 
     const {
         data,
@@ -36,7 +42,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetUnifiedProductsInfiniteQuery(selectedCategory, appliedSearch || undefined);
+    } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
@@ -45,12 +51,15 @@ export default function Products() {
     // Apply search only on click/Enter
     const handleSearchSubmit = () => {
         setAppliedSearch(searchTerm.trim());
+        setAppliedCategory(selectedCategory);
     };
 
     // Handle clear search
     const handleClearSearch = () => {
         setSearchTerm('');
         setAppliedSearch('');
+        setSelectedCategory('All Categories');
+        setAppliedCategory('All Categories');
     };
 
     const allProducts = useMemo(() => {
