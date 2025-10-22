@@ -173,15 +173,21 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
             {data.alternative_matches && data.alternative_matches.length > 0 && (
                 <div className="rounded-xl border border-app p-5 bg-app/30">
                     <h3 className="text-lg font-semibold mb-4">Alternative Matches</h3>
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {data.alternative_matches.map((match, index) => (
-                            <div key={index} className="border border-app/50 rounded-lg p-3">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div className="font-medium text-sm">{match.product_name}</div>
-                                    <div className="text-xs text-muted">{(match.relevance_score * 100).toFixed(1)}% match</div>
+                            <div key={index} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
+                                <div className="flex items-start justify-between mb-2">
+                                    <h4 className="font-semibold text-sm line-clamp-2 pr-2">{match.product_name}</h4>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`}>
+                                        {(match.type || '—').toString().toUpperCase()}
+                                    </span>
                                 </div>
-                                <div className="text-xs text-muted mb-1">{match.company_name}</div>
-                                <div className="text-xs font-mono">{match.registration_number}</div>
+                                <div className="text-xs text-muted mb-2 line-clamp-1">{match.company_name}</div>
+                                <div className="flex items-center justify-between text-[11px]">
+                                    <span className="opacity-70">Reg. No.</span>
+                                    <span className="font-mono">{match.registration_number}</span>
+                                </div>
+                                <div className="mt-2 text-right text-[11px] text-muted">{(match.relevance_score * 100).toFixed(0)}% match</div>
                             </div>
                         ))}
                     </div>
