@@ -2,38 +2,19 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { FaSearch, FaList } from 'react-icons/fa';
 import { CiGrid41 } from "react-icons/ci";
 import ProductCard from '../components/ProductCard';
-import { useGetProductsInfiniteQuery } from '../query/get/useGetFoodProductsQuery';
-import type { Product, ProductsResponse } from '../query/get/useGetFoodProductsQuery';
+import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
+import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
 
-const transformProduct = (product: Product) => {
-    // Check if it's a drug product by looking for drug-specific fields
-    if ('brand_name' in product || 'generic_name' in product) {
-        const drugProduct = product as import('../query/get/useGetFoodProductsQuery').DrugProduct;
-        return {
-            id: drugProduct.id || drugProduct.registration_number,
-            name: drugProduct.brand_name || drugProduct.generic_name || 'Unknown Drug',
-            status: 'verified' as const,
-            category: 'Pharmaceutical' as const,
-            registrationNo: drugProduct.registration_number,
-            manufacturer: drugProduct.manufacturer || drugProduct.company_name || 'Unknown Manufacturer',
-            registered: drugProduct.issuance_date || 'Unknown',
-            expires: drugProduct.expiry_date || 'Unknown',
-            compliance: 'compliant' as const,
-            action: 'active' as const,
-        };
-    }
-
-    // It's a food product
-    const foodProduct = product as import('../query/get/useGetFoodProductsQuery').FoodProduct;
+const transformProduct = (product: UnifiedProduct) => {
     return {
-        id: foodProduct.id || foodProduct.registration_number,
-        name: foodProduct.product_name || 'Unknown Product',
+        id: product.id || product.registration_number,
+        name: product.name || 'Unknown Product',
         status: 'verified' as const,
-        category: foodProduct.type_of_product || 'Food',
-        registrationNo: foodProduct.registration_number,
-        manufacturer: foodProduct.company_name || 'Unknown Manufacturer',
-        registered: foodProduct.issuance_date || 'Unknown',
-        expires: foodProduct.expiry_date || 'Unknown',
+        category: product.category || product.source_category,
+        registrationNo: product.registration_number,
+        manufacturer: product.manufacturer || 'Unknown Manufacturer',
+        registered: product.issuance_date || 'Unknown',
+        expires: product.expiry_date || 'Unknown',
         compliance: 'compliant' as const,
         action: 'active' as const,
     };
@@ -55,7 +36,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetProductsInfiniteQuery(selectedCategory, appliedSearch || undefined);
+    } = useGetUnifiedProductsInfiniteQuery(selectedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
@@ -74,7 +55,7 @@ export default function Products() {
 
     const allProducts = useMemo(() => {
         if (!data?.pages) return [];
-        return data.pages.flatMap((page: ProductsResponse) => page.data);
+        return data.pages.flatMap((page: UnifiedProductsResponse) => page.data);
     }, [data]);
 
     const filteredProducts = useMemo(() => {
@@ -116,7 +97,7 @@ export default function Products() {
     }, [allProducts, selectedStatus, sortBy]);
 
     // Get total count from the first page
-    const totalCount = (data?.pages?.[0] as ProductsResponse)?.totalCount || 0;
+    const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;
 
     // Intersection observer for automatic loading
     const loadMoreRef = useRef<HTMLDivElement>(null);
