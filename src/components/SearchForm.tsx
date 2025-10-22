@@ -162,7 +162,7 @@ export default function SearchForm() {
                             <input
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Enter FDA registration number..."
+                                placeholder="Enter FDA registration number or product name..."
                                 className="w-full h-11 border bg-app text-base rounded-lg pl-9 pr-3 placeholder:text-muted border-app"
                             />
                         </div>
