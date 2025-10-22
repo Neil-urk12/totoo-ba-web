@@ -2,38 +2,19 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { FaSearch, FaList } from 'react-icons/fa';
 import { CiGrid41 } from "react-icons/ci";
 import ProductCard from '../components/ProductCard';
-import { useGetProductsInfiniteQuery } from '../query/get/useGetFoodProductsQuery';
-import type { Product, ProductsResponse } from '../query/get/useGetFoodProductsQuery';
+import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
+import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
 
-const transformProduct = (product: Product) => {
-    // Check if it's a drug product by looking for drug-specific fields
-    if ('brand_name' in product || 'generic_name' in product) {
-        const drugProduct = product as import('../query/get/useGetFoodProductsQuery').DrugProduct;
-        return {
-            id: drugProduct.id || drugProduct.registration_number,
-            name: drugProduct.brand_name || drugProduct.generic_name || 'Unknown Drug',
-            status: 'verified' as const,
-            category: 'Pharmaceutical' as const,
-            registrationNo: drugProduct.registration_number,
-            manufacturer: drugProduct.manufacturer || drugProduct.company_name || 'Unknown Manufacturer',
-            registered: drugProduct.issuance_date || 'Unknown',
-            expires: drugProduct.expiry_date || 'Unknown',
-            compliance: 'compliant' as const,
-            action: 'active' as const,
-        };
-    }
-
-    // It's a food product
-    const foodProduct = product as import('../query/get/useGetFoodProductsQuery').FoodProduct;
+const transformProduct = (product: UnifiedProduct) => {
     return {
-        id: foodProduct.id || foodProduct.registration_number,
-        name: foodProduct.product_name || 'Unknown Product',
+        id: product.id || product.registration_number,
+        name: product.name || 'Unknown Product',
         status: 'verified' as const,
-        category: foodProduct.type_of_product || 'Food',
-        registrationNo: foodProduct.registration_number,
-        manufacturer: foodProduct.company_name || 'Unknown Manufacturer',
-        registered: foodProduct.issuance_date || 'Unknown',
-        expires: foodProduct.expiry_date || 'Unknown',
+        category: product.category || product.source_category,
+        registrationNo: product.registration_number,
+        manufacturer: product.manufacturer || 'Unknown Manufacturer',
+        registered: product.issuance_date || 'Unknown',
+        expires: product.expiry_date || 'Unknown',
         compliance: 'compliant' as const,
         action: 'active' as const,
     };
@@ -43,9 +24,15 @@ export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
+    const [appliedCategory, setAppliedCategory] = useState('All Categories');
     const [selectedStatus, setSelectedStatus] = useState('All Status');
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+    // Load initial products on mount
+    useEffect(() => {
+        setAppliedCategory('All Categories');
+    }, []);
 
     const {
         data,
@@ -55,7 +42,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetProductsInfiniteQuery(selectedCategory);
+    } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
     const statuses = ['All Status', 'Verified', 'Not Verified'];
@@ -63,18 +50,21 @@ export default function Products() {
 
     // Apply search only on click/Enter
     const handleSearchSubmit = () => {
-        setAppliedSearch(searchTerm.trim().toLowerCase());
+        setAppliedSearch(searchTerm.trim());
+        setAppliedCategory(selectedCategory);
     };
 
     // Handle clear search
     const handleClearSearch = () => {
         setSearchTerm('');
         setAppliedSearch('');
+        setSelectedCategory('All Categories');
+        setAppliedCategory('All Categories');
     };
 
     const allProducts = useMemo(() => {
         if (!data?.pages) return [];
-        return data.pages.flatMap((page: ProductsResponse) => page.data);
+        return data.pages.flatMap((page: UnifiedProductsResponse) => page.data);
     }, [data]);
 
     const filteredProducts = useMemo(() => {
@@ -90,25 +80,8 @@ export default function Products() {
             return matchesStatus;
         });
 
-        // Client-side search filter (applied via Search button/Enter)
-        const query = appliedSearch.trim().toLowerCase();
-        const searchFilteredProducts = query
-            ? statusFilteredProducts.filter((product) => {
-                const name = product.name?.toLowerCase() || '';
-                const manufacturer = product.manufacturer?.toLowerCase() || '';
-                const registrationNo = product.registrationNo?.toLowerCase() || '';
-                const category = product.category?.toString().toLowerCase() || '';
-                return (
-                    name.includes(query) ||
-                    manufacturer.includes(query) ||
-                    registrationNo.includes(query) ||
-                    category.includes(query)
-                );
-            })
-            : statusFilteredProducts;
-
         // Sort products based on selected sort option
-        const sortedProducts = [...searchFilteredProducts].sort((a, b) => {
+        const sortedProducts = [...statusFilteredProducts].sort((a, b) => {
             switch (sortBy) {
                 case 'Name':
                     return a.name.localeCompare(b.name);
@@ -130,10 +103,10 @@ export default function Products() {
         });
 
         return sortedProducts;
-    }, [allProducts, selectedStatus, sortBy, appliedSearch]);
+    }, [allProducts, selectedStatus, sortBy]);
 
     // Get total count from the first page
-    const totalCount = (data?.pages?.[0] as ProductsResponse)?.totalCount || 0;
+    const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;
 
     // Intersection observer for automatic loading
     const loadMoreRef = useRef<HTMLDivElement>(null);
@@ -275,7 +248,7 @@ export default function Products() {
             {!isLoading && !isError && (
                 <section className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                     {filteredProducts.map(product => (
-                        <ProductCard key={product.id} product={product} />
+                        <ProductCard key={product.id} product={product} viewMode={viewMode} />
                     ))}
                 </section>
             )}

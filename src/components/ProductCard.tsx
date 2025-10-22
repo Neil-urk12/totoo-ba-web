@@ -13,9 +13,10 @@ interface ProductCardProps {
         compliance: 'compliant' | 'non-compliant';
         action: 'active' | 'suspended';
     };
+    viewMode?: 'grid' | 'list';
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
     const getStatusIcon = () => {
         if (product.status === 'verified') {
             return <FaCheck className="w-3 h-3" />;
@@ -42,6 +43,41 @@ export default function ProductCard({ product }: ProductCardProps) {
         return product.action === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     };
 
+    if (viewMode === 'list') {
+        return (
+            <div className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
+                <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-4 mb-2">
+                            <h3 className="font-semibold text-lg truncate">{product.name}</h3>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
+                                {getStatusIcon()}
+                                {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-6 text-sm">
+                            <span className="text-muted">{product.category}</span>
+                            <span className="text-muted">Reg: {product.registrationNo}</span>
+                            <span className="text-muted">Manufacturer: {product.manufacturer}</span>
+                            <span className="text-muted">Registered: {product.registered}</span>
+                            <span className="text-muted">Expires: {product.expires}</span>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
+                            {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
+                        </div>
+                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
+                            {getActionIcon()}
+                            {product.action === 'active' ? 'Active' : 'Suspended'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Grid view (default)
     return (
         <div className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow bg-card border-app">
             <div className="flex items-start justify-between mb-4">
