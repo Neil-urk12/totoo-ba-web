@@ -5,6 +5,7 @@ import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
+import LoadingSpinner from './components/LoadingSpinner'
 
 // Lazy load route components
 const Products = lazy(() => import('./pages/Products.tsx'))
@@ -35,7 +36,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} storageKey="theme" disableTransitionOnChange>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div></div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <RouterProvider router={routes} />
         </Suspense>
       </ThemeProvider>
