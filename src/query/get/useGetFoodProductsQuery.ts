@@ -28,6 +28,8 @@ export type ProductsResponse = {
   data: Product[];
   hasMore: boolean;
   totalCount: number;
+  currentPage: number;
+  totalPages: number;
 }
 
 // Generic record types for industry tables
@@ -49,7 +51,9 @@ export type AllDataResponse = {
 
 
 
-const fetchProducts = async (category?: string): Promise<ProductsResponse> => {
+const ITEMS_PER_PAGE = 30;
+
+const fetchProducts = async (category?: string, page: number = 0): Promise<ProductsResponse> => {
   const shouldQueryFood = !category || category === 'All Categories' || category === 'Food' || category === 'Food Supplement' || category === 'Cosmetic' || category === 'Medical Device';
   const shouldQueryDrug =
     !category ||
@@ -65,7 +69,7 @@ const fetchProducts = async (category?: string): Promise<ProductsResponse> => {
   if (shouldQueryFood) {
     const { data: foodData, error: foodError, count: foodCount } = await supabase
       .from('food_products')
-      .select('*', { count: 'planned' })
+      .select('*', { count: 'exact' })
       .order('product_name', { ascending: true });
     
     if (foodError) {
@@ -80,7 +84,7 @@ const fetchProducts = async (category?: string): Promise<ProductsResponse> => {
   if (shouldQueryDrug) {
     const { data: drugData, error: drugError, count: drugCount } = await supabase
       .from('drug_products')
-      .select('*', { count: 'planned' })
+      .select('*', { count: 'exact' })
       .order('brand_name', { ascending: true });
     
     if (drugError) {
@@ -98,19 +102,28 @@ const fetchProducts = async (category?: string): Promise<ProductsResponse> => {
     return (nameA || '').localeCompare(nameB || '');
   });
 
+  // Calculate pagination
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+  const startIndex = page * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedData = allData.slice(startIndex, endIndex);
+  const hasMore = endIndex < totalCount;
+
   return {
-    data: allData,
-    hasMore: false,
+    data: paginatedData,
+    hasMore,
     totalCount,
+    currentPage: page,
+    totalPages,
   };
 };
 
 export const useGetProductsInfiniteQuery = (category?: string) => {
   return useInfiniteQuery({
     queryKey: ["products-infinite", category],
-    queryFn: async () => await fetchProducts(category),
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.hasMore ? allPages.length : undefined;
+    queryFn: async ({ pageParam }) => await fetchProducts(category, pageParam),
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
     },
     initialPageParam: 0,
     staleTime: 5 * 60 * 1000,
@@ -122,12 +135,12 @@ export const useGetFoodProductsInfiniteQuery = () => {
   return useGetProductsInfiniteQuery('Food');
 };
 
-export const useGetProductsQuery = (category?: string) => {
+export const useGetProductsQuery = (category?: string, page: number = 0) => {
   return queryOptions({
-    queryKey: ["products", category],
+    queryKey: ["products", category, page],
     queryFn: async () => {
-      const response = await fetchProducts(category);
-      return response.data;
+      const response = await fetchProducts(category, page);
+      return response;
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
