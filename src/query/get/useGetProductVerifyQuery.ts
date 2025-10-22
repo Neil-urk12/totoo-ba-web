@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { supabase } from "../../db/supabaseClient";
+import { createSupabaseClient } from "../../db/supabaseClient";
 
 // Map UI category to table names
 const tableForCategory = (category?: string) => {
@@ -164,6 +164,7 @@ const buildResponse = ({
 };
 
 const ProductVerify = async (product_id: string, category?: string) => {
+  const supabase = createSupabaseClient();
   const q = (product_id || '').trim();
   if (!q) throw new Error('Empty query');
 
