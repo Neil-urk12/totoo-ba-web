@@ -199,10 +199,11 @@ export default function SearchForm() {
                 </button>
 
                 <p className="text-center text-muted text-sm mt-4">
-                    {searchMethod === 'image'
-                        ? "Our AI will analyze the product image and match it against FDA databases"
-                        : "Our system checks against official FDA Philippines and Business Registry databases"
-                    }
+                    {searchMethod === 'image' ? (
+                        "Our AI will analyze the product image and match it against FDA databases"
+                    ) : (
+                        "Our system checks against official FDA Philippines and Business Registry databases"
+                    )}
                 </p>
             </form>
 

@@ -228,10 +228,10 @@ const ProductVerify = async (product_id: string, category?: string) => {
   const hasDrug = tables.length === 2 || tables[0] === 'drug_products';
   const [exactFoodRes, exactDrugRes] = await Promise.all([
     hasFood
-      ? supabase.from('food_products').select('*').eq('registration_number', query).limit(1).maybeSingle()
+      ? supabase.from('food_products').select('*').eq('registration_number', q).limit(1).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     hasDrug
-      ? supabase.from('drug_products').select('*').eq('registration_number', query).limit(1).maybeSingle()
+      ? supabase.from('drug_products').select('*').eq('registration_number', q).limit(1).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
   ]);
 
@@ -241,7 +241,7 @@ const ProductVerify = async (product_id: string, category?: string) => {
   // Run FTS with websearch; if it errors, fall back to plain
   const runFts = async (table: 'food_products' | 'drug_products') => {
     // Sanitize query for FTS: strip special characters and normalize spaces
-    const qFts = query
+    const qFts = q
       .replace(/[^a-zA-Z0-9\s]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
