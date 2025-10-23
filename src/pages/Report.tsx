@@ -156,7 +156,7 @@ export default function Report() {
         return (
             <section className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
                 <main className="max-w-2xl mx-auto px-4 py-12">
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="rounded-xl shadow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <FaCheckCircle className="text-3xl text-green-600" />
@@ -193,28 +193,31 @@ export default function Report() {
     }
 
     return (
-        <section className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
+        <section className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} role="main" aria-label="Product Report Form">
             <main className="max-w-4xl mx-auto px-4 py-12">
                 {/* Header Section */}
-                <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <header className="text-center mb-8" role="banner">
+                    <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
                         <FaShieldAlt className="text-2xl text-amber-600" />
                     </div>
                     <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report a Product</h1>
                     <p className="text-lg max-w-2xl mx-auto" style={{ color: "var(--muted)" }}>
                         Help protect consumers by reporting suspicious, counterfeit, or non-compliant products.
                     </p>
-                </div>
+                </header>
 
                 {/* Alert Box */}
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8 flex items-start">
-                    <FaExclamationTriangle className="text-yellow-600 text-lg mr-3 mt-0.5 flex-shrink-0" />
-                    <p className="text-yellow-800">
-                        Your report will be forwarded to Totoo ba ? Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
-                    </p>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8 flex items-start" role="alert" aria-labelledby="alert-heading">
+                    <FaExclamationTriangle className="text-yellow-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                    <div>
+                        <h2 id="alert-heading" className="sr-only">Important Notice</h2>
+                        <p className="text-yellow-800">
+                            Your report will be forwarded to Totoo ba ? Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
+                        </p>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
+                <form onSubmit={handleSubmit} className="space-y-8" role="form" aria-label="Product Report Form">
                     {/* Product Information Section */}
                     <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
                         <div className="mb-6">
@@ -276,6 +279,8 @@ export default function Report() {
                                     onChange={handleInputChange}
                                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.issueType ? 'border-red-500' : ''}`}
                                     style={{ backgroundColor: "var(--bg)", borderColor: errors.issueType ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
+                                    aria-invalid={!!errors.issueType}
+                                    aria-describedby={errors.issueType ? "issueType-error" : undefined}
                                 >
                                     <option value="">Select an issue type</option>
                                     {issueTypes.map((type) => (
@@ -283,7 +288,7 @@ export default function Report() {
                                     ))}
                                 </select>
                                 {errors.issueType && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.issueType}</p>
+                                    <p id="issueType-error" className="text-red-500 text-sm mt-1">{errors.issueType}</p>
                                 )}
                             </div>
 
@@ -313,9 +318,9 @@ export default function Report() {
                     </div>
 
                     {/* Report Details Section */}
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="report-details-heading">
                         <div className="mb-6">
-                            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Details</h2>
+                            <h2 id="report-details-heading" className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Details</h2>
                         </div>
 
                         <div className="space-y-6">
@@ -329,8 +334,17 @@ export default function Report() {
                                     className="border-2 border-dashed rounded-lg p-6 text-center hover:opacity-80 transition-opacity cursor-pointer"
                                     style={{ borderColor: "var(--border)" }}
                                     onClick={() => document.getElementById('supportingEvidence')?.click()}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            document.getElementById('supportingEvidence')?.click();
+                                        }
+                                    }}
+                                    aria-label="Upload supporting evidence files"
                                 >
-                                    <FaUpload className="text-3xl mx-auto mb-3" style={{ color: "var(--muted)" }} />
+                                    <FaUpload className="text-3xl mx-auto mb-3" style={{ color: "var(--muted)" }} aria-hidden="true" />
                                     <p className="mb-1" style={{ color: "var(--fg)" }}>Upload photos or documents</p>
                                     <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>Product photos, receipts, packaging, or other evidence (Max 10MB each)</p>
                                     <div className="inline-flex items-center px-4 py-2 rounded-lg transition-colors"
@@ -347,11 +361,12 @@ export default function Report() {
                                     multiple
                                     accept="image/*,.pdf,.doc,.docx"
                                     className="hidden"
+                                    aria-label="Supporting evidence files"
                                 />
 
                                 {/* Selected Files Display */}
                                 {selectedFiles.length > 0 && (
-                                    <div className="mt-4">
+                                    <div className="mt-4" role="region" aria-label="Selected files">
                                         <p className="text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
                                             Selected Files ({selectedFiles.length}):
                                         </p>
@@ -360,7 +375,7 @@ export default function Report() {
                                                 <div key={index} className="bg-slate-300 flex items-center justify-between p-3 rounded-lg"
                                                 >
                                                     <div className="flex items-center">
-                                                        <FaUpload className="text-sm mr-2 text-black" />
+                                                        <FaUpload className="text-sm mr-2 text-black" aria-hidden="true" />
                                                         <span className="text-sm text-black">
                                                             {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                                                         </span>
@@ -372,6 +387,7 @@ export default function Report() {
                                                             removeFile(index);
                                                         }}
                                                         className="text-red-500 hover:text-red-700 text-sm"
+                                                        aria-label={`Remove file ${file.name}`}
                                                     >
                                                         Remove
                                                     </button>
@@ -385,9 +401,9 @@ export default function Report() {
                     </div>
 
                     {/* Contact Information Section */}
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="contact-info-heading">
                         <div className="mb-6">
-                            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Your Contact Information</h2>
+                            <h2 id="contact-info-heading" className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Your Contact Information</h2>
                             <p style={{ color: "var(--muted)" }}>We may need to contact you for additional information.</p>
                         </div>
 
@@ -405,9 +421,11 @@ export default function Report() {
                                     placeholder="Enter your full name"
                                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.fullName ? 'border-red-500' : ''}`}
                                     style={{ backgroundColor: "var(--bg)", borderColor: errors.fullName ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
+                                    aria-invalid={!!errors.fullName}
+                                    aria-describedby={errors.fullName ? "fullName-error" : undefined}
                                 />
                                 {errors.fullName && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+                                    <p id="fullName-error" className="text-red-500 text-sm mt-1">{errors.fullName}</p>
                                 )}
                             </div>
 
@@ -425,9 +443,11 @@ export default function Report() {
                                         placeholder="your.email@example.com"
                                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? 'border-red-500' : ''}`}
                                         style={{ backgroundColor: "var(--bg)", borderColor: errors.email ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
+                                        aria-invalid={!!errors.email}
+                                        aria-describedby={errors.email ? "email-error" : undefined}
                                     />
                                     {errors.email && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                                        <p id="email-error" className="text-red-500 text-sm mt-1">{errors.email}</p>
                                     )}
                                 </div>
 
@@ -444,9 +464,11 @@ export default function Report() {
                                         placeholder="+63 XXX XXX XXXX"
                                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.phone ? 'border-red-500' : ''}`}
                                         style={{ backgroundColor: "var(--bg)", borderColor: errors.phone ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
+                                        aria-invalid={!!errors.phone}
+                                        aria-describedby={errors.phone ? "phone-error" : undefined}
                                     />
                                     {errors.phone && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+                                        <p id="phone-error" className="text-red-500 text-sm mt-1">{errors.phone}</p>
                                     )}
                                 </div>
                             </div>
@@ -460,6 +482,7 @@ export default function Report() {
                             disabled={isSubmitting}
                             className="px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{ backgroundColor: "var(--fg)", color: "var(--bg)" }}
+                            aria-label={isSubmitting ? 'Submitting report' : 'Submit report'}
                         >
                             {isSubmitting ? 'Submitting...' : 'Submit Report'}
                         </button>
