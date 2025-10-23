@@ -167,43 +167,29 @@ export default function SearchForm() {
                             />
                         </div>
 
-                        <label className="text-sm font-semibold mb-2 block">Product Category (Optional)</label>
-                        <div className="mb-4">
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="w-56 h-9 border rounded-md bg-app border-app"
-                            >
-                                <option value="All Categories">All Categories</option>
-                                <option value="Food">Food</option>
-                                <option value="Cosmetics">Cosmetics</option>
-                                <option value="Drugs">Drugs</option>
-                            </select>
-                        </div>
-                    </>
-                )}
-
-                {/* Submit Button */}
-                <button
-                    type="submit"
-                    disabled={
-                        searchMethod === 'text' ? (query.length === 0 || isSubmitting) : (isUploading || !selectedFile)
-                    }
-                    className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app disabled:opacity-50 disabled:cursor-not-allowed"
+                <label className="text-sm font-semibold mb-2 block">Product Category (Optional)</label>
+                <div className="mb-4">
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-56 h-9 border rounded-md bg-app border-app"
+                    >
+                        <option value="All Categories">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Cosmetics">Cosmetics</option>
+                        <option value="Drugs">Drugs</option>
+                    </select>
+                </div>
+                <button 
+                    type="submit" 
+                    disabled={isSubmitting || !query.trim()} 
+                    className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app"
                 >
-                    {searchMethod === 'image' ? (
-                        isUploading ? "Analyzing Image..." : "Verify Product Image"
-                    ) : (
-                        isSubmitting ? "Verifying..." : "Verify Product"
-                    )}
+                    {isSubmitting ? "Verifying..." : "Verify Product"}
                 </button>
+                }
 
-                <p className="text-center text-muted text-sm mt-4">
-                    {searchMethod === 'image'
-                        ? "Our AI will analyze the product image and match it against FDA databases"
-                        : "Our system checks against official FDA Philippines and Business Registry databases"
-                    }
-                </p>
+                <p className="text-center text-muted text-sm mt-4">Our system checks against official FDA Philippines and Business Registry databases</p>
             </form>
 
             {/* Error Popup */}
