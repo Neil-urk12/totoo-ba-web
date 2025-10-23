@@ -1,5 +1,5 @@
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { supabase } from "../../db/supabaseClient";
+import { createSupabaseClient } from "../../db/supabaseClient";
 
 export type FoodProduct = {
   id?: string;
@@ -76,6 +76,7 @@ const validateAndSanitizeSearchQuery = (searchQuery?: string): string | null => 
 const ITEMS_PER_PAGE = 30;
 
 const fetchProducts = async (category?: string, page: number = 0, searchQuery?: string): Promise<ProductsResponse> => {
+  const supabase = createSupabaseClient();
   const shouldQueryFood = !category || category === 'All Categories' || category === 'Food' || category === 'Food Supplement' || category === 'Cosmetic' || category === 'Medical Device';
   const shouldQueryDrug =
     !category ||
@@ -252,6 +253,7 @@ export const useGetFoodProductsQuery = (searchQuery?: string) => {
 
 // Fetch all rows from all relevant tables without pagination
 const fetchAllTablesData = async (): Promise<AllDataResponse> => {
+  const supabase = createSupabaseClient();
   const [foodProductsRes, drugProductsRes, foodIndustryRes, drugIndustryRes] = await Promise.all([
     supabase.from('food_products').select('*', { count: 'exact' }),
     supabase.from('drug_products').select('*', { count: 'exact' }),
