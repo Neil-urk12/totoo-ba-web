@@ -1,6 +1,7 @@
 import { useEffect, useState, type FC } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { FaRegMoon } from "react-icons/fa";
+import { LuSun } from "react-icons/lu";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
@@ -34,7 +35,7 @@ export const ThemeToggle: FC = () => {
   if (!isReady) {
     return (
       <Button aria-hidden>
-        <Sun className="h-5 w-5" />
+        <LuSun className="h-5 w-5" />
       </Button>
     );
   }
@@ -42,9 +43,9 @@ export const ThemeToggle: FC = () => {
   return (
     <Button onClick={toggleTheme} aria-label="Toggle theme">
       {isDark ? (
-        <Sun className="h-5 w-5 text-yellow-400 transition-all" />
+        <LuSun className="h-5 w-5 text-yellow-400 transition-all" />
       ) : (
-        <Moon className="h-5 w-5 text-slate-700 transition-all" />
+        <FaRegMoon className="h-5 w-5 text-slate-700 transition-all" />
       )}
     </Button>
   );
