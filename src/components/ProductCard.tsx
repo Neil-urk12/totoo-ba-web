@@ -45,23 +45,26 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
     if (viewMode === 'list') {
         return (
-            <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app">
+            <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
                 <div className="flex flex-col gap-2">
                     {/* Row 1: Name and badges */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <h3 className="font-semibold text-base sm:text-lg truncate">{product.name}</h3>
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor()}`}>
+                            <h3 id={`product-name-${product.id}`} className="font-semibold text-base sm:text-lg truncate">{product.name}</h3>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
                                 {getStatusIcon()}
+                                <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
                                 {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
                             </div>
                         </div>
                         <div className="flex gap-1 sm:gap-2 ml-2 sm:ml-4 flex-shrink-0">
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`} aria-label={`Compliance: ${product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}`}>
+                                <span className="sr-only">{product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}</span>
                                 {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
                             </div>
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`} aria-label={`Action: ${product.action === 'active' ? 'Active' : 'Suspended'}`}>
                                 {getActionIcon()}
+                                <span className="sr-only">{product.action === 'active' ? 'Active' : 'Suspended'}</span>
                                 {product.action === 'active' ? 'Active' : 'Suspended'}
                             </div>
                         </div>
@@ -69,7 +72,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
                     {/* Row 2: Scrollable details with full labels */}
                     <div className="scrollbar-none flex items-center gap-3 sm:gap-6 text-xs sm:text-sm overflow-x-auto">
-                        <span className="text-muted whitespace-nowrap">{product.category}</span>
+                        <span className="text-muted whitespace-nowrap">Category: {product.category}</span>
                         <span className="text-muted whitespace-nowrap">Reg: {product.registrationNo}</span>
                         <span className="text-muted whitespace-nowrap">Manufacturer: {product.manufacturer}</span>
                         <span className="text-muted whitespace-nowrap">Registered: {product.registered}</span>
@@ -82,17 +85,18 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
     // Grid view (default)
     return (
-        <div className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow bg-card border-app">
+        <div className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
             <div className="flex items-start justify-between mb-4">
-                <h3 className="font-semibold text-lg">{product.name}</h3>
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
+                <h3 id={`product-name-${product.id}`} className="font-semibold text-lg">{product.name}</h3>
+                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
                     {getStatusIcon()}
+                    <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
                     {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
                 </div>
             </div>
 
             <div className="mb-4">
-                <span className="text-sm text-muted">{product.category}</span>
+                <span className="text-sm text-muted">Category: {product.category}</span>
             </div>
 
             <div className="space-y-2 mb-4">
@@ -115,11 +119,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             </div>
 
             <div className="flex gap-2">
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`} >
+                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`} aria-label={`Compliance: ${product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}`}>
+                    <span className="sr-only">{product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}</span>
                     {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
                 </div>
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`} >
+                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`} aria-label={`Action: ${product.action === 'active' ? 'Active' : 'Suspended'}`}>
                     {getActionIcon()}
+                    <span className="sr-only">{product.action === 'active' ? 'Active' : 'Suspended'}</span>
                     {product.action === 'active' ? 'Active' : 'Suspended'}
                 </div>
             </div>

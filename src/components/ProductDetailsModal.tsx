@@ -13,24 +13,26 @@ export default function ProductDetailsModal({ open, onClose, data }: ProductDeta
     const info = data.details?.product_info
 
     return (
-        <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:w-[760px] max-h-[85vh]">
-                <div className="m-0 sm:m-0 rounded-t-2xl sm:rounded-2xl border border-app bg-card shadow-xl overflow-hidden flex flex-col">
+                <div className="m-0 sm:m-0 rounded-t-2xl sm:rounded-2xl border border-app bg-card shadow-xl overflow-hidden flex flex-col" role="document">
                     <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-app">
-                        <div className="font-semibold">Full product details</div>
+                        <h2 id="modal-title" className="font-semibold">Full product details</h2>
                         <div className="flex items-center gap-2">
                             <button
                                 type="button"
                                 className="h-8 px-3 rounded-md border border-app hover:border-app text-sm"
                                 onClick={onClose}
+                                aria-label="Close modal"
                             >
                                 Close
                             </button>
                         </div>
                     </div>
                     <div className="p-4 sm:p-6 overflow-auto space-y-6">
-                        <section className="rounded-xl border border-app p-4 bg-app/20">
+                        <section className="rounded-xl border border-app p-4 bg-app/20" aria-labelledby="product-details-title">
+                            <h3 id="product-details-title" className="sr-only">Product Details</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <Field label="Status" value={data.is_verified ? 'Verified' : 'Not verified'} emphasize={true} />
                                 <Field label="Message" value={data.message || '—'} />
@@ -64,8 +66,8 @@ export default function ProductDetailsModal({ open, onClose, data }: ProductDeta
                         </section>
 
                         {info?.id && (
-                            <section className="rounded-xl border border-app p-4 bg-app/20">
-                                <div className="text-sm opacity-80 mb-3">Identifiers</div>
+                            <section className="rounded-xl border border-app p-4 bg-app/20" aria-labelledby="identifiers-title">
+                                <h3 id="identifiers-title" className="text-sm opacity-80 mb-3">Identifiers</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Field label="Repository ID" value={info.id} mono />
                                 </div>

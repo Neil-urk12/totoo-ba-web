@@ -67,25 +67,28 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" role="region" aria-labelledby="image-verification-result">
             {/* Verification Status */}
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Image Verification Result</h2>
-                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(data.verification_status)}`}>
+                <h2 id="image-verification-result" className="text-xl font-bold">Image Verification Result</h2>
+                <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(data.verification_status)}`} 
+                     aria-label={`Verification status: ${data.verification_status.replace('_', ' ')}`}>
                     {getStatusIcon(data.verification_status)}
+                    <span className="sr-only">{data.verification_status.replace('_', ' ')}</span>
                     <span className="capitalize">{data.verification_status.replace('_', ' ')}</span>
                 </div>
             </div>
 
             {/* Confidence Score */}
-            <div className="rounded-xl border border-app p-4 bg-app/30">
+            <div className="rounded-xl border border-app p-4 bg-app/30" role="region" aria-labelledby="confidence-score-section">
+                <h3 id="confidence-score-section" className="sr-only">Confidence Score</h3>
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold">Confidence Score</span>
-                    <span className={`text-lg font-bold ${getConfidenceColor(data.confidence)}`}>
+                    <span className={`text-lg font-bold ${getConfidenceColor(data.confidence)}`} aria-label={`Confidence: ${data.confidence}%`}>
                         {data.confidence}%
                     </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2" role="progressbar" aria-valuenow={data.confidence} aria-valuemin={0} aria-valuemax={100} aria-label="Confidence score">
                     <div
                         className={`h-2 rounded-full ${data.confidence >= 80 ? 'bg-green-500' : data.confidence >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                         style={{ width: `${data.confidence}%` }}
@@ -94,8 +97,8 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
             </div>
 
             {/* Extracted Fields */}
-            <div className="rounded-xl border border-app p-5 bg-app/30">
-                <h3 className="text-lg font-semibold mb-4">Extracted Information</h3>
+            <div className="rounded-xl border border-app p-5 bg-app/30" role="region" aria-labelledby="extracted-fields">
+                <h3 id="extracted-fields" className="text-lg font-semibold mb-4">Extracted Information</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <div className="text-xs uppercase tracking-wide opacity-70">Brand Name</div>
@@ -130,8 +133,8 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
 
             {/* Matched Product */}
             {data.matched_product && (
-                <div className="rounded-xl border border-app p-5 bg-app/30">
-                    <h3 className="text-lg font-semibold mb-4">Best Match</h3>
+                <div className="rounded-xl border border-app p-5 bg-app/30" role="region" aria-labelledby="best-match">
+                    <h3 id="best-match" className="text-lg font-semibold mb-4">Best Match</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <div className="text-xs uppercase tracking-wide opacity-70">Product Name</div>
@@ -153,7 +156,7 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
                             <div className="text-xs uppercase tracking-wide opacity-70">Matched Fields</div>
                             <div className="mt-1 flex flex-wrap gap-1">
                                 {data.matched_product.matched_fields.map((field, index) => (
-                                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                                    <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded" aria-label={`Matched field: ${field.replace('_', ' ')}`}>
                                         {field.replace('_', ' ')}
                                     </span>
                                 ))}
@@ -164,21 +167,21 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
             )}
 
             {/* AI Reasoning */}
-            <div className="rounded-xl border border-app p-5 bg-app/30">
-                <h3 className="text-lg font-semibold mb-3">AI Analysis</h3>
+            <div className="rounded-xl border border-app p-5 bg-app/30" role="region" aria-labelledby="ai-analysis">
+                <h3 id="ai-analysis" className="text-lg font-semibold mb-3">AI Analysis</h3>
                 <p className="text-sm leading-relaxed">{data.ai_reasoning}</p>
             </div>
 
             {/* Alternative Matches */}
             {data.alternative_matches && data.alternative_matches.length > 0 && (
-                <div className="rounded-xl border border-app p-5 bg-app/30">
-                    <h3 className="text-lg font-semibold mb-4">Alternative Matches</h3>
+                <div className="rounded-xl border border-app p-5 bg-app/30" role="region" aria-labelledby="alternative-matches">
+                    <h3 id="alternative-matches" className="text-lg font-semibold mb-4">Alternative Matches</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {data.alternative_matches.map((match, index) => (
-                            <div key={index} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
+                            <div key={index} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`alt-match-${index}`}>
                                 <div className="flex items-start justify-between mb-2">
-                                    <h4 className="font-semibold text-sm line-clamp-2 pr-2">{match.product_name}</h4>
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`}>
+                                    <h4 id={`alt-match-${index}`} className="font-semibold text-sm line-clamp-2 pr-2">{match.product_name}</h4>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`} aria-label={`Product type: ${match.type || '—'}`}>
                                         {(match.type || '—').toString().toUpperCase()}
                                     </span>
                                 </div>
