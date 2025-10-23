@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { supabase } from "../../db/supabaseClient";
+import { createSupabaseClient } from "../../db/supabaseClient";
 
 // Map UI category to table names
 const tableForCategory = (category?: string) => {
@@ -14,6 +14,7 @@ const tableForCategory = (category?: string) => {
 interface FoodProduct {
   id?: string;
   registration_number: string;
+  brand_name?: string | null; // Brand name field exists in food_products table
   company_name?: string | null;
   product_name?: string | null;
   type_of_product?: string | null;
@@ -70,6 +71,15 @@ export type VerifyResponse = {
     matched_field?: string;
     product_info: ProductInfo | null;
     verified_product: VerifiedProduct | null;
+    alternative_matches?: Array<{
+      id?: string;
+      relevance_score?: number | null;
+      matched_fields?: string[];
+      type: string;
+      registration_number: string;
+      product_name: string;
+      company_name: string;
+    }>;
   };
   registrationDate: string | null;
   expiryDate: string | null;
@@ -94,20 +104,23 @@ const buildResponse = ({
   const totalMatches = foodMatches.length + drugMatches.length;
 
   const is_exact_registration = !!exact;
+  const has_text_match = totalMatches > 0;
 
   const base: VerifyResponse = {
     product_id: exact?.registration_number || topFood?.registration_number || topDrug?.registration_number || null,
-    is_verified: is_exact_registration,
+    // Treat any successful text match as verified (even if not exact registration)
+    is_verified: is_exact_registration || has_text_match,
     message: is_exact_registration
       ? 'Product verified via FTS from FDA database.'
-      : totalMatches > 0
-        ? 'No exact registration match found. Showing closest matches from FDA database.'
+      : has_text_match
+        ? 'Product verified via text search match in FDA database.'
         : 'Product not found in FDA database.',
     details: {
       verification_method: 'Full-Text Search in FDA Database',
       total_matches: totalMatches,
       search_results_count: totalMatches,
-      confidence_score: is_exact_registration ? 100 : (totalMatches > 0 ? 60 : 0),
+      // Slightly higher confidence for non-exact text matches
+      confidence_score: is_exact_registration ? 100 : (has_text_match ? 85 : 0),
       exact_match: is_exact_registration,
       suggestions: totalMatches === 0 ? [
         'Check for typos or spacing in the registration number',
@@ -116,6 +129,7 @@ const buildResponse = ({
       ] : undefined,
       product_info: null,
       verified_product: null,
+      alternative_matches: [],
     },
     registrationDate: exact?.issuance_date || topFood?.issuance_date || topDrug?.issuance_date || null,
     expiryDate: exact?.expiry_date || topFood?.expiry_date || topDrug?.expiry_date || null,
@@ -149,7 +163,7 @@ const buildResponse = ({
     if (row) {
       base.details.product_info = {
         id: row.id || undefined,
-        product_name: row.product_name || null,
+        product_name: row.brand_name || row.product_name || null, // Prioritize brand_name for food products
         company_name: row.company_name || null,
         registration_number: row.registration_number || null,
         type: row.type_of_product || 'food',
@@ -159,10 +173,51 @@ const buildResponse = ({
     }
   }
 
+  // Build alternative matches (exclude the chosen exact/top item)
+  const chosenReg = base.product_id;
+  const alternatives: Array<{
+    id?: string;
+    relevance_score?: number | null;
+    matched_fields?: string[];
+    type: string;
+    registration_number: string;
+    product_name: string;
+    company_name: string;
+  }> = [];
+
+  for (const f of foodMatches) {
+    if (!f.registration_number || f.registration_number === chosenReg) continue;
+    alternatives.push({
+      id: f.id,
+      relevance_score: null,
+      matched_fields: [],
+      type: (f.type_of_product || 'food'),
+      registration_number: f.registration_number,
+      product_name: f.product_name || 'Unknown',
+      company_name: f.company_name || '—',
+    });
+  }
+  for (const d of drugMatches) {
+    if (!d.registration_number || d.registration_number === chosenReg) continue;
+    alternatives.push({
+      id: d.id,
+      relevance_score: null,
+      matched_fields: [],
+      type: 'drug',
+      registration_number: d.registration_number,
+      product_name: d.brand_name || d.generic_name || 'Unknown',
+      company_name: d.manufacturer || d.company_name || '—',
+    });
+  }
+
+  // Keep top 10 alternatives for display
+  base.details.alternative_matches = alternatives.slice(0, 10);
+
   return base;
 };
 
 const ProductVerify = async (product_id: string, category?: string) => {
+  const supabase = createSupabaseClient();
   const q = (product_id || '').trim();
   if (!q) throw new Error('Empty query');
 
@@ -185,18 +240,18 @@ const ProductVerify = async (product_id: string, category?: string) => {
 
   // Run FTS with websearch; if it errors, fall back to plain
   const runFts = async (table: 'food_products' | 'drug_products') => {
-    // Skip FTS if query contains special characters (rely on exact match only)
-    const hasSpecialChars = /[^a-zA-Z0-9\s]/.test(q);
-    if (hasSpecialChars) {
-      console.warn(`[FTS] Skipping FTS for "${q}" - contains special characters that could cause tsquery errors`);
-      return [];
-    }
+    // Sanitize query for FTS: strip special characters and normalize spaces
+    const qFts = q
+      .replace(/[^a-zA-Z0-9\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (!qFts) return [];
 
     const base = supabase.from(table).select('*', { count: 'exact' });
 
     // Try websearch first with explicit config
     const first = await base
-      .textSearch('search_vector', q, { type: 'websearch', config: 'english' })
+      .textSearch('search_vector', qFts, { type: 'websearch', config: 'english' })
       .limit(10);
 
     if (first.error) {
@@ -204,7 +259,7 @@ const ProductVerify = async (product_id: string, category?: string) => {
 
       // Fallback to plain search with same config
       const alt = await base
-        .textSearch('search_vector', q, { type: 'plain', config: 'english' })
+        .textSearch('search_vector', qFts, { type: 'plain', config: 'english' })
         .limit(10);
 
       if (alt.error) {
@@ -238,6 +293,22 @@ const ProductVerify = async (product_id: string, category?: string) => {
     foodMatches = await runFts('food_products');
   } else if (tables[0] === 'drug_products') {
     drugMatches = await runFts('drug_products');
+  }
+
+  // If no alternative candidates found for a restricted category, try the other table as a fallback for alternatives
+  if (tables.length === 1) {
+    const chosen = tables[0];
+    const noFoodAlts = chosen === 'food_products' && (foodMatches.length <= 1); // likely only exact/top
+    const noDrugAlts = chosen === 'drug_products' && (drugMatches.length <= 1);
+    if (noFoodAlts) {
+      try {
+        drugMatches = await runFts('drug_products');
+      } catch (err){ console.error(err); }
+    } else if (noDrugAlts) {
+      try {
+        foodMatches = await runFts('food_products');
+      } catch (err){ console.error(err); }
+    }
   }
 
   return buildResponse({ exactFood, exactDrug, foodMatches, drugMatches });

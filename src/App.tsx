@@ -8,25 +8,22 @@ import { Outlet, useLocation } from 'react-router-dom'
 
 function App() {
   const location = useLocation();
-  const isProductsPage = location.pathname === '/products';
-  const isAnalytics = location.pathname === '/analytics';
-  const isAboutPage = location.pathname === '/about';
-  const isReport = location.pathname === '/report';
-  const isVerify = location.pathname === "/verify";
-  const isNotFound = !['/', '/products', '/analytics', '/about', '/report', '/verify'].includes(location.pathname);
+  const isHomePage = location.pathname === '/';
 
   return (
-    <div className="flex flex-col min-h-screen text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-800" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
+    <div className="flex flex-col min-h-screen text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-800" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} role="document">
       <Navbar />
-      {!isProductsPage && !isAboutPage && !isAnalytics && !isReport && !isVerify && !isNotFound && (
-        <main className="px-4">
+      {isHomePage && (
+        <main className="px-4" role="main">
           <Hero />
           <SearchForm />
           <Features />
           <Notice />
         </main>
       )}
-      <Outlet />
+      <main role="main">
+        <Outlet />
+      </main>
       <Footer />
     </div>
   )

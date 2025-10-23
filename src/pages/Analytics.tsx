@@ -24,25 +24,25 @@ function MetricCard({ title, value, trend, trendValue, icon, trendType = 'positi
     };
 
     const getTrendIcon = () => {
-        if (trendType === 'positive') return <HiArrowUpRight />;
-        if (trendType === 'negative') return <HiArrowUpRight />;
+        if (trendType === 'positive') return <HiArrowUpRight aria-hidden="true" />;
+        if (trendType === 'negative') return <HiArrowDownRight aria-hidden="true" />;
         return '';
     };
 
     return (
-        <div className="bg-white rounded-lg p-6 shadow-sm hover:showdow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }}>
+        <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-label={`Metric: ${title}`}>
             <div className="flex items-start justify-between">
                 <div className="flex-1">
                     <p className="text-sm font-medium text-gray-600 mb-1" style={{ color: "var(--fg)" }}>{title}</p>
                     <p className="text-2xl font-bold text-gray-900" style={{ color: "var(--muted)" }}>{value}</p>
                     {trend && trendValue && (
-                        <div className={`flex items-center mt-2 text-sm ${getTrendColor()}`}>
-                            <span className="mr-1">{getTrendIcon()}</span>
+                        <div className={`flex items-center mt-2 text-sm ${getTrendColor()}`} role="status">
+                            <span className="mr-1" aria-hidden="true">{getTrendIcon()}</span>
                             <span>{trendValue}</span>
                         </div>
                     )}
                 </div>
-                <div className="text-gray-400 dark:text-gray-500">
+                <div className="text-gray-400 dark:text-gray-500" aria-hidden="true">
                     {icon}
                 </div>
             </div>
@@ -158,9 +158,9 @@ export default function Analytics() {
     const maxCategoryCount = Math.max(...analyticsData.productsByCategory.map(c => c.count));
 
     return (
-        <div className="min-h-screen bg-gray-50" style={{ backgroundColor: "var(--bg)" }}>
+        <div className="min-h-screen bg-gray-50" style={{ backgroundColor: "var(--bg)" }} role="main" aria-label="Analytics Dashboard">
             {/* Header */}
-            <div className="bg-white " style={{ backgroundColor: "var(--bg)" }}>
+            <header className="bg-white " style={{ backgroundColor: "var(--bg)" }}>
                 <div className="max-w-7xl mx-auto px-4 py-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -171,12 +171,12 @@ export default function Analytics() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 py-8">
+            <main className="max-w-7xl mx-auto px-4 py-8">
                 {/* Key Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" role="region" aria-label="Key Metrics">
                     <MetricCard
                         title="Total Products"
                         value={analyticsData.totalProducts.toLocaleString()}
@@ -224,8 +224,8 @@ export default function Analytics() {
                 {/* Bottom Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     {/* Products by Category */}
-                    <div className=" bg-white rounded-lg p-6 shadow-sm hover:showdow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }}>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Products by Category</h2>
+                    <div className=" bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-labelledby="products-by-category">
+                        <h2 id="products-by-category" className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Products by Category</h2>
                         <div className="space-y-0">
                             {analyticsData.productsByCategory.map((category, index) => (
                                 <CategoryBar
@@ -240,8 +240,8 @@ export default function Analytics() {
                     </div>
 
                     {/* Recent Activity */}
-                    <div className="bg-white rounded-lg p-6 shadow-sm hover:showdow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }}>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Recent Activity</h2>
+                    <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-labelledby="recent-activity">
+                        <h2 id="recent-activity" className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Recent Activity</h2>
                         <div className="space-y-0">
                             {analyticsData.recentActivity.map((activity, index) => (
                                 <ActivityItem
@@ -257,38 +257,38 @@ export default function Analytics() {
                 </div>
 
                 {/* Top Manufacturers Table */}
-                <div className="bg-white rounded-lg shadow-sm hover:showdow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }}>
+                <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-labelledby="top-manufacturers">
                     <div className="p-6">
-                        <h2 className="text-lg font-semibold text-gray-900" style={{ color: "var(--fg)" }}>Top Manufacturers</h2>
+                        <h2 id="top-manufacturers" className="text-lg font-semibold text-gray-900" style={{ color: "var(--fg)" }}>Top Manufacturers</h2>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="w-full" role="table" aria-label="Top Manufacturers List">
                             <thead className="bg-gray-50" style={{ backgroundColor: "var(--card)", borderTop: "var(--border)" }}>
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Rank</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Manufacturer</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Products</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Compliance Rate</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Action</th>
+                                <tr role="row">
+                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Rank</th>
+                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Manufacturer</th>
+                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Products</th>
+                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Compliance Rate</th>
+                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
-                                {analyticsData.topManufacturers.map((manufacturer, index) => (
-                                    <tr key={index}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ color: "var(--muted)" }}>
+                                {mockAnalyticsData.topManufacturers.map((manufacturer, index) => (
+                                    <tr key={index} role="row">
+                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ color: "var(--muted)" }}>
                                             {manufacturer.rank}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style={{ color: "var(--muted)" }}>
+                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" style={{ color: "var(--muted)" }}>
                                             {manufacturer.name}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600" style={{ color: "var(--muted)" }}>
+                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600" style={{ color: "var(--muted)" }}>
                                             {manufacturer.products}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap" style={{ color: "var(--muted)" }}>
+                                        <td role="cell" className="px-6 py-4 whitespace-nowrap" style={{ color: "var(--muted)" }}>
                                             <ComplianceBar rate={manufacturer.complianceRate} />
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--muted)" }}>
-                                            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium">
+                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--muted)" }}>
+                                            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium" aria-label={`View details for ${manufacturer.name}`}>
                                                 View Details
                                             </button>
                                         </td>
@@ -298,7 +298,7 @@ export default function Analytics() {
                         </table>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

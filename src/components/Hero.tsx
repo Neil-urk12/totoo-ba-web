@@ -1,6 +1,6 @@
 export default function Hero() {
     return (
-        <section className="max-w-5xl mx-auto text-center mt-10">
+        <section className="max-w-5xl mx-auto text-center mt-10" role="banner" aria-label="Hero section">
             <div className="inline-flex items-center gap-2 px-3 py-1 border rounded-full bg-card shadow-sm text-sm border-app" style={{ color: "var(--muted)" }}>
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "var(--muted)" }}></span>
                 Class A FDA Philippines Verification

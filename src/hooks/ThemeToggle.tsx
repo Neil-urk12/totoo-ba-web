@@ -1,6 +1,7 @@
 import { useEffect, useState, type FC } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
+import { FaRegMoon } from "react-icons/fa";
+import { LuSun } from "react-icons/lu";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
@@ -8,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button: FC<ButtonProps> = ({ className = "", children, ...props }) => (
   <button
-    className={`flex items-center justify-center rounded-full h-9 w-9 hover:bg-gray-500 transition-colors ${className}`}
+    className={`flex items-center justify-center rounded-full h-9 w-9 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${className}`}
     {...props}
   >
     {children}
@@ -29,13 +30,12 @@ export const ThemeToggle: FC = () => {
     const next = isDark ? "light" : "dark";
     setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
-    console.log("Switch to", next);
   };
 
   if (!isReady) {
     return (
       <Button aria-hidden>
-        <Sun className="h-5 w-5" />
+        <LuSun className="h-5 w-5" />
       </Button>
     );
   }
@@ -43,9 +43,9 @@ export const ThemeToggle: FC = () => {
   return (
     <Button onClick={toggleTheme} aria-label="Toggle theme">
       {isDark ? (
-        <Sun className="h-5 w-5 text-yellow-400 transition-all" />
+        <LuSun className="h-5 w-5 text-yellow-400 transition-all" />
       ) : (
-        <Moon className="h-5 w-5 text-slate-700 transition-all" />
+        <FaRegMoon className="h-5 w-5 text-slate-700 transition-all" />
       )}
     </Button>
   );

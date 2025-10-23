@@ -6,6 +6,8 @@
   --muted: rgb(100, 116, 139);
   --card: rgb(255, 255, 255);
   --border: rgb(226, 232, 240);
+  --verified-bg: rgb(22, 163, 74);
+  --verified-text: rgb(255, 255, 255);
 }
 
 [data-theme="dark"] {
@@ -14,6 +16,8 @@
   --muted: rgb(148, 163, 184);
   --card: rgb(11, 18, 32);
   --border: rgb(51, 65, 85);
+  --verified-bg: color-mix(in oklab, var(--color-green-900) 30%, transparent);
+  --verified-text: oklch(79.2% .209 151.711)
 }
 
 html, body {
@@ -32,3 +36,5 @@ html, body {
 .border-app { border-color: var(--border); }
 .btn-invert { background-color: var(--fg); color: var(--bg); }
 .hover-text-app:hover { color: var(--fg); }
+.bg-verified { background-color: var(--verified-bg); }
+.text-verified { color: var(--verified-text); }
