@@ -6,30 +6,31 @@ export default function ProductCardSkeleton({ viewMode = 'grid' }: ProductCardSk
     if (viewMode === 'list') {
         return (
             <div className="rounded-lg shadow-sm border p-3 sm:p-4 bg-card border-app animate-pulse">
-                <div className="flex flex-col gap-2">
-                    {/* Row 1: Name and badges */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            {/* Product name skeleton */}
-                            <div className="h-5 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 sm:w-64"></div>
-                            {/* Status badge skeleton */}
-                            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20 flex-shrink-0"></div>
-                        </div>
-                        <div className="flex gap-1 sm:gap-2 ml-2 sm:ml-4 flex-shrink-0">
-                            {/* Compliance badge skeleton */}
-                            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-                            {/* Action badge skeleton */}
-                            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-14"></div>
-                        </div>
+                <div className="flex items-start justify-between gap-4">
+                    {/* Left side: Product info stacked vertically */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                        {/* Product name skeleton */}
+                        <div className="h-4 sm:h-5 bg-gray-200 dark:bg-gray-700 rounded w-48 sm:w-64"></div>
+                        {/* Manufacturer skeleton */}
+                        <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 sm:w-40"></div>
+                        {/* Category skeleton */}
+                        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-24 sm:w-32"></div>
                     </div>
 
-                    {/* Row 2: Details skeleton */}
-                    <div className="flex items-center gap-3 sm:gap-6 overflow-x-auto">
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 flex-shrink-0"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16 flex-shrink-0"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24 flex-shrink-0"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 flex-shrink-0"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-18 flex-shrink-0"></div>
+                    {/* Right side: Badges and button stacked vertically */}
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-2">
+                            {/* Category badge skeleton */}
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                            {/* Status badge skeleton */}
+                            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16 sm:w-20"></div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {/* Date skeleton */}
+                            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                            {/* Eye button skeleton */}
+                            <div className="w-7 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -38,43 +39,21 @@ export default function ProductCardSkeleton({ viewMode = 'grid' }: ProductCardSk
 
     // Grid view (default)
     return (
-        <div className="rounded-lg shadow-sm border p-6 bg-card border-app animate-pulse">
-            {/* Header with name and status */}
-            <div className="flex items-start justify-between mb-4">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+        <div className="rounded-lg shadow-sm border p-4 sm:p-6 bg-card border-app animate-pulse">
+            {/* Header with name, status, and eye icon button */}
+            <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex-1 min-w-0">
+                    {/* Product name skeleton */}
+                    <div className="h-5 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 sm:w-64 mb-2"></div>
+                    {/* Status badge skeleton */}
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+                </div>
+                {/* Eye icon button skeleton */}
+                <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
             </div>
 
-            {/* Category */}
-            <div className="mb-4">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-            </div>
-
-            {/* Details section */}
-            <div className="space-y-2 mb-4">
-                <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
-                </div>
-                <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
-                </div>
-                <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-18"></div>
-                </div>
-                <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
-                </div>
-            </div>
-
-            {/* Bottom badges */}
-            <div className="flex gap-2">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-18"></div>
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-            </div>
+            {/* Category skeleton */}
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
         </div>
     );
 }
