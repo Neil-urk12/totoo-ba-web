@@ -1,9 +1,10 @@
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useGetProductVerifyQuery } from '../query/get/useGetProductVerifyQuery'
+import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useGetProductVerifyQuery'
 import ProductDetailsModal from '../components/ProductDetailsModal'
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
+import ImageVerificationResult from '../components/ImageVerificationResult'
 import { FaSearch } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
@@ -11,13 +12,15 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 
 export default function Verify() {
     const [params] = useSearchParams()
+    const location = useLocation()
     const q = (params.get('q') || '').trim()
     const category = (params.get('category') || '').trim() || undefined
+    const imageVerificationResult = location.state?.imageVerificationResult
 
     const options = useGetProductVerifyQuery(q, category)
     const { data, isLoading, isError, error, isFetching } = useQuery({
         ...options,
-        enabled: !!q
+        enabled: !!q && !imageVerificationResult
     })
 
     const verified = data?.is_verified === true
@@ -40,9 +43,26 @@ export default function Verify() {
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Verification</h1>
-                        <p className="text-muted mt-1">Search: {q || '—'}</p>
+                        <p className="text-muted mt-1">
+                            {imageVerificationResult ? 'Image Analysis' : `Search: ${q || '—'}`}
+                        </p>
                     </div>
-                    {q && (
+                    {imageVerificationResult ? (
+                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${imageVerificationResult.verification_status === 'verified'
+                            ? 'bg-green-500/10 text-green-600 border-green-500/30'
+                            : imageVerificationResult.verification_status === 'uncertain'
+                                ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30'
+                                : 'bg-red-500/10 text-red-600 border-red-500/30'
+                            }`}>
+                            {imageVerificationResult.verification_status === 'verified' ? (
+                                <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label>
+                            ) : imageVerificationResult.verification_status === 'uncertain' ? (
+                                <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Uncertain</label>
+                            ) : (
+                                <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>
+                            )}
+                        </div>
+                    ) : q && (
                         <div
                             className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${data ? (verified ? 'bg-green-500/10 text-green-600 border-green-500/30' : 'bg-red-500/10 text-red-600 border-red-500/30') : 'bg-app/40 text-muted border-app'
                                 }`}
@@ -52,7 +72,7 @@ export default function Verify() {
                     )}
                 </div>
 
-                {!q && (
+                {!q && !imageVerificationResult && (
                     <div className="mt-8 rounded-xl border border-dashed border-app/70 p-8 text-center">
                         <div className="mx-auto mb-2 h-10 w-10 rounded-full bg-app/40 flex items-center justify-center"><FaSearch /></div>
                         <div className="font-semibold">No query provided</div>
@@ -60,19 +80,25 @@ export default function Verify() {
                     </div>
                 )}
 
-                {q && (isLoading || isFetching) && (
+                {imageVerificationResult && (
+                    <div className="mt-8">
+                        <ImageVerificationResult data={imageVerificationResult} />
+                    </div>
+                )}
+
+                {q && !imageVerificationResult && (isLoading || isFetching) && (
                     <div className="mt-8 flex flex-col justify-center items-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600/30 border-t-gray-600"></div>
                     </div>
                 )}
 
-                {q && isError && (
+                {q && !imageVerificationResult && isError && (
                     <div className="mt-8 rounded-xl border border-red-500/30 bg-red-500/10 text-red-700 p-4">
                         {(error as Error)?.message || 'Something went wrong.'}
                     </div>
                 )}
 
-                {q && data && data.message && data.message.includes("not found in FDA database") && (
+                {q && !imageVerificationResult && data && data.message && data.message.includes("not found in FDA database") && (
                     <div className="mt-8">
                         <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-8 text-center">
                             <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-500/20 flex items-center justify-center">
@@ -102,7 +128,7 @@ export default function Verify() {
                     </div>
                 )}
 
-                {q && data && (!data.message || !data.message.includes("not found in FDA database")) && (
+                {q && !imageVerificationResult && data && (!data.message || !data.message.includes("not found in FDA database")) && (
                     <div className="mt-8 space-y-6">
                         {/* Check if it's a food industry verification */}
                         {data.details?.verified_product?.type === 'food_industry' ? (
@@ -198,6 +224,33 @@ export default function Verify() {
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* Alternative Matches (Text/Search verification) */}
+                                {Array.isArray(data.details?.alternative_matches) && data.details.alternative_matches.length > 0 && (
+                                    <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30">
+                                        <h3 className="text-lg font-semibold mb-4">Alternative Products</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                            {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
+                                                <div key={idx} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
+                                                    <div className="flex items-start justify-between mb-2">
+                                                        <h4 className="font-semibold text-sm line-clamp-2 pr-2">{alt.product_name}</h4>
+                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`}>
+                                                            {(alt.type || '—').toString().toUpperCase()}
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-xs text-muted mb-2 line-clamp-1">{alt.company_name}</div>
+                                                    <div className="flex items-center justify-between text-[11px]">
+                                                        <span className="opacity-70">Reg. No.</span>
+                                                        <span className="font-mono">{alt.registration_number}</span>
+                                                    </div>
+                                                    {typeof alt.relevance_score === 'number' && (
+                                                        <div className="mt-2 text-right text-[11px] text-muted">{Math.round(alt.relevance_score)}% match</div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
