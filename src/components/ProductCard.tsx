@@ -45,32 +45,35 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
     if (viewMode === 'list') {
         return (
-            <div className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
-                <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-4 mb-2">
-                            <h3 className="font-semibold text-lg truncate">{product.name}</h3>
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
+            <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app">
+                <div className="flex flex-col gap-2">
+                    {/* Row 1: Name and badges */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <h3 className="font-semibold text-base sm:text-lg truncate">{product.name}</h3>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor()}`}>
                                 {getStatusIcon()}
                                 {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
                             </div>
                         </div>
-                        <div className="flex items-center gap-6 text-sm">
-                            <span className="text-muted">{product.category}</span>
-                            <span className="text-muted">Reg: {product.registrationNo}</span>
-                            <span className="text-muted">Manufacturer: {product.manufacturer}</span>
-                            <span className="text-muted">Registered: {product.registered}</span>
-                            <span className="text-muted">Expires: {product.expires}</span>
+                        <div className="flex gap-1 sm:gap-2 ml-2 sm:ml-4 flex-shrink-0">
+                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
+                                {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
+                            </div>
+                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
+                                {getActionIcon()}
+                                {product.action === 'active' ? 'Active' : 'Suspended'}
+                            </div>
                         </div>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
-                            {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
-                        </div>
-                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
-                            {getActionIcon()}
-                            {product.action === 'active' ? 'Active' : 'Suspended'}
-                        </div>
+
+                    {/* Row 2: Scrollable details with full labels */}
+                    <div className="scrollbar-none flex items-center gap-3 sm:gap-6 text-xs sm:text-sm overflow-x-auto">
+                        <span className="text-muted whitespace-nowrap">{product.category}</span>
+                        <span className="text-muted whitespace-nowrap">Reg: {product.registrationNo}</span>
+                        <span className="text-muted whitespace-nowrap">Manufacturer: {product.manufacturer}</span>
+                        <span className="text-muted whitespace-nowrap">Registered: {product.registered}</span>
+                        <span className="text-muted whitespace-nowrap">Expires: {product.expires}</span>
                     </div>
                 </div>
             </div>
