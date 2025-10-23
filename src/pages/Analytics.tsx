@@ -269,7 +269,6 @@ export default function Analytics() {
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Manufacturer</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Products</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Compliance Rate</th>
-                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
@@ -286,11 +285,6 @@ export default function Analytics() {
                                         </td>
                                         <td role="cell" className="px-6 py-4 whitespace-nowrap" style={{ color: "var(--muted)" }}>
                                             <ComplianceBar rate={manufacturer.complianceRate} />
-                                        </td>
-                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--muted)" }}>
-                                            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium" aria-label={`View details for ${manufacturer.name}`}>
-                                                View Details
-                                            </button>
                                         </td>
                                     </tr>
                                 ))}
