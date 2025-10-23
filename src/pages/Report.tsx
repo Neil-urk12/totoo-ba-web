@@ -586,7 +586,7 @@ export default function Report() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex justify-between gap-4">
+                    <div className="flex justify-end gap-4">
                         <button
                             type="submit"
                             disabled={isSubmitting}
