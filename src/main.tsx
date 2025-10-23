@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import LoadingSpinner from './components/LoadingSpinner'
+import RouteLoadingSpinner from './components/RouteLoadingSpinner'
 
 // Lazy load route components
 const Products = lazy(() => import('./pages/Products.tsx'))
@@ -22,12 +23,54 @@ const routes = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
-      { path: 'products', element: <Products /> },
-      { path: 'analytics', element: <Analytics /> },
-      { path: 'verify', element: <Verify /> },
-      { path: 'about', element: <About /> },
-      { path: 'report', element: <Report /> },
-      { path: '*', element: <NotFound /> },
+      { 
+        path: 'products', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <Products />
+          </Suspense>
+        )
+      },
+      { 
+        path: 'analytics', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <Analytics />
+          </Suspense>
+        )
+      },
+      { 
+        path: 'verify', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <Verify />
+          </Suspense>
+        )
+      },
+      { 
+        path: 'about', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <About />
+          </Suspense>
+        )
+      },
+      { 
+        path: 'report', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <Report />
+          </Suspense>
+        )
+      },
+      { 
+        path: '*', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <NotFound />
+          </Suspense>
+        )
+      },
     ],
   },
 ])
