@@ -137,7 +137,7 @@ export default function SearchForm() {
                   {selectedFile ? selectedFile.name : 'Click to upload product image'}
                 </div>
                 <div className="text-xs text-muted">
-                  Supports WEBP formats only
+                  Supports JPG and WEBP formats only
                 </div>
               </label>
               {selectedFile && (
