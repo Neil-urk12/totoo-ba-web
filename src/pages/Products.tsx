@@ -129,16 +129,16 @@ export default function Products() {
     }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
-        <main className="max-w-7xl mx-auto px-4 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
             {/* Header */}
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>All Registered Products</h1>
-                <p className="text-gray-600 dark:text-slate-300" style={{ color: "var(--fg)" }}>Browse all FDA-registered products in the Philippines database</p>
+            <header className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>All Registered Products</h1>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300" style={{ color: "var(--fg)" }}>Browse all FDA-registered products in the Philippines database</p>
             </header>
 
             {/* Search and Filter Bar */}
-            <section className="mb-6">
-                <div className="flex flex-col lg:flex-row gap-4 mb-4">
+            <section className="mb-4 sm:mb-6">
+                <div className="flex flex-col gap-4 mb-4">
                     {/* Search Bar */}
                     <div className="flex-1 relative">
                         <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -148,69 +148,72 @@ export default function Products() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleSearchSubmit(); }}
-                            className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="w-full pl-10 pr-20 sm:pr-12 py-2.5 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm sm:text-base"
                             style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} />
                         <button
                             onClick={handleSearchSubmit}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-200"
+                            className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 bg-blue-500 hover:bg-blue-600 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors duration-200"
                         >
                             Search
                         </button>
                     </div>
 
-                    {/* Filter Dropdowns */}
-                    <div className="flex gap-3">
-                        <select
-                            value={selectedCategory}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
-                        >
-                            {categories.map(category => (
-                                <option key={category} value={category}>{category}</option>
-                            ))}
-                        </select>
+                    {/* Filter Dropdowns and View Toggle */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        {/* Filter Dropdowns */}
+                        <div className="flex flex-col sm:flex-row gap-3 flex-1">
+                            <select
+                                value={selectedCategory}
+                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+                            >
+                                {categories.map(category => (
+                                    <option key={category} value={category}>{category}</option>
+                                ))}
+                            </select>
 
-                        <select
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
-                        >
-                            {statuses.map(status => (
-                                <option key={status} value={status}>{status}</option>
-                            ))}
-                        </select>
+                            <select
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+                            >
+                                {statuses.map(status => (
+                                    <option key={status} value={status}>{status}</option>
+                                ))}
+                            </select>
 
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
-                        >
-                            {sortOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
-                    </div>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+                            >
+                                {sortOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    {/* View Mode Toggle */}
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-3 border rounded-lg ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white  text-gray-600 hover:bg-gray-50'}`}
-                        >
-                            <CiGrid41 className="w-6 h-6" />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-3 border rounded-lg ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
-                        >
-                            <FaList className="w-4 h-4" />
-                        </button>
+                        {/* View Mode Toggle */}
+                        <div className="flex gap-2 self-start sm:self-auto">
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-2 sm:p-3 border rounded-lg ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <CiGrid41 className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-2 sm:p-3 border rounded-lg ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <FaList className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Results Count and Clear Search */}
-                <div className="flex justify-between items-center">
-                    <p className="text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                    <p className="text-xs sm:text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
                             isError ? 'Error loading products' :
                                 appliedSearch.trim() ?
@@ -220,7 +223,7 @@ export default function Products() {
                     {appliedSearch.trim() && (
                         <button
                             onClick={handleClearSearch}
-                            className="text-sm text-blue-500 hover:text-blue-600 underline"
+                            className="text-xs sm:text-sm text-blue-500 hover:text-blue-600 underline self-start sm:self-auto"
                         >
                             Clear search
                         </button>
@@ -230,23 +233,23 @@ export default function Products() {
 
             {/* Loading State */}
             {isLoading && (
-                <section className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
-                    <p className="text-gray-500 dark:text-slate-400 text-lg">Loading products...</p>
+                <section className="text-center py-8 sm:py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
+                    <p className="text-gray-500 dark:text-slate-400 text-base sm:text-lg">Loading products...</p>
                 </section>
             )}
 
             {/* Error State */}
             {isError && (
-                <section className="text-center py-12">
-                    <p className="text-red-500 dark:text-red-400 text-lg">Error loading products</p>
-                    <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">{error?.message}</p>
+                <section className="text-center py-8 sm:py-12">
+                    <p className="text-red-500 dark:text-red-400 text-base sm:text-lg">Error loading products</p>
+                    <p className="text-gray-400 dark:text-slate-500 text-xs sm:text-sm mt-2">{error?.message}</p>
                 </section>
             )}
 
             {/* Products Grid */}
             {!isLoading && !isError && (
-                <section className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                <section className={`grid gap-4 sm:gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
                     {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} viewMode={viewMode} />
                     ))}
@@ -255,9 +258,9 @@ export default function Products() {
 
             {/* Loading More Products */}
             {!isLoading && !isError && isFetchingNextPage && (
-                <section className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
-                    <p className="text-gray-500 dark:text-slate-400">Loading more products...</p>
+                <section className="text-center py-6 sm:py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
+                    <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">Loading more products...</p>
                 </section>
             )}
 
@@ -268,16 +271,16 @@ export default function Products() {
 
             {/* No More Products */}
             {!isLoading && !isError && !hasNextPage && allProducts.length > 0 && (
-                <section className="text-center py-8">
-                    <p className="text-gray-500 dark:text-slate-400">All products loaded</p>
+                <section className="text-center py-6 sm:py-8">
+                    <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">All products loaded</p>
                 </section>
             )}
 
             {/* No Results */}
             {!isLoading && !isError && filteredProducts.length === 0 && (
-                <section className="text-center py-12">
-                    <p className="text-gray-500 dark:text-slate-400 text-lg">No products found matching your criteria.</p>
-                    <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">Try adjusting your search terms or filters.</p>
+                <section className="text-center py-8 sm:py-12">
+                    <p className="text-gray-500 dark:text-slate-400 text-base sm:text-lg">No products found matching your criteria.</p>
+                    <p className="text-gray-400 dark:text-slate-500 text-xs sm:text-sm mt-2">Try adjusting your search terms or filters.</p>
                 </section>
             )}
         </main>
