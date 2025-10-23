@@ -32,6 +32,34 @@ const issueTypes = [
     'Other'
 ];
 
+const reportMessageSuccessfully = [
+    "Your report will be reviewed by our team within 24-48 hours",
+    "Verified reports are forwarded to FDA Philippines and relevant authorities",
+    "You will receive email updates on the status of your report",
+    "Authorities may contact you if additional information is needed"
+];
+
+// FDA Email channels based on issue type
+const getEmailChannel = (issueType: string): { email: string; description: string } => {
+    switch (issueType) {
+        case 'Counterfeit Product':
+            return {
+                email: 'ncwacm@fda.gov.ph',
+                description: 'Counterfeit medicines reporting'
+            };
+        case 'Unregistered Product':
+            return {
+                email: 'info@fda.gov.ph',
+                description: 'Unregistered health products reporting'
+            };
+        default:
+            return {
+                email: 'ereport@fda.gov.ph',
+                description: 'General product reporting'
+            };
+    }
+};
+
 export default function Report() {
     const [formData, setFormData] = useState<FormData>({
         productName: '',
@@ -140,7 +168,18 @@ export default function Report() {
         setIsSubmitting(true);
 
         try {
-            console.log('Form submitted:', formData);
+            // Get the appropriate email channel based on issue type
+            const emailChannel = getEmailChannel(formData.issueType);
+
+            const submissionData = {
+                ...formData,
+                targetEmail: emailChannel.email,
+                emailChannelDescription: emailChannel.description,
+                submittedAt: new Date().toISOString()
+            };
+
+            console.log('Form submitted:', submissionData);
+            console.log(`Report will be sent to: ${emailChannel.email} (${emailChannel.description})`);
 
             await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -157,33 +196,33 @@ export default function Report() {
             <section className="min-h-screen" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
                 <main className="max-w-2xl mx-auto px-4 py-12">
                     <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="text-center mb-8" style={{ backgroundColor: "var(--bg)" }}>
+                            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <FaCheckCircle className="text-3xl text-green-600" />
                             </div>
                             <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Submitted Successfully</h1>
                             <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product.</p>
+
+                            {/* Show which email channel was used */}
+                            <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: "var(--bg)" }}>
+                                <div className="flex items-center justify-center">
+                                    <FaShieldAlt className="text-blue-600 text-sm mr-2" />
+                                    <span className="text-sm">
+                                        Report sent to: <span className="font-mono">{getEmailChannel(formData.issueType).email}</span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="rounded-lg p-6" style={{ backgroundColor: "var(--muted)" }}>
+                        <div className="rounded-lg p-6" style={{ backgroundColor: "var(--bg)" }}>
                             <h2 className="text-xl font-bold mb-4" style={{ color: "var(--fg)" }}>What Happens Next?</h2>
                             <ol className="space-y-3" style={{ color: "var(--fg)" }}>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">1</span>
-                                    <span>Your report will be reviewed by our team within 24-48 hours</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">2</span>
-                                    <span>Verified reports are forwarded to FDA Philippines and relevant authorities</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">3</span>
-                                    <span>You will receive email updates on the status of your report</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">4</span>
-                                    <span>Authorities may contact you if additional information is needed</span>
-                                </li>
+                                {reportMessageSuccessfully.map((message, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">{index + 1}</span>
+                                        <span>{message}</span>
+                                    </li>
+                                ))}
                             </ol>
                         </div>
                     </div>
@@ -284,6 +323,26 @@ export default function Report() {
                                 </select>
                                 {errors.issueType && (
                                     <p className="text-red-500 text-sm mt-1">{errors.issueType}</p>
+                                )}
+
+                                {/* Email Channel Information */}
+                                {formData.issueType && (
+                                    <div className="mt-3 p-3 rounded-lg border" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
+                                        <div className="flex items-start">
+                                            <FaShieldAlt className="text-blue-600 text-sm mr-2 mt-0.5 flex-shrink-0" />
+                                            <div>
+                                                <p className="text-sm font-medium" style={{ color: "var(--fg)" }}>
+                                                    Report will be sent to:
+                                                </p>
+                                                <p className="text-sm font-mono" style={{ color: "var(--fg)" }}>
+                                                    {getEmailChannel(formData.issueType).email}
+                                                </p>
+                                                <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>
+                                                    {getEmailChannel(formData.issueType).description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
 
@@ -441,7 +500,7 @@ export default function Report() {
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
-                                        placeholder="+63 XXX XXX XXXX"
+                                        placeholder="09XXXXXXXX"
                                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.phone ? 'border-red-500' : ''}`}
                                         style={{ backgroundColor: "var(--bg)", borderColor: errors.phone ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
                                     />
