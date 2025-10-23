@@ -16,20 +16,21 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
     const searchCount = details.search_results_count ?? details.total_matches ?? 0;
 
     return (
-        <div className="mt-8 space-y-6">
+        <div className="mt-8 space-y-6" role="region" aria-labelledby="food-industry-verification">
             {/* Verification Status */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-green-700 bg-green-500/10">
-                <FaCheck />
-                Food Industry Verified
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-green-700 bg-green-500/10" aria-label="Verification status">
+                <FaCheck aria-hidden="true" />
+                <span>Food Industry Verified</span>
             </div>
 
             {/* Main Verification Card */}
-            <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30">
+            <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30" role="region" aria-labelledby="main-verification-card">
+                <h3 id="main-verification-card" className="sr-only">Main Verification Details</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     {/* Establishment Information */}
                     <div className="sm:col-span-2">
                         <div className="flex items-center gap-2 mb-3">
-                            <FaBuilding className="text-blue-600" />
+                            <FaBuilding className="text-blue-600" aria-hidden="true" />
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Establishment Name</div>
                         </div>
                         <div className="text-lg font-semibold text-blue-700">
@@ -40,7 +41,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     {/* License Information */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <FaIdCard className="text-green-600" />
+                            <FaIdCard className="text-green-600" aria-hidden="true" />
                             <div className="text-[11px] uppercase tracking-wide opacity-70">License Number</div>
                         </div>
                         <div className="font-mono text-sm bg-green-50 p-2 rounded" style={{ backgroundColor: "var(--bg)" }}>
@@ -51,7 +52,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     {/* Product ID */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <FaCertificate className="text-purple-600" />
+                            <FaCertificate className="text-purple-600" aria-hidden="true" />
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Product ID</div>
                         </div>
                         <div className="font-mono text-sm bg-purple-50 p-2 rounded" style={{ backgroundColor: "var(--bg)" }}>
@@ -62,7 +63,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     {/* Verification Method */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <FaSearch className="text-orange-600" />
+                            <FaSearch className="text-orange-600" aria-hidden="true" />
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Verification Method</div>
                         </div>
                         <div className="font-medium capitalize">
@@ -73,7 +74,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     {/* Confidence Score */}
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <FaShield className="text-indigo-600" />
+                            <FaShield className="text-indigo-600" aria-hidden="true" />
                             <div className="text-[11px] uppercase tracking-wide opacity-70">Confidence Score</div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -84,6 +85,11 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                                 <div
                                     className="bg-indigo-600 h-2 rounded-full"
                                     style={{ width: `${confidence}%` }}
+                                    aria-valuenow={confidence}
+                                    aria-valuemin={0}
+                                    aria-valuemax={100}
+                                    role="progressbar"
+                                    aria-label="Confidence score"
                                 ></div>
                             </div>
                         </div>
@@ -95,8 +101,9 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                         <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${details.exact_match
                             ? 'bg-green-100 text-green-700 border border-green-200'
                             : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                            }`}>
-                            {details.exact_match ? <FaCheck className="text-xs" /> : '~'}
+                            }`} aria-label={`Exact match: ${details.exact_match ? 'Yes' : 'Partial'}`}>
+                            {details.exact_match ? <FaCheck className="text-xs" aria-hidden="true" /> : <span aria-hidden="true">~</span>}
+                            <span className="sr-only">{details.exact_match ? 'Yes' : 'Partial'}</span>
                             {details.exact_match ? 'Yes' : 'Partial'}
                         </div>
                     </div>
@@ -125,6 +132,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                                 <span
                                     key={index}
                                     className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
+                                    aria-label={`Matched field: ${field.replace(/_/g, ' ')}`}
                                 >
                                     {field.replace(/_/g, ' ')}
                                 </span>
@@ -136,16 +144,16 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                     <div className="sm:col-span-2">
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Industry Type</div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-700 border border-orange-200">
-                            <FaBuilding className="text-xs" />
+                            <FaBuilding className="text-xs" aria-hidden="true" />
                             {(verified_product.type || '').replace(/_/g, ' ').toUpperCase()}
                         </div>
                     </div>
                 </div>
 
                 {/* Success Message */}
-                <div className="mt-6 p-4 rounded-lg bg-green-50 border border-green-200">
+                <div className="mt-6 p-4 rounded-lg bg-green-50 border border-green-200" role="status">
                     <div className="flex items-center gap-2 text-green-700 font-medium">
-                        <FaCheck />
+                        <FaCheck aria-hidden="true" />
                         Verification Success
                     </div>
                     <div className="text-green-600 text-sm mt-1">
@@ -155,9 +163,10 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
             </div>
 
             {/* Additional Information */}
-            <div className="rounded-xl border border-blue-200 bg-blue-50 p-4">
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-4" role="region" aria-labelledby="additional-info">
+                <h3 id="additional-info" className="sr-only">Additional Information</h3>
                 <div className="flex items-start gap-3">
-                    <FaShield className="text-blue-600 mt-0.5" />
+                    <FaShield className="text-blue-600 mt-0.5" aria-hidden="true" />
                     <div>
                         <div className="font-semibold text-blue-800 mb-1">Food Industry Verification</div>
                         <div className="text-blue-700 text-sm">

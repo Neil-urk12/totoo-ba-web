@@ -35,7 +35,7 @@ type VerifyImageResponse = {
 
 const verifyImage = async (file: File): Promise<VerifyImageResponse> => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-    const END_POINT = "/api/v1/products/verify-image";
+    const END_POINT = "/api/v1/products/new-verify-image";
 
     const formData = new FormData();
     formData.append('image', file);

@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { FaSearch, FaList } from 'react-icons/fa';
 import { CiGrid41 } from "react-icons/ci";
 import ProductCard from '../components/ProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
 import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
 
@@ -215,10 +216,9 @@ export default function Products() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <p className="text-xs sm:text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
-                            isError ? 'Error loading products' :
-                                appliedSearch.trim() ?
-                                    `Showing ${filteredProducts.length} of ${totalCount} products for "${appliedSearch.trim()}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
-                                    `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
+                            appliedSearch.trim() ?
+                                `Showing ${filteredProducts.length} of ${totalCount} products for "${appliedSearch.trim()}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
+                                `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
                     </p>
                     {appliedSearch.trim() && (
                         <button
@@ -231,13 +231,6 @@ export default function Products() {
                 </div>
             </section>
 
-            {/* Loading State */}
-            {isLoading && (
-                <section className="text-center py-8 sm:py-12">
-                    <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
-                    <p className="text-gray-500 dark:text-slate-400 text-base sm:text-lg">Loading products...</p>
-                </section>
-            )}
 
             {/* Error State */}
             {isError && (
@@ -248,8 +241,18 @@ export default function Products() {
             )}
 
             {/* Products Grid */}
-            {!isLoading && !isError && (
+            {!isError && (
                 <section className={`grid gap-4 sm:gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                    {/* Show skeleton loaders while loading initial data */}
+                    {isLoading && filteredProducts.length === 0 && (
+                        <>
+                            {Array.from({ length: viewMode === 'grid' ? 6 : 8 }, (_, index) => (
+                                <ProductCardSkeleton key={`skeleton-${index}`} viewMode={viewMode} />
+                            ))}
+                        </>
+                    )}
+                    
+                    {/* Show actual products */}
                     {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} viewMode={viewMode} />
                     ))}
@@ -257,7 +260,7 @@ export default function Products() {
             )}
 
             {/* Loading More Products */}
-            {!isLoading && !isError && isFetchingNextPage && (
+            {!isError && isFetchingNextPage && filteredProducts.length > 0 && (
                 <section className="text-center py-6 sm:py-8">
                     <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">Loading more products...</p>
@@ -265,19 +268,19 @@ export default function Products() {
             )}
 
             {/* Load More Products */}
-            {!isLoading && !isError && hasNextPage && (
+            {!isError && hasNextPage && filteredProducts.length > 0 && (
                 <div ref={loadMoreRef} className="h-4"></div>
             )}
 
             {/* No More Products */}
-            {!isLoading && !isError && !hasNextPage && allProducts.length > 0 && (
+            {!isError && !hasNextPage && allProducts.length > 0 && filteredProducts.length > 0 && (
                 <section className="text-center py-6 sm:py-8">
                     <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">All products loaded</p>
                 </section>
             )}
 
             {/* No Results */}
-            {!isLoading && !isError && filteredProducts.length === 0 && (
+            {!isError && filteredProducts.length === 0 && !isLoading && (
                 <section className="text-center py-8 sm:py-12">
                     <p className="text-gray-500 dark:text-slate-400 text-base sm:text-lg">No products found matching your criteria.</p>
                     <p className="text-gray-400 dark:text-slate-500 text-xs sm:text-sm mt-2">Try adjusting your search terms or filters.</p>

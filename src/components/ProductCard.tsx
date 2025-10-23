@@ -1,4 +1,6 @@
-import { FaCheck, FaTimes, FaExclamationTriangle } from "react-icons/fa";
+import { useState } from "react";
+import { FaCheck, FaTimes, FaEye } from "react-icons/fa";
+import ProductCardDetailsModal from "./ProductCardDetailsModal";
 
 interface ProductCardProps {
     product: {
@@ -17,6 +19,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
+    const [showModal, setShowModal] = useState(false);
+
     const getStatusIcon = () => {
         if (product.status === 'verified') {
             return <FaCheck className="w-3 h-3" />;
@@ -24,105 +28,89 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         return <FaTimes className="w-3 h-3" />;
     };
 
-    const getActionIcon = () => {
-        if (product.action === 'active') {
-            return <FaCheck className="w-3 h-3" />;
-        }
-        return <FaExclamationTriangle className="w-3 h-3" />;
-    };
-
     const getStatusColor = () => {
-        return product.status === 'verified' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-    };
-
-    const getComplianceColor = () => {
-        return product.compliance === 'compliant' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-    };
-
-    const getActionColor = () => {
-        return product.action === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        return product.status === 'verified' ? 'bg-verified text-verified' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
     };
 
     if (viewMode === 'list') {
         return (
-            <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app">
-                <div className="flex flex-col gap-2">
-                    {/* Row 1: Name and badges */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <h3 className="font-semibold text-base sm:text-lg truncate">{product.name}</h3>
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${getStatusColor()}`}>
-                                {getStatusIcon()}
-                                {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
-                            </div>
+            <>
+                <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
+                    <div className="flex items-start justify-between gap-4">
+                        {/* Left side: Product info stacked vertically */}
+                        <div className="flex-1 min-w-0">
+                            <h3 id={`product-name-${product.id}`} className="font-semibold text-sm sm:text-base mb-1">{product.name}</h3>
+                            <p className="text-xs sm:text-sm text-muted mb-1">{product.manufacturer}</p>
+                            <p className="text-xs text-muted">{product.category}</p>
                         </div>
-                        <div className="flex gap-1 sm:gap-2 ml-2 sm:ml-4 flex-shrink-0">
-                            <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`}>
-                                {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
-                            </div>
-                            <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`}>
-                                {getActionIcon()}
-                                {product.action === 'active' ? 'Active' : 'Suspended'}
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Row 2: Scrollable details with full labels */}
-                    <div className="scrollbar-none flex items-center gap-3 sm:gap-6 text-xs sm:text-sm overflow-x-auto">
-                        <span className="text-muted whitespace-nowrap">{product.category}</span>
-                        <span className="text-muted whitespace-nowrap">Reg: {product.registrationNo}</span>
-                        <span className="text-muted whitespace-nowrap">Manufacturer: {product.manufacturer}</span>
-                        <span className="text-muted whitespace-nowrap">Registered: {product.registered}</span>
-                        <span className="text-muted whitespace-nowrap">Expires: {product.expires}</span>
+                        {/* Right side: Badges and button stacked vertically and fixed to the right */}
+                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted whitespace-nowrap">{product.category}</span>
+                                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
+                                    {getStatusIcon()}
+                                    <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
+                                    <span>{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted whitespace-nowrap">{product.expires}</span>
+                                <button
+                                    onClick={() => setShowModal(true)}
+                                    className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                    aria-label="View product details"
+                                >
+                                    <FaEye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <ProductCardDetailsModal
+                    open={showModal}
+                    onClose={() => setShowModal(false)}
+                    product={product}
+                />
+            </>
         );
     }
 
     // Grid view (default)
     return (
-        <div className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow bg-card border-app">
-            <div className="flex items-start justify-between mb-4">
-                <h3 className="font-semibold text-lg">{product.name}</h3>
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`}>
-                    {getStatusIcon()}
-                    {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
+        <>
+            <div className="rounded-lg shadow-sm border p-4 sm:p-6 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
+                {/* Header with name, status, and eye icon */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex-1 min-w-0">
+                        <h3 id={`product-name-${product.id}`} className="font-semibold text-base sm:text-lg mb-2 line-clamp-2">{product.name}</h3>
+                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
+                            {getStatusIcon()}
+                            <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
+                            {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
+                        aria-label="View product details"
+                    >
+                        <FaEye className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    </button>
+                </div>
+
+                {/* Category */}
+                <div className="text-sm text-muted">
+                    <span className="font-medium">Category:</span> {product.category}
                 </div>
             </div>
 
-            <div className="mb-4">
-                <span className="text-sm text-muted">{product.category}</span>
-            </div>
-
-            <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                    <span className="text-muted">Registration No.</span>
-                    <span className="font-medium">{product.registrationNo}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                    <span className="text-muted">Manufacturer</span>
-                    <span className="font-medium">{product.manufacturer}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                    <span className="text-muted">Registered</span>
-                    <span className="font-medium">{product.registered}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                    <span className="text-muted">Expires</span>
-                    <span className="font-medium">{product.expires}</span>
-                </div>
-            </div>
-
-            <div className="flex gap-2">
-                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getComplianceColor()}`} >
-                    {product.compliance === 'compliant' ? 'Compliant' : 'Non-Compliant'}
-                </div>
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getActionColor()}`} >
-                    {getActionIcon()}
-                    {product.action === 'active' ? 'Active' : 'Suspended'}
-                </div>
-            </div>
-        </div>
+            <ProductCardDetailsModal
+                open={showModal}
+                onClose={() => setShowModal(false)}
+                product={product}
+            />
+        </>
     );
 }
