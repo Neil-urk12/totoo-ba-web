@@ -198,7 +198,7 @@ export default function SearchForm() {
                 <button
                     type="submit"
                     disabled={
-                        searchMethod === 'text' ? (query.length === 0 || isSubmitting) : (isUploading || !selectedFile)
+                        searchMethod === 'text' ? (query.trim().length === 0 || isSubmitting) : (isUploading || !selectedFile)
                     }
                     className="w-full h-12 inline-flex items-center justify-center gap-2 border rounded-lg font-semibold cursor-pointer transition-all duration-300 btn-invert border-app disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label={searchMethod === 'image' ? (isUploading ? "Analyzing image" : "Verify product image") : (isSubmitting ? "Verifying product" : "Verify product")}
