@@ -38,9 +38,6 @@ export default function Navbar() {
                     ))}
                 </nav>
                 <div className="flex items-center gap-3">
-                    <button className="hidden sm:inline-flex items-center rounded-lg h-9 px-4 text-sm font-medium transition-colors" style={{ backgroundColor: "var(--fg)", color: "var(--bg)" }}>
-                        My Bookmarks
-                    </button>
                     <ThemeToggle />
                     <button
                         className="inline-flex items-center justify-center lg:hidden w-9 h-9 rounded-md border"
@@ -89,9 +86,6 @@ export default function Navbar() {
                                         {item.label}
                                     </NavLink>
                                 ))}
-                                <button className="inline-flex sm:hidden items-center justify-center rounded-lg h-10 px-4 text-sm font-medium" style={{ backgroundColor: "var(--fg)", color: "var(--bg)" }}>
-                                    My Bookmarks
-                                </button>
                             </nav>
                         </div>
                     </div>
