@@ -260,7 +260,7 @@ export default function Products() {
             )}
 
             {/* Loading More Products */}
-            {!isError && isFetchingNextPage && (
+            {!isError && isFetchingNextPage && filteredProducts.length > 0 && (
                 <section className="text-center py-6 sm:py-8">
                     <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
                     <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">Loading more products...</p>
@@ -268,12 +268,12 @@ export default function Products() {
             )}
 
             {/* Load More Products */}
-            {!isError && hasNextPage && (
+            {!isError && hasNextPage && filteredProducts.length > 0 && (
                 <div ref={loadMoreRef} className="h-4"></div>
             )}
 
             {/* No More Products */}
-            {!isError && !hasNextPage && allProducts.length > 0 && (
+            {!isError && !hasNextPage && allProducts.length > 0 && filteredProducts.length > 0 && (
                 <section className="text-center py-6 sm:py-8">
                     <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">All products loaded</p>
                 </section>
