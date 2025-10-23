@@ -1,73 +1,85 @@
-# React + TypeScript + Vite
+# FDA Product Checker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The FDA Product Checker is a web application designed to help Filipino consumers verify the authenticity and compliance of food and beauty products. It provides a user-friendly interface to check if a product is registered with the Food and Drug Administration (FDA) of the Philippines and if the manufacturer is a legitimate, registered business entity.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Real-time Verification**: Instantly check product registration against official FDA databases.
+- **Business Legitimacy Check**: Verify manufacturer information with the official Philippine business registry.
+- **AI-Powered Matching**: Utilizes advanced algorithms to match and normalize data for accurate results.
+- **Counterfeit Detection**: Get instant warnings about unregistered products and suspicious business entities.
+- **Text and Image Search**: Verify products by entering their name or registration number, or by uploading an image.
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React
+- **Build Tool**: Vite
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Data Fetching**: React Query
+- **Routing**: React Router
+- **Database**: Supabase
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js (v18 or higher)
+- Bun (or npm/yarn)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/your-username/fda-product-checker.git
+   cd fda-product-checker
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   bun install
+   ```
+   or
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+
+   Create a `.env` file in the root of the project and add the following environment variables:
+
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+### Running the Development Server
+
+To start the development server, run the following command:
+
+```bash
+bun run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The application will be available at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Available Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `bun run dev`: Starts the development server.
+- `bun run build`: Builds the application for production.
+- `bun run lint`: Lints the codebase using Oslint.
+- `bun run preview`: Previews the production build locally.
+
+## Usage
+
+1. **Text Search**:
+   - Enter the product name, brand, or registration number in the search bar.
+   - Select a category (optional).
+   - Click "Verify Product" to see the results.
+
+2. **Image Search**:
+   - Select the "Image Upload" tab.
+   - Upload an image of the product.
+   - Click "Verify Product Image" to let the AI analyze the image and provide verification results.
