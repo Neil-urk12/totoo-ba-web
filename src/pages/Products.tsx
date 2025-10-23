@@ -216,10 +216,9 @@ export default function Products() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <p className="text-xs sm:text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
-                            isError ? 'Error loading products' :
-                                appliedSearch.trim() ?
-                                    `Showing ${filteredProducts.length} of ${totalCount} products for "${appliedSearch.trim()}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
-                                    `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
+                            appliedSearch.trim() ?
+                                `Showing ${filteredProducts.length} of ${totalCount} products for "${appliedSearch.trim()}"${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}` :
+                                `Showing ${filteredProducts.length} of ${totalCount} products${allProducts.length < totalCount ? ` (${allProducts.length} loaded)` : ''}`}
                     </p>
                     {appliedSearch.trim() && (
                         <button
