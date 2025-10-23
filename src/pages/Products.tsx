@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { FaSearch, FaList } from 'react-icons/fa';
 import { CiGrid41 } from "react-icons/ci";
 import ProductCard from '../components/ProductCard';
+import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
 import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
 
@@ -243,6 +244,16 @@ export default function Products() {
             {/* Products Grid */}
             {!isError && (
                 <section className={`grid gap-4 sm:gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                    {/* Show skeleton loaders while loading initial data */}
+                    {isLoading && filteredProducts.length === 0 && (
+                        <>
+                            {Array.from({ length: viewMode === 'grid' ? 6 : 8 }, (_, index) => (
+                                <ProductCardSkeleton key={`skeleton-${index}`} viewMode={viewMode} />
+                            ))}
+                        </>
+                    )}
+                    
+                    {/* Show actual products */}
                     {filteredProducts.map(product => (
                         <ProductCard key={product.id} product={product} viewMode={viewMode} />
                     ))}
