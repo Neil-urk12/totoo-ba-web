@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button: FC<ButtonProps> = ({ className = "", children, ...props }) => (
   <button
-    className={`flex items-center justify-center rounded-full h-9 w-9 hover:bg-gray-500 transition-colors ${className}`}
+    className={`flex items-center justify-center rounded-full h-9 w-9 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${className}`}
     {...props}
   >
     {children}
