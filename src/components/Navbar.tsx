@@ -22,7 +22,7 @@ export default function Navbar() {
                     <div className="flex items-center justify-center w-8 h-8 rounded" style={{ backgroundColor: "var(--fg)" }}>
                         <FaShieldAlt className="text-sm" style={{ color: "var(--bg)" }} />
                     </div>
-                    <NavLink to={NavData[0].link} className="text-lg" style={{ color: "var(--fg)" }}>Totoo ba ito ?</NavLink>
+                    <NavLink to={NavData[0].link} className="text-lg" style={{ color: "var(--fg)" }}>Totoo ba ito?</NavLink>
                 </div>
                 <nav className="hidden lg:flex items-center gap-6" style={{ color: "var(--muted)" }}>
                     {NavData.map((item) => (
@@ -62,7 +62,7 @@ export default function Navbar() {
                                     <div className="flex items-center justify-center w-8 h-8 rounded" style={{ backgroundColor: "var(--fg)" }}>
                                         <FaShieldAlt className="text-sm" style={{ color: "var(--bg)" }} />
                                     </div>
-                                    <span className="text-lg">Totoo ba ito ?</span>
+                                    <span className="text-lg">Totoo ba ito?</span>
                                 </div>
                                 <button
                                     className="inline-flex items-center justify-center w-10 h-10 rounded-md border"

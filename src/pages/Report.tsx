@@ -212,7 +212,7 @@ export default function Report() {
                     <div>
                         <h2 id="alert-heading" className="sr-only">Important Notice</h2>
                         <p className="text-yellow-800">
-                            Your report will be forwarded to Totoo ba ? Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
+                            Your report will be forwarded to Totoo ba ito? Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
                         </p>
                     </div>
                 </div>
