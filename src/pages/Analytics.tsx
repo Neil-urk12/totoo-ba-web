@@ -272,7 +272,7 @@ export default function Analytics() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
-                                {mockAnalyticsData.topManufacturers.map((manufacturer, index) => (
+                                {analyticsData.topManufacturers.map((manufacturer, index) => (
                                     <tr key={index} role="row">
                                         <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ color: "var(--muted)" }}>
                                             {manufacturer.rank}
