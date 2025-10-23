@@ -92,7 +92,6 @@ export default function Navbar() {
                                 <button className="inline-flex sm:hidden items-center justify-center rounded-lg h-10 px-4 text-sm font-medium" style={{ backgroundColor: "var(--fg)", color: "var(--bg)" }}>
                                     My Bookmarks
                                 </button>
-                                <div className="sm:hidden"><ThemeToggle /></div>
                             </nav>
                         </div>
                     </div>
