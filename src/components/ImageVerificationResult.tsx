@@ -1,4 +1,4 @@
-import { FaCheck, FaExclamationTriangle, FaTimes } from "react-icons/fa";
+import { Check, AlertTriangle, X } from "lucide-react";
 import AlternativeProductCard from "./AlternativeProductCard";
 
 type ImageVerificationResultProps = {
@@ -40,12 +40,12 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
     const getStatusIcon = (status: string) => {
         switch (status.toLowerCase()) {
             case 'verified':
-                return <FaCheck className="text-green-600" />;
+                return <Check className="text-green-600" />;
             case 'uncertain':
-                return <FaExclamationTriangle className="text-yellow-600" />;
+                return <AlertTriangle className="text-yellow-600" />;
             case 'not_verified':
             default:
-                return <FaTimes className="text-red-600" />;
+                return <X className="text-red-600" />;
         }
     };
 

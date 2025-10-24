@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { FaSearch, FaList } from 'react-icons/fa';
-import { CiGrid41 } from "react-icons/ci";
+import { Search, List, Grid2X2 } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
@@ -144,7 +143,7 @@ export default function Products() {
                 <div className="flex flex-col gap-4 mb-4">
                     {/* Search Bar */}
                     <div className="flex-1 relative">
-                        <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
                             type="text"
                             placeholder="Search products, manufacturers, or registration numbers..."
@@ -202,13 +201,13 @@ export default function Products() {
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 sm:p-3 border rounded-lg ${viewMode === 'grid' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
                             >
-                                <CiGrid41 className="w-5 h-5 sm:w-6 sm:h-6" />
+                                <Grid2X2 className="w-5 h-5 sm:w-6 sm:h-6" />
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 sm:p-3 border rounded-lg ${viewMode === 'list' ? 'bg-gray-900 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
                             >
-                                <FaList className="w-4 h-4" />
+                                <List className="w-4 h-4" />
                             </button>
                         </div>
                     </div>

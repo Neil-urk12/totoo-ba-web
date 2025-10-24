@@ -1,5 +1,4 @@
-import { FaCheck, FaTimes, FaExclamationTriangle } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import { Check, X as CloseIcon, AlertTriangle } from "lucide-react";
 
 interface ProductCardDetailsModalProps {
     open: boolean;
@@ -23,16 +22,16 @@ export default function ProductCardDetailsModal({ open, onClose, product }: Prod
 
     const getStatusIcon = () => {
         if (product.status === 'verified') {
-            return <FaCheck className="w-4 h-4" />;
+            return <Check className="w-4 h-4" />;
         }
-        return <FaTimes className="w-4 h-4" />;
+        return <CloseIcon className="w-4 h-4" />;
     };
 
     const getActionIcon = () => {
         if (product.action === 'active') {
-            return <FaCheck className="w-4 h-4" />;
+            return <Check className="w-4 h-4" />;
         }
-        return <FaExclamationTriangle className="w-4 h-4" />;
+        return <AlertTriangle className="w-4 h-4" />;
     };
 
     const getStatusColor = () => {
@@ -64,7 +63,7 @@ export default function ProductCardDetailsModal({ open, onClose, product }: Prod
                             onClick={onClose}
                             aria-label="Close modal"
                         >
-                            <IoClose className="w-5 h-5" />
+                            <CloseIcon className="w-5 h-5" />
                         </button>
                     </div>
 

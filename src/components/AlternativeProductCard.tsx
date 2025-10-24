@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaEye } from "react-icons/fa";
+import { Eye } from "lucide-react";
 import AlternativeProductDetailsModal from "./AlternativeProductDetailsModal";
 
 interface AlternativeProductCardProps {
@@ -28,7 +28,7 @@ export default function AlternativeProductCard({ product }: AlternativeProductCa
                         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
                         aria-label="View product details"
                     >
-                        <FaEye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </button>
                 </div>
                 

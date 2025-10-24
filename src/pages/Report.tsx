@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaShieldAlt, FaExclamationTriangle, FaUpload, FaCheckCircle } from 'react-icons/fa';
+import { ShieldCheck, AlertTriangle, Upload, CheckCircle } from 'lucide-react';
 import { useReportMutation } from '../query/post/useReportMutations';
 
 interface FormData {
@@ -209,7 +209,7 @@ export default function Report() {
                     <div className="rounded-xl shadow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <FaCheckCircle className="text-3xl text-green-600" />
+                                <CheckCircle className="text-3xl text-green-600" />
                             </div>
                             <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Submitted Successfully</h1>
                             <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product.</p>
@@ -241,7 +241,7 @@ export default function Report() {
                 {/* Header Section */}
                 <header className="text-center mb-8" role="banner">
                     <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4" aria-hidden="true">
-                        <FaShieldAlt className="text-2xl text-amber-600" />
+                        <ShieldCheck className="text-2xl text-amber-600" />
                     </div>
                     <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report a Product</h1>
                     <p className="text-lg max-w-2xl mx-auto" style={{ color: "var(--muted)" }}>
@@ -251,7 +251,7 @@ export default function Report() {
 
                 {/* Alert Box */}
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8 flex items-start" role="alert" aria-labelledby="alert-heading">
-                    <FaExclamationTriangle className="text-yellow-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                    <AlertTriangle className="text-yellow-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                     <div>
                         <h2 id="alert-heading" className="sr-only">Important Notice</h2>
                         <p className="text-yellow-800">
@@ -263,7 +263,7 @@ export default function Report() {
                 {/* Error Message */}
                 {submitError && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 flex items-start" role="alert" aria-labelledby="error-heading">
-                        <FaExclamationTriangle className="text-red-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                        <AlertTriangle className="text-red-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
                         <div>
                             <h2 id="error-heading" className="sr-only">Submission Error</h2>
                             <p className="text-red-800">{submitError}</p>
@@ -391,7 +391,7 @@ export default function Report() {
                                 {formData.issueType && (
                                     <div className="mt-3 p-3 rounded-lg border" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
                                         <div className="flex items-start">
-                                            <FaShieldAlt className="text-blue-600 text-sm mr-2 mt-0.5 flex-shrink-0" />
+                                            <ShieldCheck className="text-blue-600 text-sm mr-2 mt-0.5 flex-shrink-0" />
                                             <div>
                                                 <p className="text-sm font-medium" style={{ color: "var(--fg)" }}>
                                                     Report will be sent to:
@@ -460,7 +460,7 @@ export default function Report() {
                                     }}
                                     aria-label="Upload supporting evidence files"
                                 >
-                                    <FaUpload className="text-3xl mx-auto mb-3" style={{ color: "var(--muted)" }} aria-hidden="true" />
+                                    <Upload className="text-3xl mx-auto mb-3" style={{ color: "var(--muted)" }} aria-hidden="true" />
                                     <p className="mb-1" style={{ color: "var(--fg)" }}>Upload photos or documents</p>
                                     <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>Product photos, receipts, packaging, or other evidence (Max 10MB each)</p>
                                     <div className="inline-flex items-center px-4 py-2 rounded-lg transition-colors"
@@ -490,7 +490,7 @@ export default function Report() {
                                             {selectedFiles.map((file, index) => (
                                                 <div key={index} className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: "var(--muted)", color: "var(--fg)" }}>
                                                     <div className="flex items-center">
-                                                        <FaUpload className="text-sm mr-2 text-black" aria-hidden="true" />
+                                                        <Upload className="text-sm mr-2 text-black" aria-hidden="true" />
                                                         <span className="text-sm text-black">
                                                             {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                                                         </span>

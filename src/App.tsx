@@ -1,12 +1,16 @@
+import { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import SearchForm from './components/SearchForm'
-import Features from './components/Features'
-import Notice from './components/Notice'
 import Footer from './components/Footer'
 import { Outlet, useLocation } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary'
 import GenericErrorFallback from './components/GenericErrorFallback'
+import LoadingSpinner from './components/LoadingSpinner'
+
+// Lazy load homepage components to reduce initial bundle size
+const Hero = lazy(() => import('./components/Hero'))
+const SearchForm = lazy(() => import('./components/SearchForm'))
+const Features = lazy(() => import('./components/Features'))
+const Notice = lazy(() => import('./components/Notice'))
 
 function App() {
   const location = useLocation();
@@ -17,18 +21,20 @@ function App() {
       <Navbar />
       {isHomePage && (
         <main className="px-4" role="main">
-          <ErrorBoundary fallback={GenericErrorFallback}>
-            <Hero />
-          </ErrorBoundary>
-          <ErrorBoundary fallback={GenericErrorFallback}>
-            <SearchForm />
-          </ErrorBoundary>
-          <ErrorBoundary fallback={GenericErrorFallback}>
-            <Features />
-          </ErrorBoundary>
-          <ErrorBoundary fallback={GenericErrorFallback}>
-            <Notice />
-          </ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Hero />
+            </ErrorBoundary>
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <SearchForm />
+            </ErrorBoundary>
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Features />
+            </ErrorBoundary>
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Notice />
+            </ErrorBoundary>
+          </Suspense>
         </main>
       )}
       <main role="main">
