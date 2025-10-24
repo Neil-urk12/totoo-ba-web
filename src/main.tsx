@@ -17,6 +17,7 @@ const Analytics = lazy(() => import('./pages/Analytics.tsx'))
 const Verify = lazy(() => import('./pages/Verify.tsx'))
 const Report = lazy(() => import('./pages/Report.tsx'))
 const NotFound = lazy(() => import('./pages/NotFound.tsx'))
+const CommunityReports = lazy(() => import('./pages/CommunityReports.tsx'))
 
 // Optimized React Query configuration
 const queryClient = new QueryClient({
@@ -71,6 +72,16 @@ const routes = createBrowserRouter([
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
               <About />
+            </ErrorBoundary>
+          </Suspense>
+        )
+      },
+      { 
+        path: 'community-reports', 
+        element: (
+          <Suspense fallback={<RouteLoadingSpinner />}>
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <CommunityReports />
             </ErrorBoundary>
           </Suspense>
         )
