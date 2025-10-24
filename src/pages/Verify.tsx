@@ -5,6 +5,7 @@ import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useG
 import ProductDetailsModal from '../components/ProductDetailsModal'
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
 import ImageVerificationResult from '../components/ImageVerificationResult'
+import AlternativeProductCard from '../components/AlternativeProductCard'
 import { FaSearch } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
@@ -28,7 +29,7 @@ export default function Verify() {
     const [showDetails, setShowDetails] = useState(false)
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8" style={{ color: 'var(--fg)' }}>
+        <div className="max-w-7xl mx-auto px-4 py-8" style={{ color: 'var(--fg)' }}>
             <div className="mb-6">
                 <button
                     onClick={() => history.back()}
@@ -129,129 +130,83 @@ export default function Verify() {
                 )}
 
                 {q && !imageVerificationResult && data && (!data.message || !data.message.includes("not found in FDA database")) && (
-                    <div className="mt-8 space-y-6">
+                    <div className="mt-8">
                         {/* Check if it's a food industry verification */}
                         {data.details?.verified_product?.type === 'food_industry' ? (
                             <FoodIndustryVerification data={data} />
                         ) : (
-                            <>
-                                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold ${verified ? 'text-green-700 bg-green-500/10' : 'text-red-700 bg-red-500/10'}`}>
-                                    {verified ? <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label> : <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>}
-                                </div>
-
-                                <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Product name</div>
-                                            <div className="mt-1 font-medium">{info?.product_name || 'N/A'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Category</div>
-                                            <div className="mt-1 font-medium">{info?.type || 'N/A'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Registration number</div>
-                                            <div className="mt-1 font-mono">{info?.registration_number || data?.product_id || 'N/A'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Manufacturer</div>
-                                            <div className="mt-1 font-medium">{info?.company_name || 'N/A'}</div>
+                            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                                {/* Left Column - Main Result */}
+                                <div className="lg:col-span-2">
+                                    <div className="rounded-xl border border-app bg-app/30 p-6 h-full flex flex-col">
+                                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold mb-6 self-start ${verified ? 'text-green-700 bg-green-500/10' : 'text-red-700 bg-red-500/10'}`}>
+                                            {verified ? <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label> : <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>}
                                         </div>
 
-                                        {/* Drug-specific fields */}
-                                        {data?.details?.verified_product && (
-                                            <>
-                                                {data.details.verified_product.generic_name && (
-                                                    <div>
-                                                        <div className="text-[11px] uppercase tracking-wide opacity-70">Generic name</div>
-                                                        <div className="mt-1 font-medium">{data.details.verified_product.generic_name}</div>
-                                                    </div>
-                                                )}
-                                                {data.details.verified_product.brand_name && data.details.verified_product.brand_name !== data.details.verified_product.generic_name && (
-                                                    <div>
-                                                        <div className="text-[11px] uppercase tracking-wide opacity-70">Brand name</div>
-                                                        <div className="mt-1 font-medium">{data.details.verified_product.brand_name}</div>
-                                                    </div>
-                                                )}
+                                        <div className="space-y-5 flex-1">
+                                            <div>
+                                                <div className="text-[11px] uppercase tracking-wide opacity-70">Product name</div>
+                                                <div className="mt-1 font-semibold text-lg">{info?.product_name || 'N/A'}</div>
+                                            </div>
+                                            
+                                            <div className="space-y-4">
                                                 <div>
-                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Confidence score</div>
-                                                    <div className="mt-1">{data.details.confidence_score || '—'}</div>
+                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Category</div>
+                                                    <div className="mt-1 font-medium">{info?.type || 'N/A'}</div>
                                                 </div>
                                                 <div>
-                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Exact match</div>
-                                                    <div className="mt-1">{data.details.exact_match ? 'Yes' : 'No'}</div>
+                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Registration number</div>
+                                                    <div className="mt-1 font-mono text-sm">{info?.registration_number || data?.product_id || 'N/A'}</div>
                                                 </div>
-                                            </>
-                                        )}
+                                                <div>
+                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Manufacturer</div>
+                                                    <div className="mt-1 font-medium">{info?.company_name || 'N/A'}</div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Verification method</div>
+                                                    <div className="mt-1 text-sm">{data?.details?.verification_method || '—'}</div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <div className="text-[11px] uppercase tracking-wide opacity-70">Message</div>
+                                                    <div className="mt-1 text-sm">{data?.message || '—'}</div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Registration date</div>
-                                            <div className="mt-1">{data?.registrationDate || '—'}</div>
+                                        <div className="mt-6 pt-4 border-t border-app">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowDetails(true)}
+                                                className="w-full inline-flex items-center justify-center gap-2 rounded-lg font-semibold h-11 px-4 border border-app/70 hover:border-app transition-colors btn-invert"
+                                            >
+                                                View full product details
+                                            </button>
                                         </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Expiry date</div>
-                                            <div className="mt-1">{data?.expiryDate || '—'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Message</div>
-                                            <div className="mt-1">{data?.message || '—'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Verification method</div>
-                                            <div className="mt-1">{data?.details?.verification_method || '—'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Total matches</div>
-                                            <div className="mt-1">{data?.details?.total_matches ?? '—'}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Relevance score</div>
-                                            <div className="mt-1">{info?.relevance_score ?? '—'}</div>
-                                        </div>
-                                        <div className="sm:col-span-2">
-                                            <div className="text-[11px] uppercase tracking-wide opacity-70">Matched fields</div>
-                                            <div className="mt-1 font-mono text-sm break-words">{Array.isArray(info?.matched_fields) && info?.matched_fields.length > 0 ? info?.matched_fields.join(', ') : '—'}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6">
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowDetails(true)}
-                                            className="w-full inline-flex items-center justify-center gap-2 rounded-lg font-semibold h-11 px-4 border border-app/70 hover:border-app transition-colors btn-invert"
-                                        >
-                                            View full product details
-                                        </button>
                                     </div>
                                 </div>
 
-                                {/* Alternative Matches (Text/Search verification) */}
-                                {Array.isArray(data.details?.alternative_matches) && data.details.alternative_matches.length > 0 && (
-                                    <div className="rounded-xl border border-app p-5 sm:p-6 bg-app/30">
-                                        <h3 className="text-lg font-semibold mb-4">Alternative Products</h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                            {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
-                                                <div key={idx} className="rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow bg-card border-app">
-                                                    <div className="flex items-start justify-between mb-2">
-                                                        <h4 className="font-semibold text-sm line-clamp-2 pr-2">{alt.product_name}</h4>
-                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-app/70 bg-app/40`}>
-                                                            {(alt.type || '—').toString().toUpperCase()}
-                                                        </span>
-                                                    </div>
-                                                    <div className="text-xs text-muted mb-2 line-clamp-1">{alt.company_name}</div>
-                                                    <div className="flex items-center justify-between text-[11px]">
-                                                        <span className="opacity-70">Reg. No.</span>
-                                                        <span className="font-mono">{alt.registration_number}</span>
-                                                    </div>
-                                                    {typeof alt.relevance_score === 'number' && (
-                                                        <div className="mt-2 text-right text-[11px] text-muted">{Math.round(alt.relevance_score)}% match</div>
-                                                    )}
-                                                </div>
-                                            ))}
+                                {/* Right Column - Alternative Matches */}
+                                <div className="lg:col-span-3">
+                                    {Array.isArray(data.details?.alternative_matches) && data.details.alternative_matches.length > 0 ? (
+                                        <div className="h-full">
+                                            <h3 className="text-lg font-semibold mb-4">Alternative Products</h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-fr">
+                                                {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
+                                                    <AlternativeProductCard key={idx} product={alt} />
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                            </>
+                                    ) : (
+                                        <div className="h-full flex items-center justify-center rounded-xl border border-dashed border-app/70 bg-app/20 p-8">
+                                            <div className="text-center">
+                                                <div className="text-sm text-muted">No alternative products found</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         )}
                     </div>
                 )}
