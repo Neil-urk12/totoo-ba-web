@@ -1,5 +1,6 @@
 import React from 'react'
 import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery'
+import { formatCategoryText } from '../utils/formatters'
 
 interface ProductDetailsModalProps {
     open: boolean
@@ -39,7 +40,7 @@ export default function ProductDetailsModal({ open, onClose, data }: ProductDeta
                                 <Field label="Product ID" value={data.product_id || '—'} mono />
                                 <Field label="Registration number" value={info?.registration_number || data.product_id || '—'} mono />
                                 <Field label="Product name" value={info?.product_name ?? 'N/A'} />
-                                <Field label="Category" value={info?.type || '—'} />
+                                <Field label="Category" value={formatCategoryText(info?.type)} />
                                 <Field label="Manufacturer" value={info?.company_name || '—'} />
 
                                 {/* Drug-specific fields */}

@@ -1,5 +1,6 @@
 import { Check, Building2, IdCard, Award, Search, ShieldCheck } from 'lucide-react';
 import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery';
+import { formatCategoryText } from '../utils/formatters';
 
 interface FoodIndustryVerificationProps {
     data: VerifyResponse;
@@ -144,7 +145,7 @@ export default function FoodIndustryVerification({ data }: FoodIndustryVerificat
                         <div className="text-[11px] uppercase tracking-wide opacity-70 mb-2">Industry Type</div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-700 border border-orange-200">
                             <Building2 className="text-xs" aria-hidden="true" />
-                            {(verified_product.type || '').replace(/_/g, ' ').toUpperCase()}
+                            {formatCategoryText(verified_product.type)}
                         </div>
                     </div>
                 </div>

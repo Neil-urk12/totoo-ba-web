@@ -9,6 +9,7 @@ import AlternativeProductCard from '../components/AlternativeProductCard'
 import { Search, Check, X, ArrowLeft } from "lucide-react";
 import ErrorBoundary from '../components/ErrorBoundary';
 import GenericErrorFallback from '../components/GenericErrorFallback';
+import { formatCategoryText } from '../utils/formatters';
 
 export default function Verify() {
     const [params] = useSearchParams()
@@ -131,7 +132,7 @@ export default function Verify() {
                                             <div className="space-y-4">
                                                 <div>
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Category</div>
-                                                    <div className="mt-1 font-medium">{info?.type || 'N/A'}</div>
+                                                    <div className="mt-1 font-medium">{formatCategoryText(info?.type)}</div>
                                                 </div>
                                                 <div>
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Registration number</div>

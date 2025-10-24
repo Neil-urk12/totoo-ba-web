@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { formatCategoryText } from "../utils/formatters";
 
 interface AlternativeProductDetailsModalProps {
     open: boolean;
@@ -46,7 +47,7 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
                             <h3 className="text-lg sm:text-xl font-semibold mb-3 break-words">{product.product_name}</h3>
                             <div className="flex flex-wrap gap-2">
                                 <div className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border border-app/70 bg-app/40">
-                                    <span>{(product.type || 'N/A').toString().toUpperCase()}</span>
+                                    <span>{formatCategoryText(product.type)}</span>
                                 </div>
                                 {typeof product.relevance_score === 'number' && (
                                     <div className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
@@ -62,7 +63,7 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
                             {product.brand_name && (
                                 <DetailRow label="Brand Name" value={product.brand_name} />
                             )}
-                            <DetailRow label="Category" value={product.type || 'N/A'} />
+                            <DetailRow label="Category" value={formatCategoryText(product.type)} />
                             <DetailRow label="Manufacturer/Company" value={product.company_name} />
                             <DetailRow label="Registration Number" value={product.registration_number} />
                             {product.issuance_date && (

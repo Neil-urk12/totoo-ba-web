@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye } from "lucide-react";
 import AlternativeProductDetailsModal from "./AlternativeProductDetailsModal";
+import { formatCategoryText } from "../utils/formatters";
 
 interface AlternativeProductCardProps {
     product: {
@@ -40,7 +41,7 @@ export default function AlternativeProductCard({ product }: AlternativeProductCa
                 
                 <div className="flex items-center gap-2 mb-3">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium border border-app/70 bg-app/40 shrink-0">
-                        {(product.type || '—').toString().toUpperCase()}
+                        {formatCategoryText(product.type)}
                     </span>
                 </div>
                 

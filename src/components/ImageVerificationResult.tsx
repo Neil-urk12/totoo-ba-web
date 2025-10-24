@@ -1,5 +1,6 @@
 import { Check, AlertTriangle, X } from "lucide-react";
 import AlternativeProductCard from "./AlternativeProductCard";
+import { formatCategoryText } from "../utils/formatters";
 
 type ImageVerificationResultProps = {
     data: {
@@ -86,7 +87,7 @@ export default function ImageVerificationResult({ data }: ImageVerificationResul
                                 <div className="space-y-3">
                                     <div>
                                         <div className="text-[11px] uppercase tracking-wide opacity-70">Category</div>
-                                        <div className="mt-1 font-medium">{data.matched_product.type || 'N/A'}</div>
+                                        <div className="mt-1 font-medium">{formatCategoryText(data.matched_product.type)}</div>
                                     </div>
                                     <div>
                                         <div className="text-[11px] uppercase tracking-wide opacity-70">Registration number</div>
