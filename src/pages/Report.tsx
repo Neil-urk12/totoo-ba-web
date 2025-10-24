@@ -4,9 +4,8 @@ import { useReportMutation } from '../query/post/useReportMutations';
 
 interface FormData {
     productName: string;
-    manufacturer: string;
-    issueType: string;
     description: string;
+    brandName: string;
     supportingEvidence: FileList | null;
     fullName: string;
     email: string;
@@ -17,9 +16,8 @@ interface FormData {
 
 interface FormErrors {
     productName?: string;
-    manufacturer?: string;
     description?: string;
-    issueType?: string;
+    brandName?: string;
     supportingEvidence?: string;
     fullName?: string;
     email?: string;
@@ -29,16 +27,6 @@ interface FormErrors {
     [key: string]: string | undefined;
 }
 
-const issueTypes = [
-    'Counterfeit Product',
-    'Unregistered Product',
-    'Expired Product',
-    'Misleading Labeling',
-    'Adverse Reaction',
-    'Quality Issue',
-    'Other'
-];
-
 const reportMessageSuccessfully = [
     "Your report will be reviewed by our team within 24-48 hours",
     "Verified reports are forwarded to FDA Philippines and relevant authorities",
@@ -46,34 +34,12 @@ const reportMessageSuccessfully = [
     "Authorities may contact you if additional information is needed"
 ];
 
-// FDA Email channels based on issue type
-const getEmailChannel = (issueType: string): { email: string; description: string } => {
-    switch (issueType) {
-        case 'Counterfeit Product':
-            return {
-                email: 'ncwacm@fda.gov.ph',
-                description: 'Counterfeit medicines reporting'
-            };
-        case 'Unregistered Product':
-            return {
-                email: 'info@fda.gov.ph',
-                description: 'Unregistered health products reporting'
-            };
-        default:
-            return {
-                email: 'ereport@fda.gov.ph',
-                description: 'General product reporting'
-            };
-    }
-};
-
 export default function Report() {
     const reportMutation = useReportMutation();
     const [formData, setFormData] = useState<FormData>({
         productName: '',
-        manufacturer: '',
-        issueType: '',
         description: '',
+        brandName: '',
         supportingEvidence: null,
         fullName: '',
         email: '',
@@ -88,8 +54,6 @@ export default function Report() {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [submitError, setSubmitError] = useState<string>('');
 
-
-
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
 
@@ -97,18 +61,22 @@ export default function Report() {
             newErrors.productName = 'Product name is required';
         }
 
-        if (!formData.manufacturer.trim()) {
-            newErrors.manufacturer = 'Manufacturer is required';
-        }
-
-        if (!formData.issueType) {
-            newErrors.issueType = 'Please select an issue type';
+        if (!formData.brandName.trim()) {
+            newErrors.brandName = 'Brand name is required';
         }
 
         if (!formData.description.trim()) {
             newErrors.description = 'Description is required';
         } else if (formData.description.trim().length < 50) {
             newErrors.description = 'Description must be at least 50 characters';
+        }
+
+        if (!formData.storeName.trim()) {
+            newErrors.storeName = 'Store name is required';
+        }
+
+        if (!formData.location.trim()) {
+            newErrors.location = 'Location is required';
         }
 
         if (!formData.fullName.trim()) {
@@ -185,7 +153,7 @@ export default function Report() {
             // Save to reported_products table
             await reportMutation.mutateAsync({
                 product_name: formData.productName,
-                brand_name: formData.manufacturer,
+                brand_name: formData.brandName,
                 registration_number: null,
                 description: formData.description,
                 reporter_name: formData.fullName || "Anonymous",
@@ -214,8 +182,6 @@ export default function Report() {
                             <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Submitted Successfully</h1>
                             <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product.</p>
                             <p style={{ color: "var(--muted)" }}>Your report has been submitted and will be reviewed by our team.</p>
-                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).description}</p>
-                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).email}</p>
                         </div>
 
                         <div className="rounded-lg p-6" style={{ backgroundColor: "var(--bg)" }}>
@@ -300,25 +266,21 @@ export default function Report() {
                             </div>
 
                             <div>
-                                <label htmlFor="manufacturer" className="block text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
-                                    Manufacturer/Brand <span className="text-red-500">*</span>
+                                <label htmlFor="brandName" className="block text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
+                                    Brand Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    id="manufacturer"
-                                    name="manufacturer"
-                                    value={formData.manufacturer}
+                                    id="brandName"
+                                    name="brandName"
+                                    value={formData.brandName}
                                     onChange={handleInputChange}
-                                    placeholder="Enter the manufacturer or brand name"
-                                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.manufacturer ? 'border-red-500' : ''}`}
-                                    style={{
-                                        backgroundColor: "var(--bg)",
-                                        borderColor: errors.manufacturer ? "#ef4444" : "var(--border)",
-                                        color: "var(--fg)"
-                                    }}
+                                    placeholder="Enter the brand name"
+                                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.brandName ? 'border-red-500' : ''}`}
+                                    style={{ backgroundColor: "var(--bg)", borderColor: errors.brandName ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
                                 />
-                                {errors.manufacturer && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.manufacturer}</p>
+                                {errors.brandName && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.brandName}</p>
                                 )}
                             </div>
 
@@ -334,13 +296,16 @@ export default function Report() {
                                         value={formData.storeName}
                                         onChange={handleInputChange}
                                         placeholder="Where did you find this product?"
-                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.storeName ? 'border-red-500' : ''}`}
                                         style={{
                                             backgroundColor: "var(--bg)",
-                                            borderColor: "var(--border)",
+                                            borderColor: errors.storeName ? '#ef4444' : "var(--border)",
                                             color: "var(--fg)"
                                         }}
                                     />
+                                    {errors.storeName && (
+                                        <p className="text-red-500 text-sm mt-1">{errors.storeName}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -354,58 +319,17 @@ export default function Report() {
                                         value={formData.location}
                                         onChange={handleInputChange}
                                         placeholder="City/Province, Country"
-                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.location ? 'border-red-500' : ''}`}
                                         style={{
                                             backgroundColor: "var(--bg)",
-                                            borderColor: "var(--border)",
+                                            borderColor: errors.location ? '#ef4444' : "var(--border)",
                                             color: "var(--fg)"
                                         }}
                                     />
+                                    {errors.location && (
+                                        <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+                                    )}
                                 </div>
-                            </div>
-
-                            <div>
-                                <label htmlFor="issueType" className="block text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
-                                    Type of Issue <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    id="issueType"
-                                    name="issueType"
-                                    value={formData.issueType}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.issueType ? 'border-red-500' : ''}`}
-                                    style={{ backgroundColor: "var(--bg)", borderColor: errors.issueType ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
-                                    aria-invalid={!!errors.issueType}
-                                    aria-describedby={errors.issueType ? "issueType-error" : undefined}
-                                >
-                                    <option value="">Select an issue type</option>
-                                    {issueTypes.map((type) => (
-                                        <option key={type} value={type}>{type}</option>
-                                    ))}
-                                </select>
-                                {errors.issueType && (
-                                    <p id="issueType-error" className="text-red-500 text-sm mt-1">{errors.issueType}</p>
-                                )}
-
-                                {/* Email Channel Information */}
-                                {formData.issueType && (
-                                    <div className="mt-3 p-3 rounded-lg border" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
-                                        <div className="flex items-start">
-                                            <ShieldCheck className="text-blue-600 text-sm mr-2 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="text-sm font-medium" style={{ color: "var(--fg)" }}>
-                                                    Report will be sent to:
-                                                </p>
-                                                <p className="text-sm font-mono" style={{ color: "var(--fg)" }}>
-                                                    {getEmailChannel(formData.issueType).email}
-                                                </p>
-                                                <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>
-                                                    {getEmailChannel(formData.issueType).description}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div>
