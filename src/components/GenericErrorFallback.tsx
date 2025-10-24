@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { AlertTriangle } from 'lucide-react';
 
 interface GenericErrorFallbackProps {
   error: Error | null;
@@ -18,7 +18,7 @@ const GenericErrorFallback: React.FC<GenericErrorFallbackProps> = ({
     <div className="flex flex-col items-center justify-center min-h-[300px] p-6 text-center">
       <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full">
         <div className="flex justify-center mb-4">
-          <FaExclamationTriangle className="text-red-500 text-4xl" />
+          <AlertTriangle className="text-red-500 text-4xl" />
         </div>
         <h2 className="text-xl font-bold text-red-800 mb-2">{title}</h2>
         <p className="text-red-600 mb-4">

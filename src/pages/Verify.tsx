@@ -6,10 +6,7 @@ import ProductDetailsModal from '../components/ProductDetailsModal'
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
 import ImageVerificationResult from '../components/ImageVerificationResult'
 import AlternativeProductCard from '../components/AlternativeProductCard'
-import { FaSearch } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa";
-import { RxCross2 } from "react-icons/rx";
-import { FaArrowLeftLong } from "react-icons/fa6";
+import { Search, Check, X, ArrowLeft } from "lucide-react";
 import ErrorBoundary from '../components/ErrorBoundary';
 import GenericErrorFallback from '../components/GenericErrorFallback';
 
@@ -38,7 +35,7 @@ export default function Verify() {
                     onClick={() => navigate('/')}
                     className="inline-flex items-center gap-2 h-9 px-3 rounded-full border border-app hover:border-app transition-colors text-sm opacity-90 hover:opacity-100"
                 >
-                    <span className="-ml-0.5"><FaArrowLeftLong /></span>
+                    <span className="-ml-0.5"><ArrowLeft /></span>
                     <span>New search</span>
                 </button>
             </div>
@@ -53,7 +50,7 @@ export default function Verify() {
 
                 {!q && !imageVerificationResult && (
                     <div className="mt-6 rounded-xl border border-dashed border-app/70 p-8 text-center">
-                        <div className="mx-auto mb-2 h-10 w-10 rounded-full bg-app/40 flex items-center justify-center"><FaSearch /></div>
+                        <div className="mx-auto mb-2 h-10 w-10 rounded-full bg-app/40 flex items-center justify-center"><Search /></div>
                         <div className="font-semibold">No query provided</div>
                         <div className="text-sm text-muted mt-1">Use the search to verify a product.</div>
                     </div>
@@ -83,7 +80,7 @@ export default function Verify() {
                     <div className="mt-6">
                         <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-8 text-center">
                             <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-500/20 flex items-center justify-center">
-                                <RxCross2 className="text-2xl text-orange-600" />
+                                <X className="text-2xl text-orange-600" />
                             </div>
                             <h3 className="text-xl font-bold text-orange-700 mb-2">Product Not Found</h3>
                             <p className="text-orange-600 mb-4">
@@ -122,7 +119,7 @@ export default function Verify() {
                                 <div className="lg:col-span-2">
                                     <div className="rounded-xl border border-app bg-app/30 p-6 h-full flex flex-col">
                                         <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold mb-6 self-start ${verified ? 'text-green-700 bg-green-500/10' : 'text-red-700 bg-red-500/10'}`}>
-                                            {verified ? <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label> : <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>}
+                                            {verified ? <label className='flex flex-row justify-center items-center gap-1.5'><Check /> Verified</label> : <label className='flex flex-row justify-center items-center gap-1.5'><X /> Not Verified</label>}
                                         </div>
 
                                         <div className="space-y-5 flex-1">

@@ -1,4 +1,4 @@
-import { FaShieldAlt, FaSearch, FaDatabase, FaCheckCircle, FaExclamationTriangle, FaTimesCircle, FaExternalLinkAlt } from "react-icons/fa";
+import { ShieldCheck, Search, Database, CheckCircle, AlertTriangle, XCircle, ExternalLink } from "lucide-react";
 
 export default function About() {
     return (
@@ -8,7 +8,7 @@ export default function About() {
                 <header className="text-center mb-12" role="banner">
                     <div className="flex justify-center mb-6" aria-hidden="true">
                         <div className="w-16 h-16 rounded-lg flex items-center justify-center" style={{ backgroundColor: "var(--fg)" }}>
-                            <FaShieldAlt className="text-2xl" style={{ color: "var(--bg)" }} />
+                            <ShieldCheck className="text-2xl" style={{ color: "var(--bg)" }} />
                         </div>
                     </div>
                     <h1 className="text-4xl font-bold mb-4">About FDA Product Checker</h1>
@@ -39,28 +39,28 @@ export default function About() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" role="list">
                         <div className="rounded-xl p-6 text-center bg-card border border-app" role="listitem">
                             <div className="flex justify-center mb-4" aria-hidden="true">
-                                <FaSearch className="text-3xl" style={{ color: "var(--muted)" }} />
+                                <Search className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>1. Search</h3>
                             <p className="text-muted">Enter the product name, brand, or registration number you want to verify.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app" role="listitem">
                             <div className="flex justify-center mb-4" aria-hidden="true">
-                                <FaDatabase className="text-3xl" style={{ color: "var(--muted)" }} />
+                                <Database className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>2. Verify</h3>
                             <p className="text-muted">Our AI queries official FDA and business registry databases in real-time.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app" role="listitem">
                             <div className="flex justify-center mb-4" aria-hidden="true">
-                                <FaCheckCircle className="text-3xl" style={{ color: "var(--muted)" }} />
+                                <CheckCircle className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>3. Analyze</h3>
                             <p className="text-muted">AI matches and normalizes data to provide comprehensive verification results.</p>
                         </div>
                         <div className="rounded-xl p-6 text-center bg-card border border-app" role="listitem">
                             <div className="flex justify-center mb-4" aria-hidden="true">
-                                <FaShieldAlt className="text-3xl" style={{ color: "var(--muted)" }} />
+                                <ShieldCheck className="text-3xl" style={{ color: "var(--muted)" }} />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>4. Results</h3>
                             <p className="text-muted">Get instant compliance status with detailed registration and business information.</p>
@@ -74,7 +74,7 @@ export default function About() {
                     <div className="space-y-4" role="list">
                         <div className="bg-green-50 border border-green-200 rounded-xl p-6 flex items-start gap-4" role="listitem">
                             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                                <FaCheckCircle className="text-white text-sm" />
+                                <CheckCircle className="text-white text-sm" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-2">Fully Compliant</h3>
@@ -83,7 +83,7 @@ export default function About() {
                         </div>
                         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 flex items-start gap-4" role="listitem">
                             <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                                <FaExclamationTriangle className="text-white text-sm" />
+                                <AlertTriangle className="text-white text-sm" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-2">Warning</h3>
@@ -92,7 +92,7 @@ export default function About() {
                         </div>
                         <div className="bg-red-50 border border-red-200 rounded-xl p-6 flex items-start gap-4" role="listitem">
                             <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                                <FaTimesCircle className="text-white text-sm" />
+                                <XCircle className="text-white text-sm" />
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-2">Non-Compliant</h3>
@@ -116,7 +116,7 @@ export default function About() {
                             rel="noopener noreferrer"
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
                             aria-label="Visit FDA Philippines verification portal (opens in new tab)">
-                            verification.fda.gov.ph/Businesses <FaExternalLinkAlt className="ml-1 text-xs" />
+                            verification.fda.gov.ph/Businesses <ExternalLink className="ml-1 text-xs" />
                         </a>
                     </div>
                     <div className="rounded-xl p-6 bg-card border border-app" role="region" aria-labelledby="business-registry-heading">
@@ -131,7 +131,7 @@ export default function About() {
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
                             aria-label="Visit Philippine Business Registry (opens in new tab)"
                         >
-                            databank.business.gov.ph <FaExternalLinkAlt className="ml-1 text-xs" />
+                            databank.business.gov.ph <ExternalLink className="ml-1 text-xs" />
                         </a>
                     </div>
                 </section>

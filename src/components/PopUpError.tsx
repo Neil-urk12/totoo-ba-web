@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { FaTimes, FaExclamationTriangle } from 'react-icons/fa'
+import { X, AlertTriangle } from 'lucide-react'
 
 interface PopUpErrorProps {
     isOpen: boolean
@@ -54,12 +54,12 @@ export default function PopUpError({
                     className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
                     aria-label="Close error popup"
                 >
-                    <FaTimes size={20} aria-hidden="true" />
+                    <X size={20} aria-hidden="true" />
                 </button>
 
                 <div className="flex items-center gap-3 mb-4">
                     <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center" aria-hidden="true">
-                        <FaExclamationTriangle className="text-red-600" size={20} />
+                        <AlertTriangle className="text-red-600" size={20} />
                     </div>
                     <h3 id="popup-error-title" className="text-lg font-semibold text-gray-900">
                         {title}

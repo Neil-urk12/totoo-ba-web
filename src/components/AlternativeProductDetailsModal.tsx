@@ -1,4 +1,4 @@
-import { IoClose } from "react-icons/io5";
+import { X } from "lucide-react";
 
 interface AlternativeProductDetailsModalProps {
     open: boolean;
@@ -35,7 +35,7 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
                             onClick={onClose}
                             aria-label="Close modal"
                         >
-                            <IoClose className="w-5 h-5" />
+                            <X className="w-5 h-5" />
                         </button>
                     </div>
 

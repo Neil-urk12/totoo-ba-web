@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaShieldAlt, FaBars, FaTimes } from "react-icons/fa";
+import { ShieldCheck, Menu, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { ThemeToggle } from "../hooks/ThemeToggle";
 
@@ -20,7 +20,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-3 font-bold">
                     <div className="flex items-center justify-center w-8 h-8 rounded" style={{ backgroundColor: "var(--fg)" }}>
-                        <FaShieldAlt className="text-sm" style={{ color: "var(--bg)" }} />
+                        <ShieldCheck className="text-sm" style={{ color: "var(--bg)" }} />
                     </div>
                     <NavLink to={NavData[0].link} className="text-lg" style={{ color: "var(--fg)" }}>Totoo ba ito?</NavLink>
                 </div>
@@ -46,7 +46,7 @@ export default function Navbar() {
                         aria-expanded={isMobileMenuOpen}
                         onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                     >
-                        {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+                        {isMobileMenuOpen ? <X /> : <Menu />}
                     </button>
                 </div>
             </div>
@@ -60,7 +60,7 @@ export default function Navbar() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3 font-bold" style={{ color: "var(--fg)" }}>
                                     <div className="flex items-center justify-center w-8 h-8 rounded" style={{ backgroundColor: "var(--fg)" }}>
-                                        <FaShieldAlt className="text-sm" style={{ color: "var(--bg)" }} />
+                                        <ShieldCheck className="text-sm" style={{ color: "var(--bg)" }} />
                                     </div>
                                     <span className="text-lg">Totoo ba ito?</span>
                                 </div>
@@ -70,7 +70,7 @@ export default function Navbar() {
                                     aria-label="Close menu"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    <FaTimes />
+                                    <X />
                                 </button>
                             </div>
                             <nav className="mt-6 flex flex-col gap-4" style={{ color: "var(--muted)" }}>

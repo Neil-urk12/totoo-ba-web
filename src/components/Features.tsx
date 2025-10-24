@@ -1,32 +1,30 @@
-import { IoShieldCheckmarkOutline } from "react-icons/io5";
-import { FaRegBuilding } from "react-icons/fa";
-import { PiLightning } from "react-icons/pi";
-import { IoIosWarning } from "react-icons/io";
+import { memo } from 'react'
+import { ShieldCheck, Building2, Zap, AlertTriangle } from "lucide-react";
 
 const items = [
     {
         title: 'FDA Registration Verification',
         desc: 'Instantly verify if products are registered with FDA Philippines and check registration validity.',
-        icon: <IoShieldCheckmarkOutline />,
+        icon: <ShieldCheck />,
     },
     {
         title: 'Business Legitimacy Check',
         desc: 'Cross-reference with the official Business Name Registry to confirm manufacturer legitimacy.',
-        icon: <FaRegBuilding />,
+        icon: <Building2 />,
     },
     {
         title: 'AI-Powered Matching',
         desc: 'Advanced AI algorithms match and normalize data across multiple databases for accurate results.',
-        icon: <PiLightning />,
+        icon: <Zap />,
     },
     {
         title: 'Counterfeit Detection',
         desc: 'Get instant warnings about unregistered products and suspicious business entities.',
-        icon: <IoIosWarning />,
+        icon: <AlertTriangle />,
     },
 ]
 
-export default function Features() {
+const Features = memo(function Features() {
     return (
         <section className="px-4" role="region" aria-labelledby="features-heading">
             <h2 id="features-heading" className="text-center text-3xl md:text-4xl font-bold mt-6 mb-2">Comprehensive Product Verification</h2>
@@ -46,6 +44,8 @@ export default function Features() {
             </div>
         </section>
     )
-}
+});
+
+export default Features
 
 
