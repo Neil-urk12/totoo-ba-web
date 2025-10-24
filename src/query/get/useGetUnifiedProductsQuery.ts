@@ -1,5 +1,5 @@
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { createSupabaseClient } from "../../db/supabaseClient";
+import { supabase } from "../../db/supabaseClient";
 import type { UnifiedProduct, UnifiedProductsResponse } from "../../types/UnifiedProduct";
 
 /**
@@ -34,7 +34,6 @@ const fetchUnifiedProducts = async (
   page: number = 0, 
   searchQuery?: string
 ): Promise<UnifiedProductsResponse> => {
-  const supabase = createSupabaseClient();
   const sanitizedSearchQuery = validateAndSanitizeSearchQuery(searchQuery);
   const startIndex = page * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE - 1;

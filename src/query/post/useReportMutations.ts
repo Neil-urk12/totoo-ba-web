@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createSupabaseClient } from '../../db/supabaseClient';
+import { supabase } from '../../db/supabaseClient';
 
 
 type ReportData = {
@@ -14,7 +14,6 @@ type ReportData = {
 
 export const useReportMutation = () => {
   const queryClient = useQueryClient();
-  const supabase = createSupabaseClient();
 
   return useMutation({
     mutationFn: async (reportData: ReportData) => {
