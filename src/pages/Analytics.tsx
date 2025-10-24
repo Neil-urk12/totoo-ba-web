@@ -1,4 +1,6 @@
-import { Package, Building2, BarChart3, Clock, AlertTriangle, TrendingDown, TrendingUp } from 'lucide-react';
+import { FaBox, FaBuilding, FaChartBar, FaClock, FaExclamationTriangle } from 'react-icons/fa';
+import { HiArrowDownRight } from "react-icons/hi2";
+import { HiArrowUpRight } from "react-icons/hi2";
 
 // Mock data for analytics
 const mockAnalyticsData = {
@@ -49,8 +51,8 @@ function MetricCard({ title, value, trend, trendValue, icon, trendType = 'positi
     };
 
     const getTrendIcon = () => {
-        if (trendType === 'positive') return <TrendingUp aria-hidden="true" />;
-        if (trendType === 'negative') return <TrendingDown aria-hidden="true" />;
+        if (trendType === 'positive') return <HiArrowDownRight aria-hidden="true" />;
+        if (trendType === 'negative') return <HiArrowUpRight aria-hidden="true" />;
         return '';
     };
 
@@ -80,8 +82,8 @@ function CategoryBar({ name, count, trend }: { name: string; count: number; tren
     const percentage = (count / maxCount) * 100;
 
     const getTrendIcon = () => {
-        if (trend === 'up') return <span className="text-green-600"><TrendingUp /></span>;
-        if (trend === 'down') return <span className="text-red-600"><TrendingDown /></span>;
+        if (trend === 'up') return <span className="text-green-600"><HiArrowDownRight /></span>;
+        if (trend === 'down') return <span className="text-red-600"><HiArrowUpRight /></span>;
         return null;
     };
 
@@ -168,42 +170,42 @@ export default function Analytics() {
                         title="Total Products"
                         value={mockAnalyticsData.totalProducts.toLocaleString()}
                         trend="+12% from last month"
-                        icon={<Package className="text-xl" />}
+                        icon={<FaChartBar className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Verified Today"
                         value={mockAnalyticsData.verifiedToday.toLocaleString()}
                         trend="+8% from yesterday"
-                        icon={<Clock className="text-xl" />}
+                        icon={<FaClock className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Compliance Rate"
                         value={`${mockAnalyticsData.complianceRate}%`}
                         trend="+2.3% from last quarter"
-                        icon={<BarChart3 className="text-xl" />}
+                        icon={<FaBox className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Businesses"
                         value={mockAnalyticsData.activeBusinesses.toLocaleString()}
                         trend="+5% from last month"
-                        icon={<Building2 className="text-xl" />}
+                        icon={<FaBuilding className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Recalls"
                         value={mockAnalyticsData.activeRecalls}
                         trend="+3 from last week"
-                        icon={<AlertTriangle className="text-xl" />}
+                        icon={<FaExclamationTriangle className="text-xl" />}
                         trendType="negative"
                     />
                     <MetricCard
                         title="Expiring Soon"
                         value={mockAnalyticsData.expiringSoon}
                         trend="Within 30 days"
-                        icon={<AlertTriangle className="text-xl" />}
+                        icon={<FaExclamationTriangle className="text-xl" />}
                         trendType="neutral"
                     />
                 </div>
