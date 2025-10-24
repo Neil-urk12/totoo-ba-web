@@ -1,6 +1,38 @@
+/**
+ * Image Verification Loader Component
+ * 
+ * A full-screen loading overlay displayed during image verification.
+ * Shows animated progress through three stages: uploading, analyzing,
+ * and matching with the FDA database.
+ * 
+ * Features:
+ * - Three-stage progress visualization
+ * - Animated icons that change per stage
+ * - Pulsing background animation
+ * - Rotating spinner border
+ * - Sliding progress bar
+ * - Stage indicator dots
+ * - Backdrop blur effect
+ * - Accessible ARIA attributes
+ * 
+ * Stages:
+ * 1. Uploading: Shows camera icon
+ * 2. Analyzing: Shows search icon
+ * 3. Matching: Shows check circle icon
+ * 
+ * @component
+ * @returns {JSX.Element} A full-screen loading modal
+ * 
+ * @example
+ * {isUploading && <ImageVerificationLoader />}
+ */
 import { Camera, Search, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
+/**
+ * Type definition for loading stages
+ * @typedef {'uploading' | 'analyzing' | 'matching'} LoadingStage
+ */
 type LoadingStage = 'uploading' | 'analyzing' | 'matching';
 
 export default function ImageVerificationLoader() {
@@ -17,6 +49,10 @@ export default function ImageVerificationLoader() {
         };
     }, []);
 
+    /**
+     * Returns the appropriate icon for the current loading stage
+     * @returns {JSX.Element} The icon component for the current stage
+     */
     const getStageIcon = () => {
         switch (stage) {
             case 'uploading':
@@ -30,6 +66,10 @@ export default function ImageVerificationLoader() {
         }
     };
 
+    /**
+     * Returns the appropriate text description for the current loading stage
+     * @returns {string} The text description for the current stage
+     */
     const getStageText = () => {
         switch (stage) {
             case 'uploading':

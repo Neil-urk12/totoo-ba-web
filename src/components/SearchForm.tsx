@@ -1,3 +1,26 @@
+/**
+ * Search Form Component
+ * 
+ * The main product verification form on the homepage. Supports two verification
+ * methods: text search (by registration number or product name) and image upload
+ * (AI-powered image verification).
+ * 
+ * Features:
+ * - Dual verification methods (text search and image upload)
+ * - Category filtering for text search
+ * - Image file upload with preview
+ * - Loading states for both methods
+ * - Error handling with popup notifications
+ * - Form validation
+ * - Navigation to verification results page
+ * - Accessible ARIA attributes
+ * 
+ * @component
+ * @returns {JSX.Element} The product verification search form
+ * 
+ * @example
+ * <SearchForm />
+ */
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePostVerifyImage } from '../query/post/usePostVerifyImage'
@@ -19,14 +42,28 @@ export default function SearchForm() {
     const navigate = useNavigate()
     const verifyImageMutation = usePostVerifyImage()
 
+    /**
+     * Shows an error popup with the specified message
+     * @param {string} message - The error message to display
+     * @returns {void}
+     */
     const showError = (message: string) => {
         setErrorPopup({ isOpen: true, message })
     }
 
+    /**
+     * Closes the error popup
+     * @returns {void}
+     */
     const closeError = () => {
         setErrorPopup({ isOpen: false, message: '' })
     }
 
+    /**
+     * Handles file input change event
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The change event
+     * @returns {void}
+     */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
@@ -34,6 +71,12 @@ export default function SearchForm() {
         }
     }
 
+    /**
+     * Handles form submission for both text and image verification
+     * Routes to appropriate verification endpoint with search parameters
+     * @param {React.FormEvent} e - The form submit event
+     * @returns {Promise<void>}
+     */
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 

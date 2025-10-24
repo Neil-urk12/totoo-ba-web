@@ -1,3 +1,25 @@
+/**
+ * Route Loading Spinner Component
+ * 
+ * A loading spinner specifically designed for route transitions.
+ * Displays a smaller, centered spinner with loading text, suitable
+ * for showing while lazy-loaded route components are being fetched.
+ * 
+ * Features:
+ * - Animated spinner with blue color scheme
+ * - "Loading page..." text indicator
+ * - Vertical centering with padding
+ * - Dark mode support
+ * - Accessible ARIA attributes
+ * 
+ * @component
+ * @returns {JSX.Element} A route loading spinner with text
+ * 
+ * @example
+ * <Suspense fallback={<RouteLoadingSpinner />}>
+ *   <LazyRoute />
+ * </Suspense>
+ */
 const RouteLoadingSpinner = () => {
   return (
     <div className="flex items-center justify-center py-12" role="status" aria-label="Loading page">

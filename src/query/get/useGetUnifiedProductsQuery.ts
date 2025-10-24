@@ -1,11 +1,33 @@
+/**
+ * Unified Products Query Hook
+ * 
+ * React Query hooks for fetching products from the unified_products database view.
+ * This view combines food_products and drug_products tables into a single normalized
+ * structure for efficient querying and display.
+ * 
+ * The unified approach replaces the previous multi-query strategy, reducing from
+ * 4 separate queries to 1 optimized query per request.
+ * 
+ * @module useGetUnifiedProductsQuery
+ */
+
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
 import type { UnifiedProduct, UnifiedProductsResponse } from "../../types/UnifiedProduct";
 
 /**
  * Validates and sanitizes search query input
- * @param searchQuery - Raw search query string
- * @returns Sanitized search query or null if invalid
+ * 
+ * Ensures the search query is a valid string with minimum length requirements.
+ * This prevents unnecessary database queries and potential injection issues.
+ * 
+ * @param {string} [searchQuery] - Raw search query string from user input
+ * @returns {string | null} Sanitized search query or null if invalid
+ * 
+ * @example
+ * validateAndSanitizeSearchQuery("  Aspirin  ") // Returns "Aspirin"
+ * validateAndSanitizeSearchQuery("A") // Returns null (too short)
+ * validateAndSanitizeSearchQuery("") // Returns null (empty)
  */
 const validateAndSanitizeSearchQuery = (searchQuery?: string): string | null => {
   if (!searchQuery || typeof searchQuery !== 'string') {
@@ -23,11 +45,37 @@ const validateAndSanitizeSearchQuery = (searchQuery?: string): string | null => 
   return trimmed;
 };
 
+/**
+ * Number of items to fetch per page
+ * @constant {number}
+ */
 const ITEMS_PER_PAGE = 30;
 
 /**
- * Optimized fetch function using the unified_products view
- * This replaces the previous 4-query approach with a single query
+ * Fetches unified products from the database
+ * 
+ * Optimized fetch function using the unified_products view. This single query
+ * replaces the previous approach that required 4 separate queries (2 for counts,
+ * 2 for data) when fetching from both food and drug tables.
+ * 
+ * Features:
+ * - Single database query for all cases
+ * - Category filtering (Food/Drugs)
+ * - Full-text search support
+ * - Server-side pagination
+ * - Sorted results by product name
+ * 
+ * @async
+ * @param {string} [category] - Filter by category ('Food', 'Drugs', or 'All Categories')
+ * @param {number} [page=0] - Page number (0-indexed)
+ * @param {string} [searchQuery] - Search term for full-text search
+ * @returns {Promise<UnifiedProductsResponse>} Paginated products with metadata
+ * @throws {Error} If the database query fails
+ * 
+ * @example
+ * const response = await fetchUnifiedProducts('Food', 0, 'vitamin');
+ * console.log(response.data); // Array of UnifiedProduct objects
+ * console.log(response.hasMore); // true if more pages available
  */
 const fetchUnifiedProducts = async (
   category?: string, 
@@ -83,7 +131,27 @@ const fetchUnifiedProducts = async (
 
 /**
  * React Query infinite query hook for unified products
- * This is the main hook to use in components
+ * 
+ * This is the main hook for components that need infinite scroll or
+ * "load more" functionality. It automatically handles pagination and
+ * appends new pages to the existing data.
+ * 
+ * @param {string} [category] - Filter by category ('Food', 'Drugs', or 'All Categories')
+ * @param {string} [searchQuery] - Search term for filtering products
+ * @returns {UseInfiniteQueryResult} React Query infinite query result
+ * @property {Array<UnifiedProductsResponse>} data.pages - Array of page responses
+ * @property {Function} fetchNextPage - Function to load the next page
+ * @property {boolean} hasNextPage - Whether more pages are available
+ * @property {boolean} isFetchingNextPage - Whether next page is loading
+ * 
+ * @example
+ * const { data, fetchNextPage, hasNextPage } = useGetUnifiedProductsInfiniteQuery('Food', 'vitamin');
+ * 
+ * // Render products from all pages
+ * data?.pages.map(page => page.data.map(product => <ProductCard key={product.id} product={product} />))
+ * 
+ * // Load more button
+ * {hasNextPage && <button onClick={() => fetchNextPage()}>Load More</button>}
  */
 export const useGetUnifiedProductsInfiniteQuery = (category?: string, searchQuery?: string) => {
   return useInfiniteQuery({
@@ -100,6 +168,17 @@ export const useGetUnifiedProductsInfiniteQuery = (category?: string, searchQuer
 
 /**
  * React Query single page query for unified products
+ * 
+ * Returns query options for fetching a single page of products.
+ * Use with useQuery() for standard pagination.
+ * 
+ * @param {string} [category] - Filter by category
+ * @param {number} [page=0] - Page number (0-indexed)
+ * @param {string} [searchQuery] - Search term
+ * @returns {QueryOptions} React Query options object
+ * 
+ * @example
+ * const { data, isLoading } = useQuery(useGetUnifiedProductsQuery('Food', 0, 'vitamin'));
  */
 export const useGetUnifiedProductsQuery = (category?: string, page: number = 0, searchQuery?: string) => {
   return queryOptions({
@@ -114,12 +193,27 @@ export const useGetUnifiedProductsQuery = (category?: string, page: number = 0, 
 };
 
 /**
- * Convenience hooks for specific categories
+ * Convenience hook for fetching food products only
+ * 
+ * @param {string} [searchQuery] - Search term
+ * @returns {QueryOptions} React Query options for food products
+ * 
+ * @example
+ * const { data } = useQuery(useGetUnifiedFoodProductsQuery('vitamin'));
  */
 export const useGetUnifiedFoodProductsQuery = (searchQuery?: string) => {
   return useGetUnifiedProductsQuery('Food', 0, searchQuery);
 };
 
+/**
+ * Convenience hook for fetching drug products only
+ * 
+ * @param {string} [searchQuery] - Search term
+ * @returns {QueryOptions} React Query options for drug products
+ * 
+ * @example
+ * const { data } = useQuery(useGetUnifiedDrugProductsQuery('aspirin'));
+ */
 export const useGetUnifiedDrugProductsQuery = (searchQuery?: string) => {
   return useGetUnifiedProductsQuery('Drugs', 0, searchQuery);
 };
