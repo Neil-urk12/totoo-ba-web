@@ -1,6 +1,37 @@
+/**
+ * Generic Error Fallback Component
+ * 
+ * A reusable error fallback UI component used by ErrorBoundary.
+ * Displays a styled error message with an icon and a retry button.
+ * 
+ * Features:
+ * - Alert triangle icon
+ * - Customizable title and message
+ * - Displays actual error message if available
+ * - "Try Again" button to reset error state
+ * - Red color scheme for errors
+ * - Accessible focus management
+ * 
+ * @component
+ * @param {GenericErrorFallbackProps} props - Component props
+ * @returns {JSX.Element} An error fallback UI
+ * 
+ * @example
+ * <ErrorBoundary fallback={GenericErrorFallback}>
+ *   <MyComponent />
+ * </ErrorBoundary>
+ */
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
+/**
+ * Props interface for GenericErrorFallback component
+ * @interface GenericErrorFallbackProps
+ * @property {Error | null} error - The error object that was caught
+ * @property {Function} resetError - Callback to reset the error state
+ * @property {string} [title] - Optional custom error title
+ * @property {string} [message] - Optional custom error message
+ */
 interface GenericErrorFallbackProps {
   error: Error | null;
   resetError: () => void;

@@ -1,3 +1,21 @@
+/**
+ * Footer Component
+ * 
+ * Application footer displaying copyright information and external links
+ * to official government resources (FDA Philippines and Business Registry).
+ * 
+ * Features:
+ * - Copyright notice
+ * - External links with proper accessibility attributes
+ * - Responsive layout
+ * - ARIA labels for screen readers
+ * 
+ * @component
+ * @returns {JSX.Element} The application footer
+ * 
+ * @example
+ * <Footer />
+ */
 export default function Footer() {
     return (
         <footer className="border-t mt-10 border-app" role="contentinfo">

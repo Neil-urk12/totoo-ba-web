@@ -1,4 +1,24 @@
+/**
+ * Notice Component
+ * 
+ * Displays an important warning notice to users about the limitations
+ * and proper use of the verification tool. Styled as an alert with
+ * warning colors and an icon.
+ * 
+ * Features:
+ * - Warning icon from lucide-react
+ * - Amber/yellow color scheme for warnings
+ * - Accessible ARIA attributes
+ * - Responsive layout
+ * 
+ * @component
+ * @returns {JSX.Element} An important notice alert box
+ * 
+ * @example
+ * <Notice />
+ */
 import { AlertTriangle } from "lucide-react";
+
 export default function Notice() {
     return (
         <section className="flex justify-center" role="region" aria-labelledby="notice-heading">

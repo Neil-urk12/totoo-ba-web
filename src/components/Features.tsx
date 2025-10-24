@@ -1,6 +1,30 @@
+/**
+ * Features Component
+ * 
+ * Displays the key features of the FDA Product Checker application
+ * in a grid layout. Each feature includes an icon, title, and description.
+ * Memoized for performance optimization.
+ * 
+ * Features displayed:
+ * - FDA Registration Verification
+ * - Business Legitimacy Check
+ * - AI-Powered Matching
+ * - Counterfeit Detection
+ * 
+ * @component
+ * @returns {JSX.Element} A grid of feature cards
+ * 
+ * @example
+ * <Features />
+ */
 import { memo } from 'react'
 import { ShieldCheck, Building2, Zap, AlertTriangle } from "lucide-react";
 
+/**
+ * Feature items configuration
+ * Each item contains a title, description, and icon component
+ * @constant {Array<{title: string, desc: string, icon: JSX.Element}>}
+ */
 const items = [
     {
         title: 'FDA Registration Verification',

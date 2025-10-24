@@ -1,3 +1,12 @@
+/**
+ * Main Application Component
+ * 
+ * This is the root component of the FDA Product Checker application.
+ * It provides the main layout structure including navigation, content area,
+ * and footer. It also handles conditional rendering of homepage components
+ * and implements lazy loading for performance optimization.
+ */
+
 import { lazy, Suspense } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -12,6 +21,31 @@ const SearchForm = lazy(() => import('./components/SearchForm'))
 const Features = lazy(() => import('./components/Features'))
 const Notice = lazy(() => import('./components/Notice'))
 
+/**
+ * App Component
+ * 
+ * The main application component that serves as the layout wrapper for all pages.
+ * It conditionally renders homepage-specific components when on the root path
+ * and uses React Router's Outlet for nested routes.
+ * 
+ * Features:
+ * - Responsive layout with flexbox
+ * - Dark mode support via CSS variables
+ * - Lazy loading of homepage components
+ * - Error boundaries for graceful error handling
+ * - Suspense boundaries for loading states
+ * - Accessibility attributes (ARIA roles)
+ * 
+ * @component
+ * @returns {JSX.Element} The main application layout
+ * 
+ * @example
+ * // Used in main.tsx as the root route component
+ * <Route path="/" element={<App />}>
+ *   <Route path="products" element={<Products />} />
+ *   <Route path="verify" element={<Verify />} />
+ * </Route>
+ */
 function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';

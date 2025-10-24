@@ -1,3 +1,23 @@
+/**
+ * Hero Component
+ * 
+ * The main hero section displayed on the homepage. Features a large
+ * headline, descriptive text, and key feature badges. Memoized for
+ * performance optimization.
+ * 
+ * Features:
+ * - Large, attention-grabbing headline
+ * - Descriptive subtitle
+ * - Three feature badges with status indicators
+ * - Responsive typography (scales on mobile/desktop)
+ * - Memoized to prevent unnecessary re-renders
+ * 
+ * @component
+ * @returns {JSX.Element} The hero section of the homepage
+ * 
+ * @example
+ * <Hero />
+ */
 import { memo } from 'react'
 
 const Hero = memo(function Hero() {

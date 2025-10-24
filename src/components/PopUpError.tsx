@@ -1,6 +1,45 @@
+/**
+ * Pop-up Error Modal Component
+ * 
+ * A modal dialog that displays error messages to users. Can be configured
+ * to auto-close after a specified delay or remain open until manually closed.
+ * 
+ * Features:
+ * - Modal overlay with backdrop blur
+ * - Alert triangle icon
+ * - Customizable title and message
+ * - Auto-close functionality with configurable delay
+ * - Close button (X) in top-right corner
+ * - OK button to dismiss
+ * - Prevents body scroll when open
+ * - Accessible ARIA attributes
+ * 
+ * @component
+ * @param {PopUpErrorProps} props - Component props
+ * @returns {JSX.Element | null} Error modal or null if not open
+ * 
+ * @example
+ * <PopUpError
+ *   isOpen={isErrorOpen}
+ *   onClose={() => setIsErrorOpen(false)}
+ *   message="Failed to load data"
+ *   autoClose={true}
+ *   autoCloseDelay={5000}
+ * />
+ */
 import { useEffect } from 'react'
 import { X, AlertTriangle } from 'lucide-react'
 
+/**
+ * Props interface for PopUpError component
+ * @interface PopUpErrorProps
+ * @property {boolean} isOpen - Whether the modal is open
+ * @property {Function} onClose - Callback to close the modal
+ * @property {string} [title] - Optional custom error title (default: "Error")
+ * @property {string} message - The error message to display
+ * @property {boolean} [autoClose] - Whether to auto-close the modal (default: false)
+ * @property {number} [autoCloseDelay] - Delay in ms before auto-closing (default: 5000)
+ */
 interface PopUpErrorProps {
     isOpen: boolean
     onClose: () => void

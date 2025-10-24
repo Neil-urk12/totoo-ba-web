@@ -1,7 +1,36 @@
+/**
+ * Product Card Component
+ * 
+ * Displays a product in either grid or list view with verification status,
+ * category, and basic information. Includes a modal for viewing full details.
+ * 
+ * Features:
+ * - Two view modes: grid and list
+ * - Verification status badge with icon
+ * - Product information display
+ * - "View details" button with eye icon
+ * - Modal popup for full product details
+ * - Responsive design
+ * - Hover effects
+ * - Accessible ARIA attributes
+ * 
+ * @component
+ * @param {ProductCardProps} props - Component props
+ * @returns {JSX.Element} A product card with optional modal
+ * 
+ * @example
+ * <ProductCard product={productData} viewMode="grid" />
+ */
 import { useState } from "react";
 import { Check, X, Eye } from "lucide-react";
 import ProductCardDetailsModal from "./ProductCardDetailsModal";
 
+/**
+ * Props interface for ProductCard component
+ * @interface ProductCardProps
+ * @property {Object} product - The product data to display
+ * @property {'grid' | 'list'} [viewMode] - Display mode (default: 'grid')
+ */
 interface ProductCardProps {
     product: {
         id: string;
@@ -21,6 +50,10 @@ interface ProductCardProps {
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
     const [showModal, setShowModal] = useState(false);
 
+    /**
+     * Returns the appropriate icon for the product's verification status
+     * @returns {JSX.Element} Check icon for verified, X icon for not verified
+     */
     const getStatusIcon = () => {
         if (product.status === 'verified') {
             return <Check className="w-3 h-3" />;
@@ -28,6 +61,10 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         return <X className="w-3 h-3" />;
     };
 
+    /**
+     * Returns the appropriate CSS classes for the status badge color
+     * @returns {string} CSS classes for badge styling
+     */
     const getStatusColor = () => {
         return product.status === 'verified' ? 'bg-verified text-verified' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
     };

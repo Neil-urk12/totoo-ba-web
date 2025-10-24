@@ -1,8 +1,34 @@
+/**
+ * Navbar Component
+ * 
+ * The main navigation bar for the application. Provides navigation links,
+ * theme toggle, and a mobile-responsive menu. Sticky positioned at the top
+ * of the viewport.
+ * 
+ * Features:
+ * - Sticky header that stays at top during scroll
+ * - Desktop navigation with hover effects
+ * - Mobile hamburger menu with slide-out panel
+ * - Theme toggle button (light/dark mode)
+ * - Active route highlighting
+ * - Backdrop overlay for mobile menu
+ * - Accessible ARIA attributes
+ * 
+ * @component
+ * @returns {JSX.Element} The application navigation bar
+ * 
+ * @example
+ * <Navbar />
+ */
 import { useState } from "react";
 import { ShieldCheck, Menu, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { ThemeToggle } from "../hooks/ThemeToggle";
 
+/**
+ * Navigation links configuration
+ * @constant {Array<{label: string, link: string}>}
+ */
 const NavData = [
     { label: "Home", link: "/" },
     { label: "Products", link: "/products" },
