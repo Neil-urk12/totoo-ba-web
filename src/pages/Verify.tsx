@@ -40,41 +40,16 @@ export default function Verify() {
                 </button>
             </div>
 
-            <div className="rounded-2xl p-6 sm:p-8 bg-card border border-app shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Verification</h1>
-                        <p className="text-muted mt-1">
-                            {imageVerificationResult ? 'Image Analysis' : `Search: ${q || '—'}`}
-                        </p>
-                    </div>
-                    {imageVerificationResult ? (
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${imageVerificationResult.verification_status === 'verified'
-                            ? 'bg-green-500/10 text-green-600 border-green-500/30'
-                            : imageVerificationResult.verification_status === 'uncertain'
-                                ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30'
-                                : 'bg-red-500/10 text-red-600 border-red-500/30'
-                            }`}>
-                            {imageVerificationResult.verification_status === 'verified' ? (
-                                <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label>
-                            ) : imageVerificationResult.verification_status === 'uncertain' ? (
-                                <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Uncertain</label>
-                            ) : (
-                                <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>
-                            )}
-                        </div>
-                    ) : q && (
-                        <div
-                            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border ${data ? (verified ? 'bg-green-500/10 text-green-600 border-green-500/30' : 'bg-red-500/10 text-red-600 border-red-500/30') : 'bg-app/40 text-muted border-app'
-                                }`}
-                        >
-                            {data ? (verified ? <label className='flex flex-row justify-center items-center gap-1.5'><FaCheck /> Verified</label> : <label className='flex flex-row justify-center items-center gap-1.5'><RxCross2 /> Not Verified</label>) : 'Pending'}
-                        </div>
-                    )}
+            <div className="rounded-2xl p-6 sm:p-7 bg-card border border-app shadow-sm">
+                <div>
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Verification</h1>
+                    <p className="text-muted mt-1">
+                        {imageVerificationResult ? 'Image Analysis' : `Search: ${q || '—'}`}
+                    </p>
                 </div>
 
                 {!q && !imageVerificationResult && (
-                    <div className="mt-8 rounded-xl border border-dashed border-app/70 p-8 text-center">
+                    <div className="mt-6 rounded-xl border border-dashed border-app/70 p-8 text-center">
                         <div className="mx-auto mb-2 h-10 w-10 rounded-full bg-app/40 flex items-center justify-center"><FaSearch /></div>
                         <div className="font-semibold">No query provided</div>
                         <div className="text-sm text-muted mt-1">Use the search to verify a product.</div>
@@ -82,25 +57,25 @@ export default function Verify() {
                 )}
 
                 {imageVerificationResult && (
-                    <div className="mt-8">
+                    <div className="mt-6">
                         <ImageVerificationResult data={imageVerificationResult} />
                     </div>
                 )}
 
                 {q && !imageVerificationResult && (isLoading || isFetching) && (
-                    <div className="mt-8 flex flex-col justify-center items-center py-12">
+                    <div className="mt-6 flex flex-col justify-center items-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600/30 border-t-gray-600"></div>
                     </div>
                 )}
 
                 {q && !imageVerificationResult && isError && (
-                    <div className="mt-8 rounded-xl border border-red-500/30 bg-red-500/10 text-red-700 p-4">
+                    <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 text-red-700 p-4">
                         {(error as Error)?.message || 'Something went wrong.'}
                     </div>
                 )}
 
                 {q && !imageVerificationResult && data && data.message && data.message.includes("not found in FDA database") && (
-                    <div className="mt-8">
+                    <div className="mt-6">
                         <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-8 text-center">
                             <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-orange-500/20 flex items-center justify-center">
                                 <RxCross2 className="text-2xl text-orange-600" />
@@ -130,7 +105,7 @@ export default function Verify() {
                 )}
 
                 {q && !imageVerificationResult && data && (!data.message || !data.message.includes("not found in FDA database")) && (
-                    <div className="mt-8">
+                    <div className="mt-6">
                         {/* Check if it's a food industry verification */}
                         {data.details?.verified_product?.type === 'food_industry' ? (
                             <FoodIndustryVerification data={data} />
