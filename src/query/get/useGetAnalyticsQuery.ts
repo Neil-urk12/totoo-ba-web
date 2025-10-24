@@ -56,14 +56,13 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   // Get unique companies/manufacturers
   const [foodCompaniesResult, drugCompaniesResult] = await Promise.all([
     supabase.from('food_products').select('company_name').not('company_name', 'is', null),
-    supabase.from('drug_products').select('company_name, manufacturer').not('company_name', 'is', null)
+    supabase.from('drug_products').select('manufacturer').not('manufacturer', 'is', null)
   ]);
 
   const foodCompanies = new Set(foodCompaniesResult.data?.map(p => p.company_name) || []);
-  const drugCompanies = new Set([
-    ...(drugCompaniesResult.data?.map(p => p.company_name).filter(Boolean) || []),
-    ...(drugCompaniesResult.data?.map(p => p.manufacturer).filter(Boolean) || [])
-  ]);
+  const drugCompanies = new Set(
+    drugCompaniesResult.data?.map(p => p.manufacturer).filter(Boolean) || []
+  );
   
   const activeBusinesses = foodCompanies.size + drugCompanies.size;
 
@@ -99,7 +98,7 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   // Get top manufacturers by product count
   const [topFoodManufacturersResult, topDrugManufacturersResult] = await Promise.all([
     supabase.from('food_products').select('company_name').not('company_name', 'is', null),
-    supabase.from('drug_products').select('company_name, manufacturer').not('company_name', 'is', null)
+    supabase.from('drug_products').select('manufacturer').not('manufacturer', 'is', null)
   ]);
 
   // Count products per manufacturer
@@ -115,7 +114,7 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
 
   // Count drug products
   topDrugManufacturersResult.data?.forEach(product => {
-    const manufacturer = product.company_name || product.manufacturer;
+    const manufacturer = product.manufacturer;
     if (manufacturer) {
       manufacturerCounts[manufacturer] = (manufacturerCounts[manufacturer] || 0) + 1;
     }
@@ -135,7 +134,7 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   // Generate recent activity based on recent products
   const [recentFoodResult, recentDrugResult] = await Promise.all([
     supabase.from('food_products').select('product_name, issuance_date, company_name').order('issuance_date', { ascending: false }).limit(5),
-    supabase.from('drug_products').select('brand_name, issuance_date, company_name').order('issuance_date', { ascending: false }).limit(3)
+    supabase.from('drug_products').select('brand_name, issuance_date, manufacturer').order('issuance_date', { ascending: false }).limit(3)
   ]);
 
   const recentActivity = [

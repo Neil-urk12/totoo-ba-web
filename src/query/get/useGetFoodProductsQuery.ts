@@ -19,7 +19,6 @@ export type DrugProduct = {
   brand_name?: string | null;
   generic_name?: string | null;
   manufacturer?: string | null;
-  company_name?: string | null;
   issuance_date?: string | null;
   expiry_date?: string | null;
   search_vector?: string | null; // Full-text search vector

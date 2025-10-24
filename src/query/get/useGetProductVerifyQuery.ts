@@ -27,7 +27,6 @@ interface DrugProduct {
   brand_name?: string | null;
   generic_name?: string | null;
   manufacturer?: string | null;
-  company_name?: string | null;
   issuance_date?: string | null;
   expiry_date?: string | null;
 }
@@ -145,7 +144,7 @@ const buildResponse = ({
         id: row.id || undefined,
         brand_name: row.brand_name || null,
         generic_name: row.generic_name || null,
-        manufacturer: row.manufacturer || row.company_name || null,
+        manufacturer: row.manufacturer || null,
         registration_number: row.registration_number || null,
         type: 'drug',
         matched_fields: [],
@@ -154,7 +153,7 @@ const buildResponse = ({
       base.details.product_info = {
         id: row.id || undefined,
         product_name: row.brand_name || row.generic_name || null,
-        company_name: row.manufacturer || row.company_name || null,
+        company_name: row.manufacturer || null,
         registration_number: row.registration_number || null,
         type: 'drug',
         matched_fields: [],
@@ -215,7 +214,7 @@ const buildResponse = ({
       type: 'drug',
       registration_number: d.registration_number,
       product_name: d.brand_name || d.generic_name || 'Unknown',
-      company_name: d.manufacturer || d.company_name || '—',
+      company_name: d.manufacturer || '—',
       brand_name: d.brand_name || null,
       issuance_date: d.issuance_date || null,
       expiry_date: d.expiry_date || null,
