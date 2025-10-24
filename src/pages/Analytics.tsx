@@ -23,8 +23,8 @@ function MetricCard({ title, value, trend, trendValue, icon, trendType = 'positi
     };
 
     const getTrendIcon = () => {
-        if (trendType === 'positive') return <HiArrowDownRight aria-hidden="true" />;
-        if (trendType === 'negative') return <HiArrowUpRight aria-hidden="true" />;
+        if (trendType === 'positive') return <HiArrowUpRight aria-hidden="true" />;
+        if (trendType === 'negative') return <HiArrowDownRight aria-hidden="true" />;
         return '';
     };
 
@@ -53,8 +53,8 @@ function CategoryBar({ name, count, trend, maxCount }: { name: string; count: nu
     const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
     const getTrendIcon = () => {
-        if (trend === 'up') return <span className="text-green-600"><HiArrowDownRight /></span>;
-        if (trend === 'down') return <span className="text-red-600"><HiArrowUpRight /></span>;
+        if (trend === 'up') return <span className="text-green-600"><HiArrowUpRight /></span>;
+        if (trend === 'down') return <span className="text-red-600"><HiArrowDownRight /></span>;
         return null;
     };
 
