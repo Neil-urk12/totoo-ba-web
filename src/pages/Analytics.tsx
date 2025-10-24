@@ -3,7 +3,6 @@ import { HiArrowDownRight } from "react-icons/hi2";
 import { HiArrowUpRight } from "react-icons/hi2";
 import { useQuery } from "@tanstack/react-query";
 import { useGetAnalyticsQuery } from "../query/get/useGetAnalyticsQuery";
-import { useSearchTracking } from "../hooks/useSearchTracking";
 
 type MetricCardProps = {
     title: string;
@@ -117,8 +116,7 @@ function ComplianceBar({ rate }: { rate: number }) {
 }
 
 export default function Analytics() {
-    const { searchCount } = useSearchTracking();
-    const { data: analyticsData, isLoading, error } = useQuery(useGetAnalyticsQuery(searchCount));
+    const { data: analyticsData, isLoading, error } = useQuery(useGetAnalyticsQuery());
 
     if (isLoading) {
         return (
