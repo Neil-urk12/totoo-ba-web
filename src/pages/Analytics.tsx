@@ -23,8 +23,8 @@ function MetricCard({ title, value, trend, trendValue, icon, trendType = 'positi
     };
 
     const getTrendIcon = () => {
-        if (trendType === 'positive') return <TrendingUp aria-hidden="true" />;
-        if (trendType === 'negative') return <TrendingDown aria-hidden="true" />;
+        if (trendType === 'positive') return <HiArrowDownRight aria-hidden="true" />;
+        if (trendType === 'negative') return <HiArrowUpRight aria-hidden="true" />;
         return '';
     };
 
@@ -53,8 +53,8 @@ function CategoryBar({ name, count, trend, maxCount }: { name: string; count: nu
     const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
     const getTrendIcon = () => {
-        if (trend === 'up') return <span className="text-green-600"><TrendingUp /></span>;
-        if (trend === 'down') return <span className="text-red-600"><TrendingDown /></span>;
+        if (trend === 'up') return <span className="text-green-600"><HiArrowDownRight /></span>;
+        if (trend === 'down') return <span className="text-red-600"><HiArrowUpRight /></span>;
         return null;
     };
 
@@ -179,42 +179,42 @@ export default function Analytics() {
                         title="Total Products"
                         value={analyticsData.totalProducts.toLocaleString()}
                         trend="+12% from last month"
-                        icon={<Package className="text-xl" />}
+                        icon={<FaChartBar className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Verified Today"
                         value={analyticsData.verifiedToday.toLocaleString()}
                         trend="+8% from yesterday"
-                        icon={<Clock className="text-xl" />}
+                        icon={<FaClock className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Compliance Rate"
                         value={`${analyticsData.complianceRate}%`}
                         trend="+2.3% from last quarter"
-                        icon={<BarChart3 className="text-xl" />}
+                        icon={<FaBox className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Businesses"
                         value={analyticsData.activeBusinesses.toLocaleString()}
                         trend="+5% from last month"
-                        icon={<Building2 className="text-xl" />}
+                        icon={<FaBuilding className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Recalls"
                         value={analyticsData.activeRecalls}
                         trend="+3 from last week"
-                        icon={<AlertTriangle className="text-xl" />}
+                        icon={<FaExclamationTriangle className="text-xl" />}
                         trendType="negative"
                     />
                     <MetricCard
                         title="Expiring Soon"
                         value={analyticsData.expiringSoon}
                         trend="Within 30 days"
-                        icon={<AlertTriangle className="text-xl" />}
+                        icon={<FaExclamationTriangle className="text-xl" />}
                         trendType="neutral"
                     />
                 </div>
