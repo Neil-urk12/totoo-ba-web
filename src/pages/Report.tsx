@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaShieldAlt, FaExclamationTriangle, FaUpload, FaCheckCircle } from 'react-icons/fa';
 import { initEmailJS, sendEmailWithAttachments } from '../config/emailjs';
+import { useReportMutation } from '../query/post/useReportMutations';
 
 interface FormData {
     productName: string;
@@ -11,6 +12,8 @@ interface FormData {
     fullName: string;
     email: string;
     phone: string;
+    storeName: string;
+    location: string;
 }
 
 interface FormErrors {
@@ -62,6 +65,7 @@ const getEmailChannel = (issueType: string): { email: string; description: strin
 };
 
 export default function Report() {
+    const reportMutation = useReportMutation();
     const [formData, setFormData] = useState<FormData>({
         productName: '',
         manufacturer: '',
@@ -70,7 +74,9 @@ export default function Report() {
         supportingEvidence: null,
         fullName: '',
         email: '',
-        phone: ''
+        phone: '',
+        storeName: '',
+        location: ''
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
@@ -184,13 +190,15 @@ export default function Report() {
             const templateParams = {
                 to_email: emailChannel.email,
                 to_name: 'FDA Philippines',
-                from_name: formData.fullName,
-                from_email: formData.email,
-                phone: formData.phone,
-                product_name: formData.productName,
-                manufacturer: formData.manufacturer,
+                from_name: formData.fullName || 'Anonymous',
+                from_email: formData.email || 'no-reply@example.com',
+                phone: formData.phone || 'Not provided',
+                product_name: formData.productName || 'Unknown product',
+                manufacturer: formData.manufacturer || 'Unknown manufacturer',
                 issue_type: formData.issueType,
-                description: formData.description,
+                description: formData.description || 'No description provided',
+                store_name: formData.storeName || 'Not specified',
+                location: formData.location || 'Not specified',
                 email_channel_description: emailChannel.description,
                 submitted_at: new Date().toLocaleString('en-PH', {
                     timeZone: 'Asia/Manila',
@@ -215,12 +223,20 @@ export default function Report() {
 
             if (result.success) {
                 console.log('Email sent successfully:', result.response);
-                setIsSubmitted(true);
-            } else {
-                console.error('Failed to send email:', result.error);
-                setSubmitError('Failed to send report. Please try again or contact support.');
+                
+                // Save to reported_products table
+                 reportMutation.mutateAsync({
+                    product_name: formData.productName,
+                    brand_name: formData.manufacturer,
+                    registration_number: null,
+                    description: formData.description,
+                    reporter_name: formData.fullName || "Anonymous",
+                    location: formData.location || "Unknown",
+                    store_name: formData.storeName || "Unknown",
+                });
             }
 
+            setIsSubmitted(true);
         } catch (error) {
             console.error('Error submitting form:', error);
             setSubmitError('An unexpected error occurred. Please try again.');
@@ -357,6 +373,48 @@ export default function Report() {
                                 {errors.manufacturer && (
                                     <p className="text-red-500 text-sm mt-1">{errors.manufacturer}</p>
                                 )}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label htmlFor="storeName" className="block text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>
+                                        Store Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="storeName"
+                                        name="storeName"
+                                        value={formData.storeName}
+                                        onChange={handleInputChange}
+                                        placeholder="Where did you find this product?"
+                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        style={{
+                                            backgroundColor: "var(--bg)",
+                                            borderColor: "var(--border)",
+                                            color: "var(--fg)"
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="location" className="block text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>
+                                        Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="location"
+                                        name="location"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
+                                        placeholder="City/Province, Country"
+                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        style={{
+                                            backgroundColor: "var(--bg)",
+                                            borderColor: "var(--border)",
+                                            color: "var(--fg)"
+                                        }}
+                                    />
+                                </div>
                             </div>
 
                             <div>
