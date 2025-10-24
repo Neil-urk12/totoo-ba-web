@@ -5,6 +5,8 @@ import ProductCard from '../components/ProductCard';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
 import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
+import ErrorBoundary from '../components/ErrorBoundary';
+import GenericErrorFallback from '../components/GenericErrorFallback';
 
 const transformProduct = (product: UnifiedProduct) => {
     return {
@@ -254,7 +256,9 @@ export default function Products() {
                     
                     {/* Show actual products */}
                     {filteredProducts.map(product => (
-                        <ProductCard key={product.id} product={product} viewMode={viewMode} />
+                        <ErrorBoundary key={product.id} fallback={GenericErrorFallback}>
+                            <ProductCard product={product} viewMode={viewMode} />
+                        </ErrorBoundary>
                     ))}
                 </section>
             )}

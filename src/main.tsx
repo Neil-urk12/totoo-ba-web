@@ -7,6 +7,8 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import LoadingSpinner from './components/LoadingSpinner'
 import RouteLoadingSpinner from './components/RouteLoadingSpinner'
+import ErrorBoundary from './components/ErrorBoundary'
+import GenericErrorFallback from './components/GenericErrorFallback'
 
 // Lazy load route components
 const Products = lazy(() => import('./pages/Products.tsx'))
@@ -27,7 +29,9 @@ const routes = createBrowserRouter([
         path: 'products', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <Products />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Products />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -35,7 +39,9 @@ const routes = createBrowserRouter([
         path: 'analytics', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <Analytics />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Analytics />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -43,7 +49,9 @@ const routes = createBrowserRouter([
         path: 'verify', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <Verify />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Verify />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -51,7 +59,9 @@ const routes = createBrowserRouter([
         path: 'about', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <About />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <About />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -59,7 +69,9 @@ const routes = createBrowserRouter([
         path: 'report', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <Report />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <Report />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -67,7 +79,9 @@ const routes = createBrowserRouter([
         path: '*', 
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
-            <NotFound />
+            <ErrorBoundary fallback={GenericErrorFallback}>
+              <NotFound />
+            </ErrorBoundary>
           </Suspense>
         )
       },
@@ -79,9 +93,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false} storageKey="theme" disableTransitionOnChange>
-        <Suspense fallback={<LoadingSpinner />}>
-          <RouterProvider router={routes} />
-        </Suspense>
+        <ErrorBoundary fallback={GenericErrorFallback}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <RouterProvider router={routes} />
+          </Suspense>
+        </ErrorBoundary>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,

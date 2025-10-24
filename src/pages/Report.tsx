@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaShieldAlt, FaExclamationTriangle, FaUpload, FaCheckCircle } from 'react-icons/fa';
+import { useReportMutation } from '../query/post/useReportMutations';
 
 interface FormData {
     productName: string;
@@ -10,16 +11,22 @@ interface FormData {
     fullName: string;
     email: string;
     phone: string;
+    storeName: string;
+    location: string;
 }
 
 interface FormErrors {
     productName?: string;
-    issueType?: string;
     manufacturer?: string;
     description?: string;
+    issueType?: string;
+    supportingEvidence?: string;
     fullName?: string;
     email?: string;
     phone?: string;
+    storeName?: string;
+    location?: string;
+    [key: string]: string | undefined;
 }
 
 const issueTypes = [
@@ -32,7 +39,36 @@ const issueTypes = [
     'Other'
 ];
 
+const reportMessageSuccessfully = [
+    "Your report will be reviewed by our team within 24-48 hours",
+    "Verified reports are forwarded to FDA Philippines and relevant authorities",
+    "You will receive email updates on the status of your report",
+    "Authorities may contact you if additional information is needed"
+];
+
+// FDA Email channels based on issue type
+const getEmailChannel = (issueType: string): { email: string; description: string } => {
+    switch (issueType) {
+        case 'Counterfeit Product':
+            return {
+                email: 'ncwacm@fda.gov.ph',
+                description: 'Counterfeit medicines reporting'
+            };
+        case 'Unregistered Product':
+            return {
+                email: 'info@fda.gov.ph',
+                description: 'Unregistered health products reporting'
+            };
+        default:
+            return {
+                email: 'ereport@fda.gov.ph',
+                description: 'General product reporting'
+            };
+    }
+};
+
 export default function Report() {
+    const reportMutation = useReportMutation();
     const [formData, setFormData] = useState<FormData>({
         productName: '',
         manufacturer: '',
@@ -41,13 +77,18 @@ export default function Report() {
         supportingEvidence: null,
         fullName: '',
         email: '',
-        phone: ''
+        phone: '',
+        storeName: '',
+        location: ''
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [submitError, setSubmitError] = useState<string>('');
+
+
 
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
@@ -138,15 +179,24 @@ export default function Report() {
         }
 
         setIsSubmitting(true);
+        setSubmitError('');
 
         try {
-            console.log('Form submitted:', formData);
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // Save to reported_products table
+            await reportMutation.mutateAsync({
+                product_name: formData.productName,
+                brand_name: formData.manufacturer,
+                registration_number: null,
+                description: formData.description,
+                reporter_name: formData.fullName || "Anonymous",
+                location: formData.location || "Unknown",
+                store_name: formData.storeName || "Unknown",
+            });
 
             setIsSubmitted(true);
         } catch (error) {
             console.error('Error submitting form:', error);
+            setSubmitError('An unexpected error occurred. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -163,27 +213,20 @@ export default function Report() {
                             </div>
                             <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Submitted Successfully</h1>
                             <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product.</p>
+                            <p style={{ color: "var(--muted)" }}>Your report has been submitted and will be reviewed by our team.</p>
+                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).description}</p>
+                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).email}</p>
                         </div>
 
-                        <div className="rounded-lg p-6" style={{ backgroundColor: "var(--muted)" }}>
+                        <div className="rounded-lg p-6" style={{ backgroundColor: "var(--bg)" }}>
                             <h2 className="text-xl font-bold mb-4" style={{ color: "var(--fg)" }}>What Happens Next?</h2>
                             <ol className="space-y-3" style={{ color: "var(--fg)" }}>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">1</span>
-                                    <span>Your report will be reviewed by our team within 24-48 hours</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">2</span>
-                                    <span>Verified reports are forwarded to FDA Philippines and relevant authorities</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">3</span>
-                                    <span>You will receive email updates on the status of your report</span>
-                                </li>
-                                <li className="flex items-start">
-                                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">4</span>
-                                    <span>Authorities may contact you if additional information is needed</span>
-                                </li>
+                                {reportMessageSuccessfully.map((message, index) => (
+                                    <li key={index} className="flex items-start">
+                                        <span className="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3 mt-0.5">{index + 1}</span>
+                                        <span>{message}</span>
+                                    </li>
+                                ))}
                             </ol>
                         </div>
                     </div>
@@ -212,14 +255,25 @@ export default function Report() {
                     <div>
                         <h2 id="alert-heading" className="sr-only">Important Notice</h2>
                         <p className="text-yellow-800">
-                            Your report will be forwarded to Totoo ba ito? Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
+                            Your report will be forwarded to FDA Philippines and relevant authorities. All information provided will be kept confidential and used solely for investigation purposes.
                         </p>
                     </div>
                 </div>
 
+                {/* Error Message */}
+                {submitError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8 flex items-start" role="alert" aria-labelledby="error-heading">
+                        <FaExclamationTriangle className="text-red-600 text-lg mr-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                        <div>
+                            <h2 id="error-heading" className="sr-only">Submission Error</h2>
+                            <p className="text-red-800">{submitError}</p>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-8" role="form" aria-label="Product Report Form">
                     {/* Product Information Section */}
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
+                    <div className="rounded-xl shadow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }}>
                         <div className="mb-6">
                             <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Product Information</h2>
                             <p style={{ color: "var(--muted)" }}>Provide details about the product you want to report.</p>
@@ -247,7 +301,7 @@ export default function Report() {
 
                             <div>
                                 <label htmlFor="manufacturer" className="block text-sm font-medium mb-2" style={{ color: "var(--fg)" }}>
-                                    Manufacturer/Brand
+                                    Manufacturer/Brand <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -266,6 +320,48 @@ export default function Report() {
                                 {errors.manufacturer && (
                                     <p className="text-red-500 text-sm mt-1">{errors.manufacturer}</p>
                                 )}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label htmlFor="storeName" className="block text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>
+                                        Store Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="storeName"
+                                        name="storeName"
+                                        value={formData.storeName}
+                                        onChange={handleInputChange}
+                                        placeholder="Where did you find this product?"
+                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        style={{
+                                            backgroundColor: "var(--bg)",
+                                            borderColor: "var(--border)",
+                                            color: "var(--fg)"
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="location" className="block text-sm font-medium mb-2" style={{ color: 'var(--fg)' }}>
+                                        Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="location"
+                                        name="location"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
+                                        placeholder="City/Province, Country"
+                                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        style={{
+                                            backgroundColor: "var(--bg)",
+                                            borderColor: "var(--border)",
+                                            color: "var(--fg)"
+                                        }}
+                                    />
+                                </div>
                             </div>
 
                             <div>
@@ -289,6 +385,26 @@ export default function Report() {
                                 </select>
                                 {errors.issueType && (
                                     <p id="issueType-error" className="text-red-500 text-sm mt-1">{errors.issueType}</p>
+                                )}
+
+                                {/* Email Channel Information */}
+                                {formData.issueType && (
+                                    <div className="mt-3 p-3 rounded-lg border" style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}>
+                                        <div className="flex items-start">
+                                            <FaShieldAlt className="text-blue-600 text-sm mr-2 mt-0.5 flex-shrink-0" />
+                                            <div>
+                                                <p className="text-sm font-medium" style={{ color: "var(--fg)" }}>
+                                                    Report will be sent to:
+                                                </p>
+                                                <p className="text-sm font-mono" style={{ color: "var(--fg)" }}>
+                                                    {getEmailChannel(formData.issueType).email}
+                                                </p>
+                                                <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>
+                                                    {getEmailChannel(formData.issueType).description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
 
@@ -318,7 +434,7 @@ export default function Report() {
                     </div>
 
                     {/* Report Details Section */}
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="report-details-heading">
+                    <div className="rounded-xl shadow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="report-details-heading">
                         <div className="mb-6">
                             <h2 id="report-details-heading" className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Details</h2>
                         </div>
@@ -372,8 +488,7 @@ export default function Report() {
                                         </p>
                                         <div className="space-y-2">
                                             {selectedFiles.map((file, index) => (
-                                                <div key={index} className="bg-slate-300 flex items-center justify-between p-3 rounded-lg"
-                                                >
+                                                <div key={index} className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: "var(--muted)", color: "var(--fg)" }}>
                                                     <div className="flex items-center">
                                                         <FaUpload className="text-sm mr-2 text-black" aria-hidden="true" />
                                                         <span className="text-sm text-black">
@@ -401,7 +516,7 @@ export default function Report() {
                     </div>
 
                     {/* Contact Information Section */}
-                    <div className="rounded-xl showdow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="contact-info-heading">
+                    <div className="rounded-xl shadow-md p-8" style={{ backgroundColor: "var(--card)", border: "1px solid var(--border)" }} role="region" aria-labelledby="contact-info-heading">
                         <div className="mb-6">
                             <h2 id="contact-info-heading" className="text-2xl font-bold mb-2" style={{ color: "var(--fg)" }}>Your Contact Information</h2>
                             <p style={{ color: "var(--muted)" }}>We may need to contact you for additional information.</p>
@@ -461,7 +576,7 @@ export default function Report() {
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleInputChange}
-                                        placeholder="+63 XXX XXX XXXX"
+                                        placeholder="09XXXXXXXX"
                                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.phone ? 'border-red-500' : ''}`}
                                         style={{ backgroundColor: "var(--bg)", borderColor: errors.phone ? '#ef4444' : "var(--border)", color: "var(--fg)" }}
                                         aria-invalid={!!errors.phone}

@@ -79,6 +79,9 @@ export type VerifyResponse = {
       registration_number: string;
       product_name: string;
       company_name: string;
+      brand_name?: string | null;
+      issuance_date?: string | null;
+      expiry_date?: string | null;
     }>;
   };
   registrationDate: string | null;
@@ -183,6 +186,9 @@ const buildResponse = ({
     registration_number: string;
     product_name: string;
     company_name: string;
+    brand_name?: string | null;
+    issuance_date?: string | null;
+    expiry_date?: string | null;
   }> = [];
 
   for (const f of foodMatches) {
@@ -195,6 +201,9 @@ const buildResponse = ({
       registration_number: f.registration_number,
       product_name: f.product_name || 'Unknown',
       company_name: f.company_name || '—',
+      brand_name: f.brand_name || null,
+      issuance_date: f.issuance_date || null,
+      expiry_date: f.expiry_date || null,
     });
   }
   for (const d of drugMatches) {
@@ -207,6 +216,9 @@ const buildResponse = ({
       registration_number: d.registration_number,
       product_name: d.brand_name || d.generic_name || 'Unknown',
       company_name: d.manufacturer || d.company_name || '—',
+      brand_name: d.brand_name || null,
+      issuance_date: d.issuance_date || null,
+      expiry_date: d.expiry_date || null,
     });
   }
 
