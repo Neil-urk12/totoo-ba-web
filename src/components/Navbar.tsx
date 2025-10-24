@@ -8,6 +8,7 @@ const NavData = [
     { label: "Products", link: "/products" },
     { label: "Analytics", link: "/analytics" },
     { label: "About", link: "/about" },
+    { label: "Community Reports", link: "/community-reports" },
     { label: "Report", link: "/report" }
 ];
 
