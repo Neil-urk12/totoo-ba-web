@@ -18,7 +18,17 @@ const Verify = lazy(() => import('./pages/Verify.tsx'))
 const Report = lazy(() => import('./pages/Report.tsx'))
 const NotFound = lazy(() => import('./pages/NotFound.tsx'))
 
-const queryClient = new QueryClient()
+// Optimized React Query configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes - reduce unnecessary refetches
+      gcTime: 1000 * 60 * 10, // 10 minutes - cache data longer (renamed from cacheTime)
+      refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+      retry: 1, // Reduce retry attempts for faster failures
+    },
+  },
+})
 
 const routes = createBrowserRouter([
   {

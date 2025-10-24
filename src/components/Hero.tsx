@@ -1,4 +1,6 @@
-export default function Hero() {
+import { memo } from 'react'
+
+const Hero = memo(function Hero() {
     return (
         <section className="max-w-5xl mx-auto text-center mt-10" role="banner" aria-label="Hero section">
             <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] mt-4 whitespace-pre-line">
@@ -24,6 +26,8 @@ export default function Hero() {
             </ul>
         </section>
     )
-}
+});
+
+export default Hero
 
 

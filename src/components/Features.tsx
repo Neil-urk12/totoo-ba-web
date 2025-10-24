@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { FaRegBuilding } from "react-icons/fa";
 import { PiLightning } from "react-icons/pi";
@@ -26,7 +27,7 @@ const items = [
     },
 ]
 
-export default function Features() {
+const Features = memo(function Features() {
     return (
         <section className="px-4" role="region" aria-labelledby="features-heading">
             <h2 id="features-heading" className="text-center text-3xl md:text-4xl font-bold mt-6 mb-2">Comprehensive Product Verification</h2>
@@ -46,6 +47,8 @@ export default function Features() {
             </div>
         </section>
     )
-}
+});
+
+export default Features
 
 

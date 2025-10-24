@@ -1,8 +1,10 @@
+import { memo } from 'react'
+
 interface ProductCardSkeletonProps {
     viewMode?: 'grid' | 'list';
 }
 
-export default function ProductCardSkeleton({ viewMode = 'grid' }: ProductCardSkeletonProps) {
+const ProductCardSkeleton = memo(function ProductCardSkeleton({ viewMode = 'grid' }: ProductCardSkeletonProps) {
     if (viewMode === 'list') {
         return (
             <div className="rounded-lg shadow-sm border p-3 sm:p-4 bg-card border-app animate-pulse">
@@ -56,4 +58,6 @@ export default function ProductCardSkeleton({ viewMode = 'grid' }: ProductCardSk
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
         </div>
     );
-}
+});
+
+export default ProductCardSkeleton;
