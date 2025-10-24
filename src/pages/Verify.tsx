@@ -1,4 +1,4 @@
-import { useSearchParams, useLocation } from 'react-router-dom'
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useGetProductVerifyQuery'
@@ -14,6 +14,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 export default function Verify() {
     const [params] = useSearchParams()
     const location = useLocation()
+    const navigate = useNavigate()
     const q = (params.get('q') || '').trim()
     const category = (params.get('category') || '').trim() || undefined
     const imageVerificationResult = location.state?.imageVerificationResult
@@ -32,7 +33,7 @@ export default function Verify() {
         <div className="max-w-7xl mx-auto px-4 py-8" style={{ color: 'var(--fg)' }}>
             <div className="mb-6">
                 <button
-                    onClick={() => history.back()}
+                    onClick={() => navigate('/')}
                     className="inline-flex items-center gap-2 h-9 px-3 rounded-full border border-app hover:border-app transition-colors text-sm opacity-90 hover:opacity-100"
                 >
                     <span className="-ml-0.5"><FaArrowLeftLong /></span>
