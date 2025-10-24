@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePostVerifyImage } from '../query/post/usePostVerifyImage'
-import { FaCamera, FaSearch } from "react-icons/fa";
+import { Camera, Search } from "lucide-react";
 import PopUpError from './PopUpError';
 
 export default function SearchForm() {
@@ -104,7 +104,7 @@ export default function SearchForm() {
                             aria-selected={searchMethod === 'text'}
                             aria-controls="text-search-panel"
                         >
-                            <FaSearch aria-hidden="true" /> Text Search
+                            <Search aria-hidden="true" /> Text Search
                         </button>
                         <button
                             type="button"
@@ -120,7 +120,7 @@ export default function SearchForm() {
                             aria-selected={searchMethod === 'image'}
                             aria-controls="image-upload-panel"
                         >
-                            <FaCamera aria-hidden="true" /> Image Upload
+                            <Camera aria-hidden="true" /> Image Upload
                         </button>
                     </div>
                 </div>
@@ -138,7 +138,7 @@ export default function SearchForm() {
                                 id="image-upload"
                             />
                             <label htmlFor="image-upload" className="cursor-pointer">
-                                <div className="text-4xl mb-2 flex justify-center items-center" aria-hidden="true"><FaCamera /></div>
+                                <div className="text-4xl mb-2 flex justify-center items-center" aria-hidden="true"><Camera /></div>
                                 <div className="text-sm font-medium mb-1">
                                     {selectedFile ? selectedFile.name : 'Click to upload product image'}
                                 </div>
@@ -165,7 +165,7 @@ export default function SearchForm() {
                     <div id="text-search-panel" role="tabpanel" aria-labelledby="text-search-tab">
                         <label htmlFor="search-input" className="text-sm font-semibold mb-2 block">Search Product or Registration Number</label>
                         <div className="relative mb-4">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 flex justify-center items-center" aria-hidden="true"><FaSearch /></span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 opacity-60 flex justify-center items-center" aria-hidden="true"><Search /></span>
                             <input
                                 id="search-input"
                                 value={query}

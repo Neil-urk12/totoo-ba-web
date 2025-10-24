@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaCheck, FaTimes, FaEye } from "react-icons/fa";
+import { Check, X, Eye } from "lucide-react";
 import ProductCardDetailsModal from "./ProductCardDetailsModal";
 
 interface ProductCardProps {
@@ -23,9 +23,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
     const getStatusIcon = () => {
         if (product.status === 'verified') {
-            return <FaCheck className="w-3 h-3" />;
+            return <Check className="w-3 h-3" />;
         }
-        return <FaTimes className="w-3 h-3" />;
+        return <X className="w-3 h-3" />;
     };
 
     const getStatusColor = () => {
@@ -61,7 +61,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                                     className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                     aria-label="View product details"
                                 >
-                                    <FaEye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                    <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                 </button>
                             </div>
                         </div>
@@ -96,7 +96,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                         className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0"
                         aria-label="View product details"
                     >
-                        <FaEye className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        <Eye className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                     </button>
                 </div>
 
