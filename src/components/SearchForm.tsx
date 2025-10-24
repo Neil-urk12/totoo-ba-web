@@ -96,22 +96,22 @@ export default function SearchForm() {
                 {/* Method Toggle */}
                 <div className="mb-6">
                     <h2 id="search-form-title" className="text-sm font-semibold mb-3 block">Verification Method</h2>
-                    <div className="flex bg-app rounded-lg p-1" role="tablist" aria-label="Verification method options">
+                    <div className="flex w-full border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800" role="tablist" aria-label="Verification method options">
                         <button
                             type="button"
                             onClick={() => {
                                 setSearchMethod('text')
                                 setSelectedFile(null)
                             }}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${searchMethod === 'text'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            className={`flex-1 py-2.5 px-6 text-sm font-medium transition-all flex items-center justify-center gap-2 ${searchMethod === 'text'
+                                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-sm'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                                 }`}
                             role="tab"
                             aria-selected={searchMethod === 'text'}
                             aria-controls="text-search-panel"
                         >
-                            <Search aria-hidden="true" /> Text Search
+                            <Search size={18} aria-hidden="true" /> Text Search
                         </button>
                         <button
                             type="button"
@@ -119,15 +119,15 @@ export default function SearchForm() {
                                 setSearchMethod('image')
                                 setQuery('')
                             }}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${searchMethod === 'image'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            className={`flex-1 py-2.5 px-6 text-sm font-medium transition-all flex items-center justify-center gap-2 border-l border-gray-300 dark:border-gray-600 ${searchMethod === 'image'
+                                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 shadow-sm'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                                 }`}
                             role="tab"
                             aria-selected={searchMethod === 'image'}
                             aria-controls="image-upload-panel"
                         >
-                            <Camera aria-hidden="true" /> Image Upload
+                            <Camera size={18} aria-hidden="true" /> Image Upload
                         </button>
                     </div>
                 </div>
