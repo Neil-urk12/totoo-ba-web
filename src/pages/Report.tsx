@@ -17,12 +17,16 @@ interface FormData {
 
 interface FormErrors {
     productName?: string;
-    issueType?: string;
     manufacturer?: string;
     description?: string;
+    issueType?: string;
+    supportingEvidence?: string;
     fullName?: string;
     email?: string;
     phone?: string;
+    storeName?: string;
+    location?: string;
+    [key: string]: string | undefined;
 }
 
 const issueTypes = [
