@@ -1,34 +1,6 @@
 import { Package, Building2, BarChart3, Clock, AlertTriangle, TrendingDown, TrendingUp } from 'lucide-react';
-
-// Mock data for analytics
-const mockAnalyticsData = {
-    totalProducts: 240000,
-    verifiedToday: 1234,
-    complianceRate: 94.5,
-    activeBusinesses: 8901,
-    activeRecalls: 12,
-    expiringSoon: 156,
-    productsByCategory: [
-        { name: 'Food Supplements', count: 18234, trend: 'up' },
-        { name: 'Cosmetics', count: 13701, trend: 'up' },
-        { name: 'Drugs', count: 9135, trend: 'neutral' },
-        { name: 'Medical Devices', count: 4608, trend: 'down' },
-    ],
-    recentActivity: [
-        { type: 'New Registration', product: 'Vitamin D3 5000IU', time: '2 hours ago', status: 'success' },
-        { type: 'Recall Alert', product: 'Whitening Cream Brand X', time: '5 hours ago', status: 'warning' },
-        { type: 'Registration Expired', product: 'Herbal Supplement Y', time: '1 day ago', status: 'error' },
-        { type: 'Status Update', product: 'Collagen Peptides', time: '1 day ago', status: 'success' },
-        { type: 'Status Update', product: 'Omega-3 Fish Oil', time: '2 days ago', status: 'success' },
-    ],
-    topManufacturers: [
-        { rank: 1, name: 'PharmaCorp Philippines', products: 234, complianceRate: 98 },
-        { rank: 2, name: 'Natural Health Inc.', products: 189, complianceRate: 96 },
-        { rank: 3, name: 'Beauty Solutions Ltd.', products: 156, complianceRate: 94 },
-        { rank: 4, name: 'Wellness Products Co.', products: 142, complianceRate: 92 },
-        { rank: 5, name: 'Herbal Remedies PH', products: 128, complianceRate: 90 },
-    ]
-};
+import { useQuery } from "@tanstack/react-query";
+import { useGetAnalyticsQuery } from "../query/get/useGetAnalyticsQuery";
 
 type MetricCardProps = {
     title: string;
@@ -75,9 +47,8 @@ function MetricCard({ title, value, trend, trendValue, icon, trendType = 'positi
     );
 }
 
-function CategoryBar({ name, count, trend }: { name: string; count: number; trend: string }) {
-    const maxCount = Math.max(...mockAnalyticsData.productsByCategory.map(c => c.count));
-    const percentage = (count / maxCount) * 100;
+function CategoryBar({ name, count, trend, maxCount }: { name: string; count: number; trend: string; maxCount: number }) {
+    const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
     const getTrendIcon = () => {
         if (trend === 'up') return <span className="text-green-600"><TrendingUp /></span>;
@@ -143,6 +114,44 @@ function ComplianceBar({ rate }: { rate: number }) {
 }
 
 export default function Analytics() {
+    const { data: analyticsData, isLoading, error } = useQuery(useGetAnalyticsQuery());
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center" style={{ backgroundColor: "var(--bg)" }}>
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600" style={{ color: "var(--fg)" }}>Loading analytics data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center" style={{ backgroundColor: "var(--bg)" }}>
+                <div className="text-center">
+                    <div className="text-red-600 text-6xl mb-4">⚠️</div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>Error Loading Analytics</h2>
+                    <p className="text-gray-600" style={{ color: "var(--fg)" }}>Unable to fetch analytics data. Please try again later.</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!analyticsData) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center" style={{ backgroundColor: "var(--bg)" }}>
+                <div className="text-center">
+                    <div className="text-gray-400 text-6xl mb-4">📊</div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ color: "var(--fg)" }}>No Data Available</h2>
+                    <p className="text-gray-600" style={{ color: "var(--fg)" }}>No analytics data found.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const maxCategoryCount = Math.max(...analyticsData.productsByCategory.map(c => c.count));
 
     return (
         <div className="min-h-screen bg-gray-50" style={{ backgroundColor: "var(--bg)" }} role="main" aria-label="Analytics Dashboard">
@@ -166,42 +175,42 @@ export default function Analytics() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" role="region" aria-label="Key Metrics">
                     <MetricCard
                         title="Total Products"
-                        value={mockAnalyticsData.totalProducts.toLocaleString()}
+                        value={analyticsData.totalProducts.toLocaleString()}
                         trend="+12% from last month"
-                        icon={<Package className="text-xl" />}
+                        icon={<BarChart3 className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Verified Today"
-                        value={mockAnalyticsData.verifiedToday.toLocaleString()}
+                        value={analyticsData.verifiedToday.toLocaleString()}
                         trend="+8% from yesterday"
                         icon={<Clock className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Compliance Rate"
-                        value={`${mockAnalyticsData.complianceRate}%`}
+                        value={`${analyticsData.complianceRate}%`}
                         trend="+2.3% from last quarter"
-                        icon={<BarChart3 className="text-xl" />}
+                        icon={<Package className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Businesses"
-                        value={mockAnalyticsData.activeBusinesses.toLocaleString()}
+                        value={analyticsData.activeBusinesses.toLocaleString()}
                         trend="+5% from last month"
                         icon={<Building2 className="text-xl" />}
                         trendType="positive"
                     />
                     <MetricCard
                         title="Active Recalls"
-                        value={mockAnalyticsData.activeRecalls}
+                        value={analyticsData.activeRecalls}
                         trend="+3 from last week"
                         icon={<AlertTriangle className="text-xl" />}
                         trendType="negative"
                     />
                     <MetricCard
                         title="Expiring Soon"
-                        value={mockAnalyticsData.expiringSoon}
+                        value={analyticsData.expiringSoon}
                         trend="Within 30 days"
                         icon={<AlertTriangle className="text-xl" />}
                         trendType="neutral"
@@ -214,12 +223,13 @@ export default function Analytics() {
                     <div className=" bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-labelledby="products-by-category">
                         <h2 id="products-by-category" className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Products by Category</h2>
                         <div className="space-y-0">
-                            {mockAnalyticsData.productsByCategory.map((category, index) => (
+                            {analyticsData.productsByCategory.map((category, index) => (
                                 <CategoryBar
                                     key={index}
                                     name={category.name}
                                     count={category.count}
                                     trend={category.trend}
+                                    maxCount={maxCategoryCount}
                                 />
                             ))}
                         </div>
@@ -229,7 +239,7 @@ export default function Analytics() {
                     <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-gray-200" style={{ backgroundColor: "var(--card)", border: "var(--border)" }} role="region" aria-labelledby="recent-activity">
                         <h2 id="recent-activity" className="text-lg font-semibold text-gray-900 mb-4" style={{ color: "var(--fg)" }}>Recent Activity</h2>
                         <div className="space-y-0">
-                            {mockAnalyticsData.recentActivity.map((activity, index) => (
+                            {analyticsData.recentActivity.map((activity, index) => (
                                 <ActivityItem
                                     key={index}
                                     type={activity.type}
@@ -255,11 +265,10 @@ export default function Analytics() {
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Manufacturer</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Products</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Compliance Rate</th>
-                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
-                                {mockAnalyticsData.topManufacturers.map((manufacturer, index) => (
+                                {analyticsData.topManufacturers.map((manufacturer, index) => (
                                     <tr key={index} role="row">
                                         <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" style={{ color: "var(--muted)" }}>
                                             {manufacturer.rank}
@@ -272,11 +281,6 @@ export default function Analytics() {
                                         </td>
                                         <td role="cell" className="px-6 py-4 whitespace-nowrap" style={{ color: "var(--muted)" }}>
                                             <ComplianceBar rate={manufacturer.complianceRate} />
-                                        </td>
-                                        <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm" style={{ color: "var(--muted)" }}>
-                                            <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium" aria-label={`View details for ${manufacturer.name}`}>
-                                                View Details
-                                            </button>
                                         </td>
                                     </tr>
                                 ))}
