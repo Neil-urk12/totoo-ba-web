@@ -27,7 +27,7 @@ export type AnalyticsData = {
   }>;
 };
 
-const fetchAnalyticsData = async (searchCount: number = 0): Promise<AnalyticsData> => {
+const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   // Get total products count from both tables
   const [foodCountResult, drugCountResult] = await Promise.all([
     supabase.from('food_products').select('*', { count: 'exact', head: true }),
@@ -38,7 +38,7 @@ const fetchAnalyticsData = async (searchCount: number = 0): Promise<AnalyticsDat
   const totalDrugProducts = drugCountResult.count || 0;
   const totalProducts = totalFoodProducts + totalDrugProducts;
 
-  const verifiedToday = searchCount;
+  const verifiedToday = 0;
 
   // Get products expiring soon (within 30 days)
   const today = new Date().toISOString().split('T')[0];
@@ -172,10 +172,10 @@ const fetchAnalyticsData = async (searchCount: number = 0): Promise<AnalyticsDat
   };
 };
 
-export const useGetAnalyticsQuery = (searchCount: number = 0) => {
+export const useGetAnalyticsQuery = () => {
   return queryOptions({
-    queryKey: ["analytics", searchCount],
-    queryFn: () => fetchAnalyticsData(searchCount),
+    queryKey: ["analytics"],
+    queryFn: () => fetchAnalyticsData(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
