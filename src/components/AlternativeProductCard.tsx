@@ -60,7 +60,7 @@ export default function AlternativeProductCard({ product }: AlternativeProductCa
                     {typeof product.relevance_score === 'number' && (
                         <div className="flex items-center justify-between text-[11px]">
                             <span className="opacity-70">Match</span>
-                            <span className="font-semibold text-blue-600">{Math.round(product.relevance_score)}%</span>
+                            <span className="font-semibold text-blue-600">{Math.round(product.relevance_score * 100)}%</span>
                         </div>
                     )}
                 </div>

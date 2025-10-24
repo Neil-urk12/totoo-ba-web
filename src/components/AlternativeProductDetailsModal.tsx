@@ -50,7 +50,7 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
                                 </div>
                                 {typeof product.relevance_score === 'number' && (
                                     <div className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                        <span>{Math.round(product.relevance_score)}% Match</span>
+                                        <span>{Math.round(product.relevance_score * 100)}% Match</span>
                                     </div>
                                 )}
                             </div>
@@ -72,7 +72,7 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
                                 <DetailRow label="Expiry Date" value={product.expiry_date} />
                             )}
                             {typeof product.relevance_score === 'number' && (
-                                <DetailRow label="Relevance Score" value={`${Math.round(product.relevance_score)}%`} />
+                                <DetailRow label="Relevance Score" value={`${Math.round(product.relevance_score * 100)}%`} />
                             )}
                         </div>
                     </div>
