@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { FaShieldAlt, FaExclamationTriangle, FaUpload, FaCheckCircle } from 'react-icons/fa';
-import { initEmailJS, sendEmailWithAttachments } from '../config/emailjs';
 import { useReportMutation } from '../query/post/useReportMutations';
 
 interface FormData {
@@ -85,10 +84,6 @@ export default function Report() {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [submitError, setSubmitError] = useState<string>('');
 
-    // Initialize EmailJS when component mounts
-    useEffect(() => {
-        initEmailJS();
-    }, []);
 
 
     const validateForm = (): boolean => {
@@ -183,58 +178,16 @@ export default function Report() {
         setSubmitError('');
 
         try {
-            // Get the appropriate email channel based on issue type
-            const emailChannel = getEmailChannel(formData.issueType);
-
-            // Prepare email template parameters
-            const templateParams = {
-                to_email: emailChannel.email,
-                to_name: 'FDA Philippines',
-                from_name: formData.fullName || 'Anonymous',
-                from_email: formData.email || 'no-reply@example.com',
-                phone: formData.phone || 'Not provided',
-                product_name: formData.productName || 'Unknown product',
-                manufacturer: formData.manufacturer || 'Unknown manufacturer',
-                issue_type: formData.issueType,
-                description: formData.description || 'No description provided',
-                store_name: formData.storeName || 'Not specified',
-                location: formData.location || 'Not specified',
-                email_channel_description: emailChannel.description,
-                submitted_at: new Date().toLocaleString('en-PH', {
-                    timeZone: 'Asia/Manila',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }),
-                report_id: `RPT-${Date.now()}`,
-                // Additional context for the email
-                subject: `Product Report: ${formData.issueType} - ${formData.productName}`,
-                priority: formData.issueType === 'Adverse Reaction' ? 'HIGH' : 'NORMAL'
-            };
-
-            console.log('Sending email with parameters:', templateParams);
-
-            // Send email with attachments if any
-            const result = selectedFiles.length > 0
-                ? await sendEmailWithAttachments(templateParams, selectedFiles)
-                : await sendEmailWithAttachments(templateParams, []);
-
-            if (result.success) {
-                console.log('Email sent successfully:', result.response);
-                
-                // Save to reported_products table
-                 reportMutation.mutateAsync({
-                    product_name: formData.productName,
-                    brand_name: formData.manufacturer,
-                    registration_number: null,
-                    description: formData.description,
-                    reporter_name: formData.fullName || "Anonymous",
-                    location: formData.location || "Unknown",
-                    store_name: formData.storeName || "Unknown",
-                });
-            }
+            // Save to reported_products table
+            await reportMutation.mutateAsync({
+                product_name: formData.productName,
+                brand_name: formData.manufacturer,
+                registration_number: null,
+                description: formData.description,
+                reporter_name: formData.fullName || "Anonymous",
+                location: formData.location || "Unknown",
+                store_name: formData.storeName || "Unknown",
+            });
 
             setIsSubmitted(true);
         } catch (error) {
@@ -255,20 +208,10 @@ export default function Report() {
                                 <FaCheckCircle className="text-3xl text-green-600" />
                             </div>
                             <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--fg)" }}>Report Submitted Successfully</h1>
-                            <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product. Your report has been sent via email.</p>
-
-                            {/* Show which email channel was used */}
-                            <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: "var(--bg)" }}>
-                                <div className="flex items-center justify-center">
-                                    <FaShieldAlt className="text-blue-600 text-sm mr-2" />
-                                    <span className="text-sm">
-                                        Report sent to: <span className="font-mono">{getEmailChannel(formData.issueType).email}</span>
-                                    </span>
-                                </div>
-                                <p className="text-xs mt-1" style={{ color: "var(--muted)" }}>
-                                    {getEmailChannel(formData.issueType).description}
-                                </p>
-                            </div>
+                            <p style={{ color: "var(--muted)" }}>Thank you for helping protect consumers by reporting this product.</p>
+                            <p style={{ color: "var(--muted)" }}>Your report has been submitted and will be reviewed by our team.</p>
+                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).description}</p>
+                            <p style={{ color: "var(--muted)" }}>{getEmailChannel(formData.issueType).email}</p>
                         </div>
 
                         <div className="rounded-lg p-6" style={{ backgroundColor: "var(--bg)" }}>
