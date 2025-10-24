@@ -10,6 +10,8 @@ import { FaSearch } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import ErrorBoundary from '../components/ErrorBoundary';
+import GenericErrorFallback from '../components/GenericErrorFallback';
 
 export default function Verify() {
     const [params] = useSearchParams()
@@ -59,7 +61,9 @@ export default function Verify() {
 
                 {imageVerificationResult && (
                     <div className="mt-6">
-                        <ImageVerificationResult data={imageVerificationResult} />
+                        <ErrorBoundary fallback={GenericErrorFallback}>
+                            <ImageVerificationResult data={imageVerificationResult} />
+                        </ErrorBoundary>
                     </div>
                 )}
 
@@ -109,7 +113,9 @@ export default function Verify() {
                     <div className="mt-6">
                         {/* Check if it's a food industry verification */}
                         {data.details?.verified_product?.type === 'food_industry' ? (
-                            <FoodIndustryVerification data={data} />
+                            <ErrorBoundary fallback={GenericErrorFallback}>
+                                <FoodIndustryVerification data={data} />
+                            </ErrorBoundary>
                         ) : (
                             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                                 {/* Left Column - Main Result */}
@@ -171,9 +177,11 @@ export default function Verify() {
                                             {/* Mobile: Horizontal scrolling, Desktop: Grid layout */}
                                             <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-x-visible lg:snap-none lg:auto-rows-fr">
                                                 {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
-                                                    <div key={idx} className="w-[280px] sm:w-[320px] flex-shrink-0 snap-start lg:w-auto">
-                                                        <AlternativeProductCard product={alt} />
-                                                    </div>
+                                                    <ErrorBoundary key={idx} fallback={GenericErrorFallback}>
+                                                        <div className="w-[280px] sm:w-[320px] flex-shrink-0 snap-start lg:w-auto">
+                                                            <AlternativeProductCard product={alt} />
+                                                        </div>
+                                                    </ErrorBoundary>
                                                 ))}
                                             </div>
                                         </div>

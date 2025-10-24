@@ -5,6 +5,8 @@ import Features from './components/Features'
 import Notice from './components/Notice'
 import Footer from './components/Footer'
 import { Outlet, useLocation } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
+import GenericErrorFallback from './components/GenericErrorFallback'
 
 function App() {
   const location = useLocation();
@@ -15,14 +17,24 @@ function App() {
       <Navbar />
       {isHomePage && (
         <main className="px-4" role="main">
-          <Hero />
-          <SearchForm />
-          <Features />
-          <Notice />
+          <ErrorBoundary fallback={GenericErrorFallback}>
+            <Hero />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={GenericErrorFallback}>
+            <SearchForm />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={GenericErrorFallback}>
+            <Features />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={GenericErrorFallback}>
+            <Notice />
+          </ErrorBoundary>
         </main>
       )}
       <main role="main">
-        <Outlet />
+        <ErrorBoundary fallback={GenericErrorFallback}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
       <Footer />
     </div>
