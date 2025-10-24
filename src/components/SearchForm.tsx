@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { usePostVerifyImage } from '../query/post/usePostVerifyImage'
 import { Camera, Search } from "lucide-react";
 import PopUpError from './PopUpError';
+import ImageVerificationLoader from './ImageVerificationLoader';
 
 export default function SearchForm() {
     const [query, setQuery] = useState('')
@@ -45,6 +46,9 @@ export default function SearchForm() {
             try {
                 setIsUploading(true)
                 const result = await verifyImageMutation.mutateAsync(selectedFile)
+                
+                await new Promise(resolve => setTimeout(resolve, 100))
+                
                 // Navigate to verify page with image verification results
                 navigate('/verify', { state: { imageVerificationResult: result } })
             } catch (error) {
@@ -85,6 +89,9 @@ export default function SearchForm() {
 
     return (
         <section className="flex justify-center" role="region" aria-labelledby="search-form-title">
+            {/* Loading Visualizer */}
+            {isUploading && <ImageVerificationLoader />}
+
             <form onSubmit={onSubmit} className="w-full max-w-3xl border rounded-xl shadow-sm p-5 my-6 bg-card border-app" role="search" aria-label="Product verification search">
                 {/* Method Toggle */}
                 <div className="mb-6">
