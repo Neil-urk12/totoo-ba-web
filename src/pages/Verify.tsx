@@ -192,9 +192,12 @@ export default function Verify() {
                                     {Array.isArray(data.details?.alternative_matches) && data.details.alternative_matches.length > 0 ? (
                                         <div className="h-full">
                                             <h3 className="text-lg font-semibold mb-4">Alternative Products</h3>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 auto-rows-fr">
+                                            {/* Mobile: Horizontal scrolling, Desktop: Grid layout */}
+                                            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:overflow-x-visible lg:snap-none lg:auto-rows-fr">
                                                 {(data.details.alternative_matches as NonNullable<VerifyResponse['details']['alternative_matches']>).map((alt, idx: number) => (
-                                                    <AlternativeProductCard key={idx} product={alt} />
+                                                    <div key={idx} className="w-[280px] sm:w-[320px] flex-shrink-0 snap-start lg:w-auto">
+                                                        <AlternativeProductCard product={alt} />
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
