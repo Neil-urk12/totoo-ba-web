@@ -153,7 +153,7 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   ].slice(0, 5);
 
   // Calculate compliance rate (mock for now - could be based on expiry dates)
-  const complianceRate = Math.round((totalProducts - expiringSoon) / totalProducts * 100);
+  const complianceRate = totalProducts === 0 ? 0 : Math.round((totalProducts - expiringSoon) / totalProducts * 100);
 
   // Mock active recalls (this would need a separate recalls table)
   const activeRecalls = Math.floor(Math.random() * 20) + 5;
