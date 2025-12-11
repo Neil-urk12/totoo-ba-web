@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import type { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "../../db/supabaseClient";
 
 export type AnalyticsData = {
@@ -27,12 +28,37 @@ export type AnalyticsData = {
   }>;
 };
 
+const assertNoSupabaseErrors = (
+  context: string,
+  ...results: Array<{ error?: PostgrestError | null }>
+) => {
+  const messages = results
+    .map((result) => result?.error)
+    .filter((error): error is PostgrestError => Boolean(error))
+    .map((error) => {
+      const details = [error.message, error.details, error.hint]
+        .filter(Boolean)
+        .join(" - ");
+      return details || "Unknown Supabase error";
+    });
+
+  if (messages.length > 0) {
+    throw new Error(`[Analytics] ${context}: ${messages.join(" | ")}`);
+  }
+};
+
 const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   // Get total products count from both tables
   const [foodCountResult, drugCountResult] = await Promise.all([
     supabase.from('food_products').select('*', { count: 'exact', head: true }),
     supabase.from('drug_products').select('*', { count: 'exact', head: true })
   ]);
+
+  assertNoSupabaseErrors(
+    'Failed to fetch total products count',
+    foodCountResult,
+    drugCountResult
+  );
 
   const totalFoodProducts = foodCountResult.count || 0;
   const totalDrugProducts = drugCountResult.count || 0;
@@ -51,6 +77,12 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
     supabase.from('drug_products').select('*', { count: 'exact', head: true }).lte('expiry_date', expiryThreshold).gte('expiry_date', today)
   ]);
 
+  assertNoSupabaseErrors(
+    'Failed to fetch expiring products',
+    foodExpiringResult,
+    drugExpiringResult
+  );
+
   const expiringSoon = (foodExpiringResult.count || 0) + (drugExpiringResult.count || 0);
 
   // Get unique companies/manufacturers
@@ -58,6 +90,12 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
     supabase.from('food_products').select('company_name').not('company_name', 'is', null),
     supabase.from('drug_products').select('manufacturer').not('manufacturer', 'is', null)
   ]);
+
+  assertNoSupabaseErrors(
+    'Failed to fetch active businesses',
+    foodCompaniesResult,
+    drugCompaniesResult
+  );
 
   const foodCompanies = new Set(foodCompaniesResult.data?.map(p => p.company_name) || []);
   const drugCompanies = new Set(
@@ -71,6 +109,12 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
     supabase.from('food_products').select('type_of_product').not('type_of_product', 'is', null),
     supabase.from('drug_products').select('brand_name')
   ]);
+
+  assertNoSupabaseErrors(
+    'Failed to fetch products by category',
+    foodCategoriesResult,
+    drugCategoriesResult
+  );
 
   // Count food categories
   const foodCategoryCounts: Record<string, number> = {};
@@ -100,6 +144,12 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
     supabase.from('food_products').select('company_name').not('company_name', 'is', null),
     supabase.from('drug_products').select('manufacturer').not('manufacturer', 'is', null)
   ]);
+
+  assertNoSupabaseErrors(
+    'Failed to fetch top manufacturers',
+    topFoodManufacturersResult,
+    topDrugManufacturersResult
+  );
 
   // Count products per manufacturer
   const manufacturerCounts: Record<string, number> = {};
@@ -136,6 +186,12 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
     supabase.from('food_products').select('product_name, issuance_date, company_name').order('issuance_date', { ascending: false }).limit(5),
     supabase.from('drug_products').select('brand_name, issuance_date, manufacturer').order('issuance_date', { ascending: false }).limit(3)
   ]);
+
+  assertNoSupabaseErrors(
+    'Failed to fetch recent activity',
+    recentFoodResult,
+    recentDrugResult
+  );
 
   const recentActivity = [
     ...(recentFoodResult.data?.map((product) => ({
