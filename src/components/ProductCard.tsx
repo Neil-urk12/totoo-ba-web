@@ -21,9 +21,9 @@
  * @example
  * <ProductCard product={productData} viewMode="grid" />
  */
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Check, X, Eye } from "lucide-react";
-import ProductCardDetailsModal from "./ProductCardDetailsModal";
+const ProductCardDetailsModal = lazy(() => import("./ProductCardDetailsModal"));
 
 /**
  * Props interface for ProductCard component
@@ -105,11 +105,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                     </div>
                 </div>
 
-                <ProductCardDetailsModal
-                    open={showModal}
-                    onClose={() => setShowModal(false)}
-                    product={product}
-                />
+                <Suspense fallback={null}>
+                    <ProductCardDetailsModal
+                        open={showModal}
+                        onClose={() => setShowModal(false)}
+                        product={product}
+                    />
+                </Suspense>
             </>
         );
     }
@@ -143,11 +145,13 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 </div>
             </div>
 
-            <ProductCardDetailsModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                product={product}
-            />
+            <Suspense fallback={null}>
+                <ProductCardDetailsModal
+                    open={showModal}
+                    onClose={() => setShowModal(false)}
+                    product={product}
+                />
+            </Suspense>
         </>
     );
 }

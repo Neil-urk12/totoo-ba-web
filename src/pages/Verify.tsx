@@ -1,8 +1,8 @@
 import { useSearchParams, useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useGetProductVerifyQuery'
-import ProductDetailsModal from '../components/ProductDetailsModal'
+const ProductDetailsModal = lazy(() => import('../components/ProductDetailsModal'))
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
 import ImageVerificationResult from '../components/ImageVerificationResult'
 import AlternativeProductCard from '../components/AlternativeProductCard'
@@ -128,7 +128,7 @@ export default function Verify() {
                                                 <div className="text-[11px] uppercase tracking-wide opacity-70">Product name</div>
                                                 <div className="mt-1 font-semibold text-lg">{info?.product_name || 'N/A'}</div>
                                             </div>
-                                            
+
                                             <div className="space-y-4">
                                                 <div>
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Category</div>
@@ -142,12 +142,12 @@ export default function Verify() {
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Manufacturer</div>
                                                     <div className="mt-1 font-medium">{info?.company_name || 'N/A'}</div>
                                                 </div>
-                                                
+
                                                 <div>
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Verification method</div>
                                                     <div className="mt-1 text-sm">{data?.details?.verification_method || '—'}</div>
                                                 </div>
-                                                
+
                                                 <div>
                                                     <div className="text-[11px] uppercase tracking-wide opacity-70">Message</div>
                                                     <div className="mt-1 text-sm">{data?.message || '—'}</div>
@@ -196,7 +196,9 @@ export default function Verify() {
                     </div>
                 )}
             </div>
-            <ProductDetailsModal open={showDetails} onClose={() => setShowDetails(false)} data={data} />
+            <Suspense fallback={null}>
+                <ProductDetailsModal open={showDetails} onClose={() => setShowDetails(false)} data={data} />
+            </Suspense>
         </div>
     )
 }

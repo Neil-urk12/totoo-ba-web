@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { useGetReportsQuery, type CommunityReport } from "../query/get/useGetReportsQuery";
 import { Info, ShieldAlert, User, MapPin, Building } from "lucide-react";
-import PopUpCommunityReports from '../components/PopUpCommunityReports';
+const PopUpCommunityReports = lazy(() => import('../components/PopUpCommunityReports'));
 import CommunityReportSkeleton from '../components/CommunityReportSkeleton';
 
 export default function CommunityReports() {
@@ -49,10 +49,10 @@ export default function CommunityReports() {
     <div className="min-h-screen bg-white" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4" style={{color: "var(--fg)"}}>
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4" style={{ color: "var(--fg)" }}>
             Community Reports
           </h1>
-          <p className="text-lg text-gray-600" style={{color: "var(--muted)"}}>
+          <p className="text-lg text-gray-600" style={{ color: "var(--muted)" }}>
             See what the community is reporting about products in the market. Help keep everyone informed and safe.
           </p>
         </div>
@@ -60,8 +60,8 @@ export default function CommunityReports() {
         {reports.length === 0 ? (
           <div className="text-center py-16 rounded-2xl bg-white border border-dashed border-gray-300" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}>
             <Info className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-4 text-lg font-medium text-gray-900" style={{color: "var(--fg)"}}>No reports yet</h3>
-            <p className="mt-2 text-sm text-gray-500" style={{color: "var(--muted)"}}>
+            <h3 className="mt-4 text-lg font-medium text-gray-900" style={{ color: "var(--fg)" }}>No reports yet</h3>
+            <p className="mt-2 text-sm text-gray-500" style={{ color: "var(--muted)" }}>
               Be the first to report an issue with a product.
             </p>
             <div className="mt-6">
@@ -77,10 +77,10 @@ export default function CommunityReports() {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900" style={{color: "var(--fg)"}}>
+                <h2 className="text-2xl font-bold text-gray-900" style={{ color: "var(--fg)" }}>
                   {reports.length} {reports.length === 1 ? 'Report' : 'Reports'}
                 </h2>
-                <p className="text-sm text-gray-500" style={{color: "var(--muted)"}}>
+                <p className="text-sm text-gray-500" style={{ color: "var(--muted)" }}>
                   Showing all community reports
                 </p>
               </div>
@@ -95,22 +95,22 @@ export default function CommunityReports() {
               </a>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" style={{backgroundColor: "var(--bg)", color: "var(--muted)"}}>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" style={{ backgroundColor: "var(--bg)", color: "var(--muted)" }}>
               {reports.map((report) => (
-                <article 
-                  key={report.id} 
+                <article
+                  key={report.id}
                   className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-200/30 bg-white hover:shadow-lg transition-all duration-300 hover:border-blue-200"
-                style={{backgroundColor: "var(--bg)", color: "var(--muted)"}}>
+                  style={{ backgroundColor: "var(--bg)", color: "var(--muted)" }}>
                   <div className="flex-1 p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                         <User className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900" style={{color: "var(--fg)"}}>
+                        <p className="text-sm font-medium text-gray-900" style={{ color: "var(--fg)" }}>
                           {report.reporter_name || 'Anonymous'}
                         </p>
-                        <p className="text-xs text-gray-500" style={{color: "var(--muted)"}}>
+                        <p className="text-xs text-gray-500" style={{ color: "var(--muted)" }}>
                           {new Date(report.report_date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
@@ -119,36 +119,36 @@ export default function CommunityReports() {
                         </p>
                       </div>
                     </div>
-                    
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2" style={{color: "var(--fg)"}}>
+
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2" style={{ color: "var(--fg)" }}>
                       {report.product_name || 'Unnamed Product'}
                     </h3>
-                    
+
                     {report.brand_name && (
-                      <p className="text-sm text-gray-600 mb-3" style={{color: "var(--muted)"}}>
+                      <p className="text-sm text-gray-600 mb-3" style={{ color: "var(--muted)" }}>
                         <span className="font-medium">Brand:</span> {report.brand_name}
                       </p>
                     )}
-                    
-                    <p className="mb-4 text-sm text-gray-600 line-clamp-3" style={{color: "var(--muted)"}}>
+
+                    <p className="mb-4 text-sm text-gray-600 line-clamp-3" style={{ color: "var(--muted)" }}>
                       {report.description || 'No description provided.'}
                     </p>
-                    
-                    <div className="mt-4 flex flex-wrap gap-2" style={{color: "var(--muted)"}}>
+
+                    <div className="mt-4 flex flex-wrap gap-2" style={{ color: "var(--muted)" }}>
                       {report.location && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
-                         <MapPin className='w-4 h-4' />
+                          <MapPin className='w-4 h-4' />
                           {report.location}
                         </span>
                       )}
-                      
+
                       {report.store_name && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
-                         <Building className='w-4 h-4' />
+                          <Building className='w-4 h-4' />
                           {report.store_name}
                         </span>
                       )}
-                      
+
                       {report.registration_number && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
                           <ShieldAlert className="h-3 w-3" />
@@ -157,8 +157,8 @@ export default function CommunityReports() {
                       )}
                     </div>
                   </div>
-                  
-                  <div className="border-t border-gray-200 bg-gray-50 px-6 py-3" style={{color: "var(--muted)"}}>
+
+                  <div className="border-t border-gray-200 bg-gray-50 px-6 py-3" style={{ color: "var(--muted)" }}>
                     <div className="flex justify-end">
                       <button
                         onClick={() => handleViewDetails(report)}
@@ -174,12 +174,14 @@ export default function CommunityReports() {
           </div>
         )}
       </div>
-      
+
       {selectedReport && (
-        <PopUpCommunityReports 
-          report={selectedReport} 
-          onClose={handleClosePopup} 
-        />
+        <Suspense fallback={null}>
+          <PopUpCommunityReports
+            report={selectedReport}
+            onClose={handleClosePopup}
+          />
+        </Suspense>
       )}
     </div>
   );

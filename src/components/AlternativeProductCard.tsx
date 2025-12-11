@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Eye } from "lucide-react";
-import AlternativeProductDetailsModal from "./AlternativeProductDetailsModal";
 import { formatCategoryText } from "../utils/formatters";
+const AlternativeProductDetailsModal = lazy(() => import("./AlternativeProductDetailsModal"));
 
 interface AlternativeProductCardProps {
     product: {
@@ -32,21 +32,21 @@ export default function AlternativeProductCard({ product }: AlternativeProductCa
                         <Eye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </button>
                 </div>
-                
+
                 {product.brand_name && (
                     <div className="text-xs text-muted mb-2">
                         <span className="font-medium">Brand:</span> {product.brand_name}
                     </div>
                 )}
-                
+
                 <div className="flex items-center gap-2 mb-3">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium border border-app/70 bg-app/40 shrink-0">
                         {formatCategoryText(product.type)}
                     </span>
                 </div>
-                
+
                 <div className="text-xs text-muted mb-3 line-clamp-1">{product.company_name}</div>
-                
+
                 <div className="mt-auto space-y-2">
                     <div className="flex items-center justify-between gap-2 text-[11px]">
                         <span className="opacity-70 shrink-0">Reg. No.</span>
@@ -67,11 +67,13 @@ export default function AlternativeProductCard({ product }: AlternativeProductCa
                 </div>
             </div>
 
-            <AlternativeProductDetailsModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                product={product}
-            />
+            <Suspense fallback={null}>
+                <AlternativeProductDetailsModal
+                    open={showModal}
+                    onClose={() => setShowModal(false)}
+                    product={product}
+                />
+            </Suspense>
         </>
     );
 }
