@@ -1,11 +1,9 @@
-import { useMemo, useState, useEffect, useRef } from 'react';
-import { Search, List, Grid2X2 } from 'lucide-react';
-import ProductCard from '../components/ProductCard';
+import { useMemo, useState, useEffect } from 'react';
+import { Search, List, Grid2X2, SearchX } from 'lucide-react';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
+import VirtualProductList from '../components/VirtualProductList';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
 import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
-import ErrorBoundary from '../components/ErrorBoundary';
-import GenericErrorFallback from '../components/GenericErrorFallback';
 
 const transformProduct = (product: UnifiedProduct) => {
     return {
@@ -109,26 +107,6 @@ export default function Products() {
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;
-
-    // Intersection observer for automatic loading
-    const loadMoreRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-                    fetchNextPage();
-                }
-            },
-            { threshold: 0.1 }
-        );
-
-        if (loadMoreRef.current) {
-            observer.observe(loadMoreRef.current);
-        }
-
-        return () => observer.disconnect();
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
@@ -241,52 +219,45 @@ export default function Products() {
                 </section>
             )}
 
-            {/* Products Grid */}
-            {!isError && (
+            {/* Virtual Products List */}
+            {!isError && filteredProducts.length > 0 && (
+                <VirtualProductList
+                    products={filteredProducts}
+                    viewMode={viewMode}
+                    isLoading={isLoading}
+                    isFetchingNextPage={isFetchingNextPage}
+                    hasNextPage={hasNextPage}
+                    fetchNextPage={fetchNextPage}
+                />
+            )}
+
+            {/* Initial Loading State */}
+            {!isError && isLoading && filteredProducts.length === 0 && (
                 <section className={`grid gap-4 sm:gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-                    {/* Show skeleton loaders while loading initial data */}
-                    {isLoading && filteredProducts.length === 0 && (
-                        <>
-                            {Array.from({ length: viewMode === 'grid' ? 6 : 8 }, (_, index) => (
-                                <ProductCardSkeleton key={`skeleton-${index}`} viewMode={viewMode} />
-                            ))}
-                        </>
-                    )}
-                    
-                    {/* Show actual products */}
-                    {filteredProducts.map(product => (
-                        <ErrorBoundary key={product.id} fallback={GenericErrorFallback}>
-                            <ProductCard product={product} viewMode={viewMode} />
-                        </ErrorBoundary>
+                    {Array.from({ length: viewMode === 'grid' ? 6 : 8 }, (_, index) => (
+                        <ProductCardSkeleton key={`skeleton-${index}`} viewMode={viewMode} />
                     ))}
                 </section>
             )}
 
-            {/* Loading More Products */}
-            {!isError && isFetchingNextPage && filteredProducts.length > 0 && (
-                <section className="text-center py-6 sm:py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-4 border-blue-600/30 border-t-gray-600 mx-auto mb-4"></div>
-                    <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">Loading more products...</p>
-                </section>
-            )}
 
-            {/* Load More Products */}
-            {!isError && hasNextPage && filteredProducts.length > 0 && (
-                <div ref={loadMoreRef} className="h-4"></div>
-            )}
-
-            {/* No More Products */}
-            {!isError && !hasNextPage && allProducts.length > 0 && filteredProducts.length > 0 && (
-                <section className="text-center py-6 sm:py-8">
-                    <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base">All products loaded</p>
-                </section>
-            )}
 
             {/* No Results */}
             {!isError && filteredProducts.length === 0 && !isLoading && (
-                <section className="text-center py-8 sm:py-12">
-                    <p className="text-gray-500 dark:text-slate-400 text-base sm:text-lg">No products found matching your criteria.</p>
-                    <p className="text-gray-400 dark:text-slate-500 text-xs sm:text-sm mt-2">Try adjusting your search terms or filters.</p>
+                <section className="text-center py-12 sm:py-16">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <SearchX className="w-8 h-8 text-gray-400 dark:text-slate-500" />
+                    </div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>No products found</h3>
+                    <p className="text-gray-500 dark:text-slate-400 text-sm sm:text-base mb-6 max-w-md mx-auto">
+                        We couldn't find any products matching "{appliedSearch}" with the selected filters.
+                    </p>
+                    <button
+                        onClick={handleClearSearch}
+                        className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                    >
+                        Clear all filters
+                    </button>
                 </section>
             )}
         </main>
