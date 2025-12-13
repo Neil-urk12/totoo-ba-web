@@ -53,8 +53,8 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen text-slate-900 bg-white dark:text-slate-100 dark:bg-slate-800" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }} role="document">
       <Navbar />
-      {isHomePage && (
-        <main className="px-4" role="main">
+      <main className={isHomePage ? "px-4" : ""} role="main">
+        {isHomePage && (
           <Suspense fallback={<LoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
               <Hero />
@@ -69,9 +69,7 @@ function App() {
               <Notice />
             </ErrorBoundary>
           </Suspense>
-        </main>
-      )}
-      <main role="main">
+        )}
         <ErrorBoundary fallback={GenericErrorFallback}>
           <Outlet />
         </ErrorBoundary>
