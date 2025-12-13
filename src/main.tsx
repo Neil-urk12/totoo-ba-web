@@ -78,8 +78,13 @@ const routes = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
-      { 
-        path: 'products', 
+      {
+        // Explicit index route - homepage content is rendered in App.tsx
+        index: true,
+        element: null,
+      },
+      {
+        path: 'products',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -88,8 +93,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: 'analytics', 
+      {
+        path: 'analytics',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -98,8 +103,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: 'verify', 
+      {
+        path: 'verify',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -108,8 +113,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: 'about', 
+      {
+        path: 'about',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -118,8 +123,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: 'community-reports', 
+      {
+        path: 'community-reports',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -128,8 +133,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: 'report', 
+      {
+        path: 'report',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
@@ -138,8 +143,8 @@ const routes = createBrowserRouter([
           </Suspense>
         )
       },
-      { 
-        path: '*', 
+      {
+        path: '*',
         element: (
           <Suspense fallback={<RouteLoadingSpinner />}>
             <ErrorBoundary fallback={GenericErrorFallback}>
