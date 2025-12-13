@@ -267,8 +267,8 @@ const ProductVerify = async (product_id: string, category?: string) => {
     if (first.error) {
       console.error(`Websearch error on ${table}:`, first.error);
 
-      // Fallback to plain search with same config
-      const alt = await base
+      // Fallback to plain search - re-create query to avoid chaining issues
+      const alt = await supabase.from(table).select('*', { count: 'exact' })
         .textSearch('search_vector', qFts, { type: 'plain', config: 'english' })
         .limit(10);
 
@@ -313,11 +313,11 @@ const ProductVerify = async (product_id: string, category?: string) => {
     if (noFoodAlts) {
       try {
         drugMatches = await runFts('drug_products');
-      } catch (err){ console.error(err); }
+      } catch (err) { console.error(err); }
     } else if (noDrugAlts) {
       try {
         foodMatches = await runFts('food_products');
-      } catch (err){ console.error(err); }
+      } catch (err) { console.error(err); }
     }
   }
 
