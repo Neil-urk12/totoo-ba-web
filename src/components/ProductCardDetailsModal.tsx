@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { Check, X as CloseIcon, AlertTriangle } from "lucide-react";
 
 interface ProductCardDetailsModalProps {
@@ -46,11 +47,11 @@ export default function ProductCardDetailsModal({ open, onClose, product }: Prod
         return product.action === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
-            
+
             {/* Modal */}
             <div className="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 w-full sm:w-[600px] max-h-[85vh]">
                 <div className="m-0 sm:m-0 rounded-t-2xl sm:rounded-2xl border border-app bg-card shadow-xl overflow-hidden flex flex-col" role="document">
@@ -98,7 +99,8 @@ export default function ProductCardDetailsModal({ open, onClose, product }: Prod
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
