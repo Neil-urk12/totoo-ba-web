@@ -25,7 +25,8 @@ export default function Products() {
     const [appliedSearch, setAppliedSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
     const [appliedCategory, setAppliedCategory] = useState('All Categories');
-    const [selectedStatus, setSelectedStatus] = useState('All Status');
+    const [selectedVerificationStatus, setSelectedVerificationStatus] = useState('All');
+    const [selectedActiveStatus, setSelectedActiveStatus] = useState('All');
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -45,7 +46,8 @@ export default function Products() {
     } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
-    const statuses = ['All Status', 'Verified', 'Not Verified'];
+    const verificationStatuses = ['All', 'Verified', 'Not Verified'];
+    const activeStatuses = ['All', 'Active', 'Inactive'];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
 
     // Apply search only on click/Enter
@@ -60,6 +62,8 @@ export default function Products() {
         setAppliedSearch('');
         setSelectedCategory('All Categories');
         setAppliedCategory('All Categories');
+        setSelectedVerificationStatus('All');
+        setSelectedActiveStatus('All');
     };
 
     const allProducts = useMemo(() => {
@@ -72,12 +76,17 @@ export default function Products() {
 
         const transformedProducts = allProducts.map(transformProduct);
 
-        // Filter by status
+        // Filter by verification status and active status
         const statusFilteredProducts = transformedProducts.filter(product => {
-            const matchesStatus = selectedStatus === 'All Status' ||
-                (selectedStatus === 'Verified' && product.status === 'verified');
+            const matchesVerification = selectedVerificationStatus === 'All' ||
+                (selectedVerificationStatus === 'Verified' && product.status === 'verified') ||
+                (selectedVerificationStatus === 'Not Verified' && product.status !== 'verified');
 
-            return matchesStatus;
+            const matchesActive = selectedActiveStatus === 'All' ||
+                (selectedActiveStatus === 'Active' && product.action === 'active') ||
+                (selectedActiveStatus === 'Inactive' && product.action !== 'active');
+
+            return matchesVerification && matchesActive;
         });
 
         // Sort products based on selected sort option
@@ -103,23 +112,23 @@ export default function Products() {
         });
 
         return sortedProducts;
-    }, [allProducts, selectedStatus, sortBy]);
+    }, [allProducts, selectedVerificationStatus, selectedActiveStatus, sortBy]);
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;
 
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-            {/* Header */}
+            // Header
             <header className="mb-6 sm:mb-8">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>All Registered Products</h1>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300" style={{ color: "var(--fg)" }}>Browse all FDA-registered products in the Philippines database</p>
             </header>
 
-            {/* Search and Filter Bar */}
+            // Search and Filter Bar
             <section className="mb-4 sm:mb-6">
                 <div className="flex flex-col gap-4 mb-4">
-                    {/* Search Bar */}
+                    // Search Bar
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
@@ -138,9 +147,9 @@ export default function Products() {
                         </button>
                     </div>
 
-                    {/* Filter Dropdowns and View Toggle */}
+                    // Filter Dropdowns and View Toggle
                     <div className="flex flex-col sm:flex-row gap-3">
-                        {/* Filter Dropdowns */}
+                        // Filter Dropdowns
                         <div className="flex flex-col sm:flex-row gap-3 flex-1">
                             <select
                                 value={selectedCategory}
@@ -153,12 +162,26 @@ export default function Products() {
                             </select>
 
                             <select
-                                value={selectedStatus}
-                                onChange={(e) => setSelectedStatus(e.target.value)}
+                                value={selectedVerificationStatus}
+                                onChange={(e) => setSelectedVerificationStatus(e.target.value)}
                                 className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
                             >
-                                {statuses.map(status => (
-                                    <option key={status} value={status}>{status}</option>
+                                {verificationStatuses.map(status => (
+                                    <option key={status} value={status}>
+                                        {status === 'All' ? 'All Verification' : status}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                value={selectedActiveStatus}
+                                onChange={(e) => setSelectedActiveStatus(e.target.value)}
+                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
+                            >
+                                {activeStatuses.map(status => (
+                                    <option key={status} value={status}>
+                                        {status === 'All' ? 'All Status' : status}
+                                    </option>
                                 ))}
                             </select>
 
@@ -173,7 +196,7 @@ export default function Products() {
                             </select>
                         </div>
 
-                        {/* View Mode Toggle */}
+                        // View Mode Toggle
                         <div className="flex gap-2 self-start sm:self-auto">
                             <button
                                 onClick={() => setViewMode('grid')}
@@ -191,7 +214,7 @@ export default function Products() {
                     </div>
                 </div>
 
-                {/* Results Count and Clear Search */}
+                // Results Count and Clear Search
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <p className="text-xs sm:text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
