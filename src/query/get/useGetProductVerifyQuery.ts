@@ -1,158 +1,15 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
 import type { FoodProduct, DrugProduct, VerifiedProduct, ProductInfo, VerifyResponse } from "../../types";
+import { verifyProduct } from "../../domain/verifyProduct";
 
 export type { VerifiedProduct, ProductInfo, VerifyResponse };
 
-// Map UI category to table names
 const tableForCategory = (category?: string) => {
   const c = (category || '').toLowerCase();
   if (c === 'food') return ['food_products'] as const;
   if (c === 'drugs' || c === 'drug' || c === 'pharmaceutical') return ['drug_products'] as const;
-  // Unknown or All -> both
   return ['food_products', 'drug_products'] as const;
-};
-
-
-
-// Build normalized response compatible with current UI
-const buildResponse = ({
-  exactFood,
-  exactDrug,
-  foodMatches,
-  drugMatches,
-}: {
-  exactFood: FoodProduct | null;
-  exactDrug: DrugProduct | null;
-  foodMatches: FoodProduct[];
-  drugMatches: DrugProduct[];
-}): VerifyResponse => {
-  const exact = exactFood || exactDrug || null;
-  const isDrug = !!exactDrug || (!exact && drugMatches.length > 0);
-  const topFood = foodMatches[0] || null;
-  const topDrug = drugMatches[0] || null;
-  const totalMatches = foodMatches.length + drugMatches.length;
-
-  const is_exact_registration = !!exact;
-  const has_text_match = totalMatches > 0;
-
-  const base: VerifyResponse = {
-    product_id: exact?.registration_number || topFood?.registration_number || topDrug?.registration_number || null,
-    // Treat any successful text match as verified (even if not exact registration)
-    is_verified: is_exact_registration || has_text_match,
-    message: is_exact_registration
-      ? 'Product verified via FTS from FDA database.'
-      : has_text_match
-        ? 'Product verified via text search match in FDA database.'
-        : 'Product not found in FDA database.',
-    details: {
-      verification_method: 'Full-Text Search in FDA Database',
-      total_matches: totalMatches,
-      search_results_count: totalMatches,
-      // Slightly higher confidence for non-exact text matches
-      confidence_score: is_exact_registration ? 100 : (has_text_match ? 85 : 0),
-      exact_match: is_exact_registration,
-      suggestions: totalMatches === 0 ? [
-        'Check for typos or spacing in the registration number',
-        'Try searching by brand or generic name',
-        'Verify the product category (Food vs Drug) and try again'
-      ] : undefined,
-      product_info: null,
-      verified_product: null,
-      alternative_matches: [],
-    },
-    registrationDate: exact?.issuance_date || topFood?.issuance_date || topDrug?.issuance_date || null,
-    expiryDate: exact?.expiry_date || topFood?.expiry_date || topDrug?.expiry_date || null,
-  };
-
-  if (isDrug) {
-    const row = exactDrug || topDrug;
-    if (row) {
-      base.details.verified_product = {
-        id: row.id || undefined,
-        brand_name: row.brand_name || null,
-        generic_name: row.generic_name || null,
-        manufacturer: row.manufacturer || null,
-        registration_number: row.registration_number || null,
-        type: 'drug',
-        matched_fields: [],
-        relevance_score: null,
-      };
-      base.details.product_info = {
-        id: row.id || undefined,
-        product_name: row.brand_name || row.generic_name || null,
-        company_name: row.manufacturer || null,
-        registration_number: row.registration_number || null,
-        type: 'drug',
-        matched_fields: [],
-        relevance_score: null,
-      };
-    }
-  } else {
-    const row = exactFood || topFood;
-    if (row) {
-      base.details.product_info = {
-        id: row.id || undefined,
-        product_name: row.brand_name || row.product_name || null, // Prioritize brand_name for food products
-        company_name: row.company_name || null,
-        registration_number: row.registration_number || null,
-        type: row.type_of_product || 'food',
-        matched_fields: [],
-        relevance_score: null,
-      };
-    }
-  }
-
-  // Build alternative matches (exclude the chosen exact/top item)
-  const chosenReg = base.product_id;
-  const alternatives: Array<{
-    id?: string;
-    relevance_score?: number | null;
-    matched_fields?: string[];
-    type: string;
-    registration_number: string;
-    product_name: string;
-    company_name: string;
-    brand_name?: string | null;
-    issuance_date?: string | null;
-    expiry_date?: string | null;
-  }> = [];
-
-  for (const f of foodMatches) {
-    if (!f.registration_number || f.registration_number === chosenReg) continue;
-    alternatives.push({
-      id: f.id,
-      relevance_score: null,
-      matched_fields: [],
-      type: (f.type_of_product || 'food'),
-      registration_number: f.registration_number,
-      product_name: f.product_name || 'Unknown',
-      company_name: f.company_name || '—',
-      brand_name: f.brand_name || null,
-      issuance_date: f.issuance_date || null,
-      expiry_date: f.expiry_date || null,
-    });
-  }
-  for (const d of drugMatches) {
-    if (!d.registration_number || d.registration_number === chosenReg) continue;
-    alternatives.push({
-      id: d.id,
-      relevance_score: null,
-      matched_fields: [],
-      type: 'drug',
-      registration_number: d.registration_number,
-      product_name: d.brand_name || d.generic_name || 'Unknown',
-      company_name: d.manufacturer || '—',
-      brand_name: d.brand_name || null,
-      issuance_date: d.issuance_date || null,
-      expiry_date: d.expiry_date || null,
-    });
-  }
-
-  // Keep top 10 alternatives for display
-  base.details.alternative_matches = alternatives.slice(0, 10);
-
-  return base;
 };
 
 const ProductVerify = async (product_id: string, category?: string) => {
@@ -249,7 +106,7 @@ const ProductVerify = async (product_id: string, category?: string) => {
     }
   }
 
-  return buildResponse({ exactFood, exactDrug, foodMatches, drugMatches });
+  return verifyProduct({ exactFood, exactDrug, foodMatches, drugMatches });
 };
 
 export const useGetProductVerifyQuery = (product_id: string, category?: string) => {
