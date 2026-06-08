@@ -1,7 +1,8 @@
 import { useSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import { useState, lazy, Suspense } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useGetProductVerifyQuery, type VerifyResponse } from '../query/get/useGetProductVerifyQuery'
+import { useGetProductVerifyQuery } from '../query/get/useGetProductVerifyQuery'
+import type { VerifyResponse } from '../types'
 const ProductDetailsModal = lazy(() => import('../components/ProductDetailsModal'))
 import FoodIndustryVerification from '../components/FoodIndustryVerification'
 import ImageVerificationResult from '../components/ImageVerificationResult'

@@ -1,5 +1,5 @@
 import React from 'react'
-import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery'
+import type { VerifyResponse } from '../types'
 import { formatCategoryText } from '../utils/formatters'
 
 interface ProductDetailsModalProps {

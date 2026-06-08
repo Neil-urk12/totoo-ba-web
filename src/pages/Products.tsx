@@ -3,7 +3,7 @@ import { Search, List, Grid2X2, SearchX } from 'lucide-react';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import VirtualProductList from '../components/VirtualProductList';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
-import type { UnifiedProduct, UnifiedProductsResponse } from '../types/UnifiedProduct';
+import type { UnifiedProduct, UnifiedProductsResponse } from '../types';
 
 const transformProduct = (product: UnifiedProduct) => {
     return {

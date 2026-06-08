@@ -9,49 +9,7 @@
  */
 
 import { useMutation } from '@tanstack/react-query'
-
-/**
- * Response structure from the image verification API
- * @typedef {Object} VerifyImageResponse
- * @property {string} verification_status - Status of verification (e.g., "verified", "not_found")
- * @property {number} confidence - Confidence score (0-100) of the match
- * @property {Object} matched_product - The best matching product from the database
- * @property {Object} extracted_fields - Fields extracted from the image by AI
- * @property {string} ai_reasoning - AI's explanation of the verification result
- * @property {Array} alternative_matches - Other potential product matches
- */
-type VerifyImageResponse = {
-    verification_status: string;
-    confidence: number;
-    matched_product: {
-        id: string;
-        relevance_score: number;
-        matched_fields: string[];
-        type: string;
-        registration_number: string;
-        product_name: string;
-        company_name: string;
-    };
-    extracted_fields: {
-        registration_number: string | null;
-        brand_name: string;
-        product_description: string;
-        manufacturer: string | null;
-        expiry_date: string | null;
-        batch_number: string | null;
-        net_weight: string;
-    };
-    ai_reasoning: string;
-    alternative_matches: Array<{
-        id: string;
-        relevance_score: number;
-        matched_fields: string[];
-        type: string;
-        registration_number: string;
-        product_name: string;
-        company_name: string;
-    }>;
-}
+import type { VerifyImageResponse } from '../../types'
 
 /**
  * Verifies a product image by uploading it to the AI verification API

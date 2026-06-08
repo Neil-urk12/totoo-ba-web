@@ -13,7 +13,7 @@
 
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
-import type { UnifiedProduct, UnifiedProductsResponse } from "../../types/UnifiedProduct";
+import type { UnifiedProduct, UnifiedProductsResponse } from "../../types";
 
 /**
  * Validates and sanitizes search query input

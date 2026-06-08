@@ -1,40 +1,10 @@
 import { Check, AlertTriangle, X } from "lucide-react";
 import AlternativeProductCard from "./AlternativeProductCard";
 import { formatCategoryText } from "../utils/formatters";
+import type { VerifyImageResponse } from "../types";
 
 type ImageVerificationResultProps = {
-    data: {
-        verification_status: string;
-        confidence: number;
-        matched_product: {
-            id: string;
-            relevance_score: number;
-            matched_fields: string[];
-            type: string;
-            registration_number: string;
-            product_name: string;
-            company_name: string;
-        };
-        extracted_fields: {
-            registration_number: string | null;
-            brand_name: string;
-            product_description: string;
-            manufacturer: string | null;
-            expiry_date: string | null;
-            batch_number: string | null;
-            net_weight: string;
-        };
-        ai_reasoning: string;
-        alternative_matches: Array<{
-            id: string;
-            relevance_score: number;
-            matched_fields: string[];
-            type: string;
-            registration_number: string;
-            product_name: string;
-            company_name: string;
-        }>;
-    };
+    data: VerifyImageResponse;
 };
 
 export default function ImageVerificationResult({ data }: ImageVerificationResultProps) {

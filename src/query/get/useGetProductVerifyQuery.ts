@@ -1,5 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
+import type { FoodProduct, DrugProduct, VerifiedProduct, ProductInfo, VerifyResponse } from "../../types";
+
+export type { VerifiedProduct, ProductInfo, VerifyResponse };
 
 // Map UI category to table names
 const tableForCategory = (category?: string) => {
@@ -10,82 +13,7 @@ const tableForCategory = (category?: string) => {
   return ['food_products', 'drug_products'] as const;
 };
 
-// Minimal row types
-interface FoodProduct {
-  id?: string;
-  registration_number: string;
-  brand_name?: string | null; // Brand name field exists in food_products table
-  company_name?: string | null;
-  product_name?: string | null;
-  type_of_product?: string | null;
-  issuance_date?: string | null;
-  expiry_date?: string | null;
-}
-interface DrugProduct {
-  id?: string;
-  registration_number: string;
-  brand_name?: string | null;
-  generic_name?: string | null;
-  manufacturer?: string | null;
-  issuance_date?: string | null;
-  expiry_date?: string | null;
-}
 
-export type VerifiedProduct = {
-  id?: string;
-  brand_name?: string | null;
-  generic_name?: string | null;
-  manufacturer?: string | null;
-  registration_number?: string | null;
-  type?: string | null;
-  matched_fields?: string[];
-  relevance_score?: number | null;
-  // Food industry specific optional fields
-  license_number?: string | null;
-  name_of_establishment?: string | null;
-};
-
-export type ProductInfo = {
-  id?: string;
-  product_name?: string | null;
-  company_name?: string | null;
-  registration_number?: string | null;
-  type?: string | null;
-  matched_fields?: string[];
-  relevance_score?: number | null;
-};
-
-export type VerifyResponse = {
-  product_id: string | null;
-  is_verified: boolean;
-  message: string;
-  details: {
-    verification_method: string;
-    total_matches: number;
-    // Back-compat optional fields used in UI
-    search_results_count?: number;
-    suggestions?: string[];
-    confidence_score?: number;
-    exact_match?: boolean;
-    matched_field?: string;
-    product_info: ProductInfo | null;
-    verified_product: VerifiedProduct | null;
-    alternative_matches?: Array<{
-      id?: string;
-      relevance_score?: number | null;
-      matched_fields?: string[];
-      type: string;
-      registration_number: string;
-      product_name: string;
-      company_name: string;
-      brand_name?: string | null;
-      issuance_date?: string | null;
-      expiry_date?: string | null;
-    }>;
-  };
-  registrationDate: string | null;
-  expiryDate: string | null;
-};
 
 // Build normalized response compatible with current UI
 const buildResponse = ({

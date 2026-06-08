@@ -1,5 +1,5 @@
 import { Check, Building2, IdCard, Award, Search, ShieldCheck } from 'lucide-react';
-import type { VerifyResponse } from '../query/get/useGetProductVerifyQuery';
+import type { VerifyResponse } from '../types';
 import { formatCategoryText } from '../utils/formatters';
 
 interface FoodIndustryVerificationProps {
