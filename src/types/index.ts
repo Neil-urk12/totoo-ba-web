@@ -64,6 +64,30 @@ export type UnifiedProductsResponse = {
 };
 
 // ---------------------------------------------------------------------------
+// Display product (view-model for product cards and lists)
+// ---------------------------------------------------------------------------
+
+export type DisplayProduct = {
+  id: string;
+  name: string;
+  category: string;
+  registrationNo: string;
+  manufacturer: string;
+  registered: string;
+  expires: string;
+};
+
+export const toDisplayProduct = (product: UnifiedProduct): DisplayProduct => ({
+  id: product.id || product.registration_number,
+  name: product.name || 'Unknown Product',
+  category: product.category || product.source_category,
+  registrationNo: product.registration_number,
+  manufacturer: product.manufacturer || 'Unknown Manufacturer',
+  registered: product.issuance_date || 'Unknown',
+  expires: product.expiry_date || 'Unknown',
+});
+
+// ---------------------------------------------------------------------------
 // Text-search verification result shapes
 // ---------------------------------------------------------------------------
 

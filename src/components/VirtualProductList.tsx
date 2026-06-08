@@ -10,22 +10,10 @@ import ProductCard from './ProductCard';
 import ProductCardSkeleton from './ProductCardSkeleton';
 import ErrorBoundary from './ErrorBoundary';
 import GenericErrorFallback from './GenericErrorFallback';
-
-interface Product {
-    id: string;
-    name: string;
-    status: 'verified' | 'not-verified';
-    category: string;
-    registrationNo: string;
-    manufacturer: string;
-    registered: string;
-    expires: string;
-    compliance: 'compliant' | 'non-compliant';
-    action: 'active' | 'suspended';
-}
+import type { DisplayProduct } from '../types';
 
 interface VirtualProductListProps {
-    products: Product[];
+    products: DisplayProduct[];
     viewMode: 'grid' | 'list';
     isLoading: boolean;
     isFetchingNextPage: boolean;

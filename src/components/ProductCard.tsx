@@ -22,73 +22,36 @@
  * <ProductCard product={productData} viewMode="grid" />
  */
 import { useState, lazy, Suspense } from "react";
-import { Check, X, Eye } from "lucide-react";
+import { Check, Eye } from "lucide-react";
+import type { DisplayProduct } from "../types";
 const ProductCardDetailsModal = lazy(() => import("./ProductCardDetailsModal"));
 
-/**
- * Props interface for ProductCard component
- * @interface ProductCardProps
- * @property {Object} product - The product data to display
- * @property {'grid' | 'list'} [viewMode] - Display mode (default: 'grid')
- */
 interface ProductCardProps {
-    product: {
-        id: string;
-        name: string;
-        status: 'verified' | 'not-verified';
-        category: string;
-        registrationNo: string;
-        manufacturer: string;
-        registered: string;
-        expires: string;
-        compliance: 'compliant' | 'non-compliant';
-        action: 'active' | 'suspended';
-    };
+    product: DisplayProduct;
     viewMode?: 'grid' | 'list';
 }
 
 export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
     const [showModal, setShowModal] = useState(false);
 
-    /**
-     * Returns the appropriate icon for the product's verification status
-     * @returns {JSX.Element} Check icon for verified, X icon for not verified
-     */
-    const getStatusIcon = () => {
-        if (product.status === 'verified') {
-            return <Check className="w-3 h-3" />;
-        }
-        return <X className="w-3 h-3" />;
-    };
-
-    /**
-     * Returns the appropriate CSS classes for the status badge color
-     * @returns {string} CSS classes for badge styling
-     */
-    const getStatusColor = () => {
-        return product.status === 'verified' ? 'bg-verified text-verified' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-    };
-
     if (viewMode === 'list') {
         return (
             <>
                 <div className="rounded-lg shadow-sm border p-3 sm:p-4 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
                     <div className="flex items-start justify-between gap-4">
-                        {/* Left side: Product info stacked vertically */}
                         <div className="flex-1 min-w-0">
                             <h3 id={`product-name-${product.id}`} className="font-semibold text-sm sm:text-base mb-1">{product.name}</h3>
                             <p className="text-xs sm:text-sm text-muted mb-1">{product.manufacturer}</p>
                             <p className="text-xs text-muted">{product.category}</p>
                         </div>
 
-                        {/* Right side: Badges and button stacked vertically and fixed to the right */}
                         <div className="flex flex-col items-end gap-2 flex-shrink-0">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs text-muted whitespace-nowrap">{product.category}</span>
-                                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
-                                    {getStatusIcon()}
-                                    <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
-                                    <span>{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
+                                <div className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium flex-shrink-0 bg-verified text-verified" aria-label="Status: Verified">
+                                    <Check className="w-3 h-3" />
+                                    <span className="sr-only">Verified</span>
+                                    <span>Verified</span>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -116,18 +79,16 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         );
     }
 
-    // Grid view (default)
     return (
         <>
             <div className="rounded-lg shadow-sm border p-4 sm:p-6 hover:shadow-md transition-shadow bg-card border-app" role="article" aria-labelledby={`product-name-${product.id}`}>
-                {/* Header with name, status, and eye icon */}
                 <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex-1 min-w-0">
                         <h3 id={`product-name-${product.id}`} className="font-semibold text-base sm:text-lg mb-2 line-clamp-2">{product.name}</h3>
-                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor()}`} aria-label={`Status: ${product.status === 'verified' ? 'Verified' : 'Not Verified'}`}>
-                            {getStatusIcon()}
-                            <span className="sr-only">{product.status === 'verified' ? 'Verified' : 'Not Verified'}</span>
-                            {product.status === 'verified' ? 'VERIFIED' : 'NOT VERIFIED'}
+                        <div className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-verified text-verified" aria-label="Status: Verified">
+                            <Check className="w-3 h-3" />
+                            <span className="sr-only">Verified</span>
+                            VERIFIED
                         </div>
                     </div>
                     <button
@@ -139,7 +100,6 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                     </button>
                 </div>
 
-                {/* Category */}
                 <div className="text-sm text-muted">
                     <span className="font-medium">Category:</span> {product.category}
                 </div>

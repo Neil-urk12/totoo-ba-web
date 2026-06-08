@@ -3,30 +3,14 @@ import { Search, List, Grid2X2, SearchX } from 'lucide-react';
 import ProductCardSkeleton from '../components/ProductCardSkeleton';
 import VirtualProductList from '../components/VirtualProductList';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
-import type { UnifiedProduct, UnifiedProductsResponse } from '../types';
-
-const transformProduct = (product: UnifiedProduct) => {
-    return {
-        id: product.id || product.registration_number,
-        name: product.name || 'Unknown Product',
-        status: 'verified' as const,
-        category: product.category || product.source_category,
-        registrationNo: product.registration_number,
-        manufacturer: product.manufacturer || 'Unknown Manufacturer',
-        registered: product.issuance_date || 'Unknown',
-        expires: product.expiry_date || 'Unknown',
-        compliance: 'compliant' as const,
-        action: 'active' as const,
-    };
-};
+import { toDisplayProduct } from '../types';
+import type { UnifiedProductsResponse } from '../types';
 
 export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All Categories');
     const [appliedCategory, setAppliedCategory] = useState('All Categories');
-    const [selectedVerificationStatus, setSelectedVerificationStatus] = useState('All');
-    const [selectedActiveStatus, setSelectedActiveStatus] = useState('All');
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -46,8 +30,6 @@ export default function Products() {
     } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
 
     const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
-    const verificationStatuses = ['All', 'Verified', 'Not Verified'];
-    const activeStatuses = ['All', 'Active', 'Inactive'];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
 
     // Apply search only on click/Enter
@@ -62,8 +44,6 @@ export default function Products() {
         setAppliedSearch('');
         setSelectedCategory('All Categories');
         setAppliedCategory('All Categories');
-        setSelectedVerificationStatus('All');
-        setSelectedActiveStatus('All');
     };
 
     const allProducts = useMemo(() => {
@@ -74,23 +54,9 @@ export default function Products() {
     const filteredProducts = useMemo(() => {
         if (!allProducts.length) return [];
 
-        const transformedProducts = allProducts.map(transformProduct);
+        const displayProducts = allProducts.map(toDisplayProduct);
 
-        // Filter by verification status and active status
-        const statusFilteredProducts = transformedProducts.filter(product => {
-            const matchesVerification = selectedVerificationStatus === 'All' ||
-                (selectedVerificationStatus === 'Verified' && product.status === 'verified') ||
-                (selectedVerificationStatus === 'Not Verified' && product.status !== 'verified');
-
-            const matchesActive = selectedActiveStatus === 'All' ||
-                (selectedActiveStatus === 'Active' && product.action === 'active') ||
-                (selectedActiveStatus === 'Inactive' && product.action !== 'active');
-
-            return matchesVerification && matchesActive;
-        });
-
-        // Sort products based on selected sort option
-        const sortedProducts = [...statusFilteredProducts].sort((a, b) => {
+        const sortedProducts = [...displayProducts].sort((a, b) => {
             switch (sortBy) {
                 case 'Name':
                     return a.name.localeCompare(b.name);
@@ -112,7 +78,7 @@ export default function Products() {
         });
 
         return sortedProducts;
-    }, [allProducts, selectedVerificationStatus, selectedActiveStatus, sortBy]);
+    }, [allProducts, sortBy]);
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;
@@ -158,30 +124,6 @@ export default function Products() {
                             >
                                 {categories.map(category => (
                                     <option key={category} value={category}>{category}</option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={selectedVerificationStatus}
-                                onChange={(e) => setSelectedVerificationStatus(e.target.value)}
-                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
-                            >
-                                {verificationStatuses.map(status => (
-                                    <option key={status} value={status}>
-                                        {status === 'All' ? 'All Verification' : status}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={selectedActiveStatus}
-                                onChange={(e) => setSelectedActiveStatus(e.target.value)}
-                                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm sm:text-base" style={{ backgroundColor: "var(--bg)", color: "var(--fg)" }}
-                            >
-                                {activeStatuses.map(status => (
-                                    <option key={status} value={status}>
-                                        {status === 'All' ? 'All Status' : status}
-                                    </option>
                                 ))}
                             </select>
 
