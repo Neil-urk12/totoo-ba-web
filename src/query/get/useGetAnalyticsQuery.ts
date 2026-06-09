@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { PostgrestError } from "@supabase/supabase-js";
 import { supabase } from "../../db/supabaseClient";
+import { CATEGORY_REGISTRY, analyticsLabelForDbType } from "../../domain/categoryRegistry";
 
 export type AnalyticsData = {
   totalProducts: number;
@@ -117,28 +118,34 @@ const fetchAnalyticsData = async (): Promise<AnalyticsData> => {
   );
   const activeBusinesses = foodCompanies.size + drugCompanies.size;
 
-  // Process Categories
-  // Count food categories
-  const foodCategoryCounts: Record<string, number> = {};
+  // Process Categories using the registry
+  const categoryCounts: Record<string, number> = {};
+
+  // Count food categories by mapping db values to analytics labels
   foodCategoriesResult.data?.forEach(product => {
-    const category = product.type_of_product || 'Food Supplement';
-    foodCategoryCounts[category] = (foodCategoryCounts[category] || 0) + 1;
+    const dbType = product.type_of_product || 'Food Supplement';
+    const label = analyticsLabelForDbType(dbType) ?? dbType;
+    categoryCounts[label] = (categoryCounts[label] || 0) + 1;
   });
 
-  // Count drug categories (using length from result)
+  // Count drug categories (drugs are counted as a single group)
   const drugCount = drugCategoriesResult.data?.length || 0;
+  if (drugCount > 0) {
+    categoryCounts['Drugs'] = (categoryCounts['Drugs'] || 0) + drugCount;
+  }
 
-  // Create comprehensive category list
-  const productsByCategory = [
-    { name: 'Food Supplements', count: foodCategoryCounts['Food Supplement'] || 0, trend: 'up' as const },
-    { name: 'Food Products', count: foodCategoryCounts['Food'] || 0, trend: 'up' as const },
-    { name: 'Cosmetics', count: foodCategoryCounts['Cosmetic'] || 0, trend: 'up' as const },
-    { name: 'Drugs', count: drugCount, trend: 'neutral' as const },
-    { name: 'Medical Devices', count: foodCategoryCounts['Medical Device'] || 0, trend: 'down' as const },
-    ...Object.entries(foodCategoryCounts)
-      .filter(([category]) => !['Food Supplement', 'Food', 'Cosmetic', 'Medical Device'].includes(category))
-      .map(([category, count]) => ({ name: category, count, trend: 'up' as const }))
-  ].filter(category => category.count > 0);
+  // Build category list from registry, deduplicated by analyticsLabel
+  const seenLabels = new Set<string>();
+  const productsByCategory = CATEGORY_REGISTRY
+    .filter(entry => !seenLabels.has(entry.analyticsLabel) && (seenLabels.add(entry.analyticsLabel), true))
+    .filter(entry => (categoryCounts[entry.analyticsLabel] || 0) > 0)
+    .map(entry => {
+      const count = categoryCounts[entry.analyticsLabel] || 0;
+      const trend = entry.analyticsLabel === 'Medical Devices' ? 'down' as const
+        : entry.analyticsLabel === 'Drugs' ? 'neutral' as const
+        : 'up' as const;
+      return { name: entry.analyticsLabel, count, trend };
+    });
 
   // Process Top Manufacturers (Reusing Companies Results)
   const manufacturerCounts: Record<string, number> = {};

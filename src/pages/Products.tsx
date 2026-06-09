@@ -5,18 +5,19 @@ import VirtualProductList from '../components/VirtualProductList';
 import { useGetUnifiedProductsInfiniteQuery } from "../query/get/useGetUnifiedProductsQuery";
 import { toDisplayProduct } from '../types';
 import type { UnifiedProductsResponse } from '../types';
+import { ALL_CATEGORIES_SENTINEL, CATEGORY_DISPLAY_LABELS } from '../domain/categoryRegistry';
 
 export default function Products() {
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All Categories');
-    const [appliedCategory, setAppliedCategory] = useState('All Categories');
+    const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES_SENTINEL);
+    const [appliedCategory, setAppliedCategory] = useState(ALL_CATEGORIES_SENTINEL);
     const [sortBy, setSortBy] = useState('Name');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
     // Load initial products on mount
     useEffect(() => {
-        setAppliedCategory('All Categories');
+        setAppliedCategory(ALL_CATEGORIES_SENTINEL);
     }, []);
 
     const {
@@ -29,7 +30,7 @@ export default function Products() {
         isError
     } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
 
-    const categories = ['All Categories', 'Food', 'Food Supplement', 'Drugs', 'Cosmetic', 'Medical Device', 'Pharmaceutical'];
+    const categories = [ALL_CATEGORIES_SENTINEL, ...CATEGORY_DISPLAY_LABELS];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
 
     // Apply search only on click/Enter
@@ -42,8 +43,8 @@ export default function Products() {
     const handleClearSearch = () => {
         setSearchTerm('');
         setAppliedSearch('');
-        setSelectedCategory('All Categories');
-        setAppliedCategory('All Categories');
+        setSelectedCategory(ALL_CATEGORIES_SENTINEL);
+        setAppliedCategory(ALL_CATEGORIES_SENTINEL);
     };
 
     const allProducts = useMemo(() => {

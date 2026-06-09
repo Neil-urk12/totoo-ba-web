@@ -1,5 +1,6 @@
 import type { FoodProduct, DrugProduct, VerifyResponse } from '../types';
 import { verifyProduct } from './verifyProduct';
+import { getTargetTables } from './categoryRegistry';
 
 export interface ProductVerificationAdapter {
   findExactRegistrationNumber(
@@ -14,10 +15,7 @@ export interface ProductVerificationAdapter {
 }
 
 const tablesForCategory = (category?: string): readonly ('food_products' | 'drug_products')[] => {
-  const c = (category || '').toLowerCase();
-  if (c === 'food') return ['food_products'] as const;
-  if (c === 'drugs' || c === 'drug' || c === 'pharmaceutical') return ['drug_products'] as const;
-  return ['food_products', 'drug_products'] as const;
+  return getTargetTables(category ?? '') ?? ['food_products', 'drug_products'];
 };
 
 export const createProductVerification = (adapter: ProductVerificationAdapter) => ({

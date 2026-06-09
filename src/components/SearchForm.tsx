@@ -27,11 +27,12 @@ import { usePostVerifyImage } from '../query/post/usePostVerifyImage'
 import { Camera, Search } from "lucide-react";
 import PopUpError from './PopUpError';
 import ImageVerificationLoader from './ImageVerificationLoader';
+import { ALL_CATEGORIES_SENTINEL, CATEGORY_DISPLAY_LABELS } from '../domain/categoryRegistry';
 
 export default function SearchForm() {
     const [query, setQuery] = useState('')
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [category, setCategory] = useState('All Categories')
+    const [category, setCategory] = useState(ALL_CATEGORIES_SENTINEL)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const [isUploading, setIsUploading] = useState<boolean>(false)
     const [searchMethod, setSearchMethod] = useState<'text' | 'image'>('text')
@@ -118,7 +119,7 @@ export default function SearchForm() {
             searchParams.set('q', q)
 
             // Only add category if it's not "All Categories"
-            if (category && category !== 'All Categories') {
+            if (category && category !== ALL_CATEGORIES_SENTINEL) {
                 searchParams.set('category', category)
             }
 
@@ -235,10 +236,10 @@ export default function SearchForm() {
                                 className="w-56 h-9 border rounded-md bg-app border-app"
                                 aria-describedby="category-help-text"
                             >
-                                <option value="All Categories">All Categories</option>
-                                <option value="Food">Food</option>
-                                <option value="Cosmetics">Cosmetics</option>
-                                <option value="Drugs">Drugs</option>
+                                <option value={ALL_CATEGORIES_SENTINEL}>All Categories</option>
+                                {CATEGORY_DISPLAY_LABELS.map(label => (
+                                    <option key={label} value={label}>{label}</option>
+                                ))}
                             </select>
                         </div>
                     </div>

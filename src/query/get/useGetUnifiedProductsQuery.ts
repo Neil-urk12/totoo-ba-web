@@ -14,6 +14,7 @@
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "../../db/supabaseClient";
 import type { UnifiedProduct, UnifiedProductsResponse } from "../../types";
+import { getSourceCategory } from "../../domain/categoryRegistry";
 
 /**
  * Validates and sanitizes search query input
@@ -93,12 +94,9 @@ const fetchUnifiedProducts = async (
     .order('name', { ascending: true });
 
   // Apply category filter if needed
-  if (category && category !== 'All Categories') {
-    if (category === 'Food' || category === 'Food Supplement' || category === 'Cosmetic' || category === 'Medical Device') {
-      query = query.eq('source_category', 'Food');
-    } else if (category === 'Drugs' || category === 'Drug' || category === 'Pharmaceutical') {
-      query = query.eq('source_category', 'Drugs');
-    }
+  const sourceCategory = getSourceCategory(category ?? '');
+  if (sourceCategory) {
+    query = query.eq('source_category', sourceCategory);
   }
 
   // Apply search if provided
