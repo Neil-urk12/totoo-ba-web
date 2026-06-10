@@ -1,4 +1,4 @@
-import { Package, Building2, BarChart3, Clock, AlertTriangle, TrendingDown, TrendingUp } from 'lucide-react';
+import { Package, Building2, BarChart3, AlertTriangle, TrendingDown, TrendingUp } from 'lucide-react';
 import { useQuery } from "@tanstack/react-query";
 import { useGetAnalyticsQuery } from "../query/get/useGetAnalyticsQuery";
 
@@ -99,20 +99,6 @@ function ActivityItem({ type, product, time, status }: { type: string; product: 
     );
 }
 
-function ComplianceBar({ rate }: { rate: number }) {
-    return (
-        <div className="flex items-center gap-2">
-            <div className="w-20 bg-gray-200 rounded-full h-2" style={{ backgroundColor: "var(--bg)" }}>
-                <div
-                    className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${rate}%` }}
-                />
-            </div>
-            <span className="text-sm text-gray-600" style={{ color: "var(--muted)" }}>{rate}%</span>
-        </div>
-    );
-}
-
 export default function Analytics() {
     const { data: analyticsData, isLoading, error } = useQuery(useGetAnalyticsQuery());
 
@@ -181,13 +167,6 @@ export default function Analytics() {
                         trendType="positive"
                     />
                     <MetricCard
-                        title="Verified Today"
-                        value={analyticsData.verifiedToday.toLocaleString()}
-                        trend="+8% from yesterday"
-                        icon={<Clock className="text-xl" />}
-                        trendType="positive"
-                    />
-                    <MetricCard
                         title="Compliance Rate"
                         value={`${analyticsData.complianceRate}%`}
                         trend="+2.3% from last quarter"
@@ -200,13 +179,6 @@ export default function Analytics() {
                         trend="+5% from last month"
                         icon={<Building2 className="text-xl" />}
                         trendType="positive"
-                    />
-                    <MetricCard
-                        title="Active Recalls"
-                        value={analyticsData.activeRecalls}
-                        trend="+3 from last week"
-                        icon={<AlertTriangle className="text-xl" />}
-                        trendType="negative"
                     />
                     <MetricCard
                         title="Expiring Soon"
@@ -264,7 +236,6 @@ export default function Analytics() {
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Rank</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Manufacturer</th>
                                     <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Products</th>
-                                    <th role="columnheader" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ color: "var(--fg)" }}>Compliance Rate</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-600">
@@ -278,9 +249,6 @@ export default function Analytics() {
                                         </td>
                                         <td role="cell" className="px-6 py-4 whitespace-nowrap text-sm text-gray-600" style={{ color: "var(--muted)" }}>
                                             {manufacturer.products}
-                                        </td>
-                                        <td role="cell" className="px-6 py-4 whitespace-nowrap" style={{ color: "var(--muted)" }}>
-                                            <ComplianceBar rate={manufacturer.complianceRate} />
                                         </td>
                                     </tr>
                                 ))}
