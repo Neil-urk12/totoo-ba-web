@@ -9,12 +9,11 @@ type ImageVerificationResultProps = {
 
 export default function ImageVerificationResult({ data }: ImageVerificationResultProps) {
     const getStatusIcon = (status: string) => {
-        switch (status.toLowerCase()) {
+        switch (status) {
             case 'verified':
                 return <Check className="text-green-600" />;
             case 'uncertain':
                 return <AlertTriangle className="text-yellow-600" />;
-            case 'not_verified':
             default:
                 return <X className="text-red-600" />;
         }

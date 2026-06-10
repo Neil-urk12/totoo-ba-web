@@ -28,6 +28,7 @@ import { Camera, Search } from "lucide-react";
 import PopUpError from './PopUpError';
 import ImageVerificationLoader from './ImageVerificationLoader';
 import { ALL_CATEGORIES_SENTINEL, CATEGORY_DISPLAY_LABELS } from '../domain/categoryRegistry';
+import { DomainError } from '../domain/domainError';
 
 export default function SearchForm() {
     const [query, setQuery] = useState('')
@@ -97,8 +98,15 @@ export default function SearchForm() {
                 navigate('/verify', { state: { imageVerificationResult: result } })
             } catch (error) {
                 console.error('Image verification failed:', error)
-                const errorMessage = error instanceof Error ? error.message : 'Image verification failed. Please try again.'
-                showError(`Image verification failed: ${errorMessage}`)
+                if (error instanceof DomainError) {
+                    if (error.kind === 'transient') {
+                        showError(`Temporary error: ${error.message}`)
+                    } else {
+                        showError(error.message)
+                    }
+                } else {
+                    showError('Image verification failed. Please try again.')
+                }
             } finally {
                 setIsUploading(false)
             }
