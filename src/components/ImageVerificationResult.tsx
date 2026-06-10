@@ -1,7 +1,7 @@
 import { Check, AlertTriangle, X } from "lucide-react";
 import AlternativeProductCard from "./AlternativeProductCard";
 import { formatCategoryText } from "../utils/formatters";
-import type { VerifyImageResponse } from "../types";
+import type { VerifyImageResponse } from "../domain/imageVerification";
 
 type ImageVerificationResultProps = {
     data: VerifyImageResponse;

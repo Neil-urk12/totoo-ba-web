@@ -147,39 +147,4 @@ export type VerifyResponse = {
   expiryDate: string | null;
 };
 
-// ---------------------------------------------------------------------------
-// Image verification (AI) result shape
-// ---------------------------------------------------------------------------
 
-export type VerifyImageResponse = {
-  verification_status: string;
-  confidence: number;
-  matched_product: {
-    id: string;
-    relevance_score: number;
-    matched_fields: string[];
-    type: string;
-    registration_number: string;
-    product_name: string;
-    company_name: string;
-  };
-  extracted_fields: {
-    registration_number: string | null;
-    brand_name: string;
-    product_description: string;
-    manufacturer: string | null;
-    expiry_date: string | null;
-    batch_number: string | null;
-    net_weight: string;
-  };
-  ai_reasoning: string;
-  alternative_matches: Array<{
-    id: string;
-    relevance_score: number;
-    matched_fields: string[];
-    type: string;
-    registration_number: string;
-    product_name: string;
-    company_name: string;
-  }>;
-};
