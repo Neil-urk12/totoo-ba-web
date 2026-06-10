@@ -1,36 +1,20 @@
 import { queryOptions } from "@tanstack/react-query";
-import { supabase } from "../../db/supabaseClient";
+import { createCommunityReportListing } from "../../domain/communityReport";
+import { supabaseCommunityReportAdapter } from "../../domain/adapters/supabaseCommunityReportAdapter";
 
-export type CommunityReport = {
-  id: string;
-  product_name: string;
-  brand_name: string;
-  registration_number: string | null;
-  description: string;
-  reporter_name: string;
-  location: string;
-  store_name: string;
-  report_date: string;
-  user_id?: string | null;
-};
+// Re-export the domain type for consumers
+export type { CommunityReport } from "../../domain/communityReport";
 
-const fetchReports = async (): Promise<CommunityReport[]> => {
-  const { data, error } = await supabase
-    .from("reported_products")
-    .select("*")
-    .order("report_date", { ascending: false });
+// ---------------------------------------------------------------------------
+// Singleton
+// ---------------------------------------------------------------------------
 
-  if (error) {
-    throw new Error(`Failed to fetch community reports: ${error.message}`);
-  }
-
-  return (data as CommunityReport[]) || [];
-};
+const communityReportListing = createCommunityReportListing(supabaseCommunityReportAdapter);
 
 export const useGetReportsQuery = () => {
   return queryOptions({
     queryKey: ["reports"],
-    queryFn: fetchReports,
+    queryFn: () => communityReportListing.list(),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
