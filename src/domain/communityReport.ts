@@ -6,7 +6,7 @@
  * in productReport.ts via the Reporter adapter — this module is
  * read-only (listing/display).
  *
- * Two seams sit behind it:
+ * One seam sits behind it:
  * - CommunityReportAdapter: fetches reports from any source
  *
  * Adding or changing community report data sources requires editing

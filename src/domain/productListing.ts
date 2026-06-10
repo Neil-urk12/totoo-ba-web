@@ -4,7 +4,7 @@
  * Owns the data access interface, params shape, validation, and factory
  * for listing FDA-registered products (unified_products view).
  *
- * Two seams sit behind it:
+ * One seam sits behind it:
  * - ProductListingAdapter: fetches raw products from any source
  *
  * Adding or changing product listing data sources requires editing exactly

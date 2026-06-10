@@ -6,7 +6,7 @@
  * product information from an image, then matches it against the
  * FDA database.
  *
- * Two seams sit behind it:
+ * One seam sits behind it:
  * - ImageVerificationAdapter: calls the external verification API
  *
  * Adding or changing the image verification backend requires editing

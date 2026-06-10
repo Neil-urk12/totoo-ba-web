@@ -7,7 +7,7 @@
  *
  * Two seams sit behind it:
  * - Reporter: persists the report row
- * - EvidenceUploader: attaches supporting evidence files (future)
+ * - EvidenceUploader: attaches supporting evidence files (future — not yet implemented)
  *
  * @module productReport
  */

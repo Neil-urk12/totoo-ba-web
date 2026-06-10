@@ -2,7 +2,7 @@
  * AnalyticsDataAccess Module
  *
  * Owns the data access interface, raw data shapes, pure processing functions,
- * and factory for analytics data. Two seams sit behind it:
+ * and factory for analytics data. One seam sits behind it:
  * - AnalyticsAdapter: fetches raw data from any source
  *
  * Adding or changing analytics data sources requires editing exactly one

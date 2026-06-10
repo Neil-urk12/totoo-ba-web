@@ -147,4 +147,3 @@ export type VerifyResponse = {
   expiryDate: string | null;
 };
 
-
