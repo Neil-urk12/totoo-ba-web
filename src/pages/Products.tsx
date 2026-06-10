@@ -28,7 +28,7 @@ export default function Products() {
         fetchNextPage,
         error,
         isError
-    } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined);
+    } = useGetUnifiedProductsInfiniteQuery(appliedCategory, appliedSearch || undefined, sortBy);
 
     const categories = [ALL_CATEGORIES_SENTINEL, ...CATEGORY_DISPLAY_LABELS];
     const sortOptions = ['Name', 'Registration Date', 'Expiry Date', 'Manufacturer'];
@@ -54,32 +54,8 @@ export default function Products() {
 
     const filteredProducts = useMemo(() => {
         if (!allProducts.length) return [];
-
-        const displayProducts = allProducts.map(toDisplayProduct);
-
-        const sortedProducts = [...displayProducts].sort((a, b) => {
-            switch (sortBy) {
-                case 'Name':
-                    return a.name.localeCompare(b.name);
-                case 'Registration Date': {
-                    const dateA = a.registered === 'Unknown' ? new Date(0) : new Date(a.registered);
-                    const dateB = b.registered === 'Unknown' ? new Date(0) : new Date(b.registered);
-                    return dateB.getTime() - dateA.getTime();
-                }
-                case 'Expiry Date': {
-                    const expiryA = a.expires === 'Unknown' ? new Date(0) : new Date(a.expires);
-                    const expiryB = b.expires === 'Unknown' ? new Date(0) : new Date(b.expires);
-                    return expiryA.getTime() - expiryB.getTime();
-                }
-                case 'Manufacturer':
-                    return a.manufacturer.localeCompare(b.manufacturer);
-                default:
-                    return 0;
-            }
-        });
-
-        return sortedProducts;
-    }, [allProducts, sortBy]);
+        return allProducts.map(toDisplayProduct);
+    }, [allProducts]);
 
     // Get total count from the first page
     const totalCount = (data?.pages?.[0] as UnifiedProductsResponse)?.totalCount || 0;

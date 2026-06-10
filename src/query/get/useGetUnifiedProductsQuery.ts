@@ -53,6 +53,19 @@ const validateAndSanitizeSearchQuery = (searchQuery?: string): string | null => 
 const ITEMS_PER_PAGE = 30;
 
 /**
+ * Sort column mapping — maps UI sort labels to DB columns and direction.
+ * Server-side sort avoids O(n log n) client re-sort of accumulated pages.
+ */
+const SORT_COLUMNS: Record<string, { column: string; ascending: boolean }> = {
+  'Name': { column: 'name', ascending: true },
+  'Registration Date': { column: 'issuance_date', ascending: false },
+  'Expiry Date': { column: 'expiry_date', ascending: true },
+  'Manufacturer': { column: 'manufacturer', ascending: true },
+};
+
+const DEFAULT_SORT = 'Name';
+
+/**
  * Fetches unified products from the database
  * 
  * Optimized fetch function using the unified_products view. This single query
@@ -64,34 +77,37 @@ const ITEMS_PER_PAGE = 30;
  * - Category filtering (Food/Drugs)
  * - Full-text search support
  * - Server-side pagination
- * - Sorted results by product name
+ * - Server-side sorting (no client re-sort of accumulated pages)
  * 
  * @async
  * @param {string} [category] - Filter by category ('Food', 'Drugs', or 'All Categories')
  * @param {number} [page=0] - Page number (0-indexed)
  * @param {string} [searchQuery] - Search term for full-text search
+ * @param {string} [sortBy='Name'] - Sort option key (must match SORT_COLUMNS key)
  * @returns {Promise<UnifiedProductsResponse>} Paginated products with metadata
  * @throws {Error} If the database query fails
  * 
  * @example
- * const response = await fetchUnifiedProducts('Food', 0, 'vitamin');
- * console.log(response.data); // Array of UnifiedProduct objects
- * console.log(response.hasMore); // true if more pages available
+ * const response = await fetchUnifiedProducts('Food', 0, 'vitamin', 'Expiry Date');
+ * console.log(response.data); // Array of UnifiedProduct objects sorted by expiry_date
  */
 const fetchUnifiedProducts = async (
   category?: string, 
   page: number = 0, 
-  searchQuery?: string
+  searchQuery?: string,
+  sortBy: string = DEFAULT_SORT
 ): Promise<UnifiedProductsResponse> => {
   const sanitizedSearchQuery = validateAndSanitizeSearchQuery(searchQuery);
   const startIndex = page * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE - 1;
 
+  const sortConfig = SORT_COLUMNS[sortBy] ?? SORT_COLUMNS[DEFAULT_SORT];
+
   // Build the unified query - SINGLE QUERY FOR ALL CASES
   let query = supabase
     .from('unified_products')
     .select('*', { count: 'exact' })
-    .order('name', { ascending: true });
+    .order(sortConfig.column, { ascending: sortConfig.ascending });
 
   // Apply category filter if needed
   const sourceCategory = getSourceCategory(category ?? '');
@@ -136,6 +152,7 @@ const fetchUnifiedProducts = async (
  * 
  * @param {string} [category] - Filter by category ('Food', 'Drugs', or 'All Categories')
  * @param {string} [searchQuery] - Search term for filtering products
+ * @param {string} [sortBy='Name'] - Sort option key (changes refetch from page 0)
  * @returns {UseInfiniteQueryResult} React Query infinite query result
  * @property {Array<UnifiedProductsResponse>} data.pages - Array of page responses
  * @property {Function} fetchNextPage - Function to load the next page
@@ -151,10 +168,10 @@ const fetchUnifiedProducts = async (
  * // Load more button
  * {hasNextPage && <button onClick={() => fetchNextPage()}>Load More</button>}
  */
-export const useGetUnifiedProductsInfiniteQuery = (category?: string, searchQuery?: string) => {
+export const useGetUnifiedProductsInfiniteQuery = (category?: string, searchQuery?: string, sortBy: string = DEFAULT_SORT) => {
   return useInfiniteQuery({
-    queryKey: ["unified-products-infinite", category, searchQuery],
-    queryFn: async ({ pageParam }) => await fetchUnifiedProducts(category, pageParam, searchQuery),
+    queryKey: ["unified-products-infinite", category, searchQuery, sortBy],
+    queryFn: async ({ pageParam }) => await fetchUnifiedProducts(category, pageParam, searchQuery, sortBy),
     getNextPageParam: (lastPage) => {
       return lastPage.hasMore ? lastPage.currentPage + 1 : undefined;
     },
