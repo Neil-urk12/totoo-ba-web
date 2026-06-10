@@ -99,6 +99,9 @@ export interface ImageVerificationAdapter {
 /**
  * Validates that the file is an acceptable image for verification.
  * Throws DomainError('permanent') on invalid input.
+ *
+ * NOTE: Client-side validation only — `file.type` is user-controllable.
+ * Server-side must validate file content (magic bytes / signature).
  */
 export function validateImageFile(file: File): void {
   if (!ALLOWED_MIME_TYPES.includes(file.type as (typeof ALLOWED_MIME_TYPES)[number])) {

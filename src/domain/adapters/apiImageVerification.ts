@@ -32,7 +32,7 @@ export const apiImageVerificationAdapter: ImageVerificationAdapter = {
       throw new DomainError(
         'transient',
         'Network request failed. Please check your connection.',
-        { cause: err },
+        { cause: err, context: { cause: String(err) } },
       );
     }
 
