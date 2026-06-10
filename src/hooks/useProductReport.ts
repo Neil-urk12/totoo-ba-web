@@ -8,11 +8,10 @@
  * @module hooks/useProductReport
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { createProductReport } from '../domain/productReport';
+import { productReport } from '../domain/adapterRegistry';
 import type { ReportInput, ReportFieldErrors, ReportFieldName } from '../domain/productReport';
-import { supabaseReporter } from '../domain/adapters/supabaseReporter';
 
 const INITIAL_FORM: ReportInput = {
   productName: '',
@@ -27,7 +26,7 @@ const INITIAL_FORM: ReportInput = {
 
 export function useProductReport() {
   const queryClient = useQueryClient();
-  const report = useMemo(() => createProductReport(supabaseReporter), []);
+  const report = productReport;
 
   const [formData, setFormData] = useState<ReportInput>(INITIAL_FORM);
   const [errors, setErrors] = useState<ReportFieldErrors>({});

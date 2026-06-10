@@ -1,8 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { createProductVerification } from "../../domain/productVerification";
-import { supabaseVerificationAdapter } from "../../domain/adapters/supabaseVerification";
-
-const productVerification = createProductVerification(supabaseVerificationAdapter);
+import { productVerification } from "../../domain/adapterRegistry";
 
 export const useGetProductVerifyQuery = (product_id: string, category?: string) => {
   return queryOptions({

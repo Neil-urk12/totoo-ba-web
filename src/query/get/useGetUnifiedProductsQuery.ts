@@ -8,14 +8,7 @@
  */
 
 import { queryOptions, useInfiniteQuery } from "@tanstack/react-query";
-import { createProductListing } from "../../domain/productListing";
-import { supabaseProductListingAdapter } from "../../domain/adapters/supabaseProductListing";
-
-// ---------------------------------------------------------------------------
-// Singleton
-// ---------------------------------------------------------------------------
-
-const productListing = createProductListing(supabaseProductListingAdapter);
+import { productListing } from "../../domain/adapterRegistry";
 
 // ---------------------------------------------------------------------------
 // Constants

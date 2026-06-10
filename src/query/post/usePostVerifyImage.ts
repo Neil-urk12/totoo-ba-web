@@ -9,17 +9,10 @@
  */
 
 import { useMutation } from '@tanstack/react-query'
-import { createImageVerification } from '../../domain/imageVerification'
-import { apiImageVerificationAdapter } from '../../domain/adapters/apiImageVerification'
+import { imageVerification } from '../../domain/adapterRegistry'
 
 // Re-export the domain type for consumers
 export type { VerifyImageResponse } from '../../domain/imageVerification'
-
-// ---------------------------------------------------------------------------
-// Singleton
-// ---------------------------------------------------------------------------
-
-const imageVerification = createImageVerification(apiImageVerificationAdapter);
 
 /**
  * React Query mutation hook for image verification
