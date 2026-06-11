@@ -62,16 +62,16 @@ export default function Products() {
 
     return (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-            // Header
+            {/* Header */}
             <header className="mb-6 sm:mb-8">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2" style={{ color: "var(--fg)" }}>All Registered Products</h1>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-slate-300" style={{ color: "var(--fg)" }}>Browse all FDA-registered products in the Philippines database</p>
             </header>
 
-            // Search and Filter Bar
+            {/* Search and Filter Bar */}
             <section className="mb-4 sm:mb-6">
                 <div className="flex flex-col gap-4 mb-4">
-                    // Search Bar
+                    {/* Search Bar */}
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <input
@@ -90,9 +90,9 @@ export default function Products() {
                         </button>
                     </div>
 
-                    // Filter Dropdowns and View Toggle
+                    {/* Filter Dropdowns and View Toggle */}
                     <div className="flex flex-col sm:flex-row gap-3">
-                        // Filter Dropdowns
+                        {/* Filter Dropdowns */}
                         <div className="flex flex-col sm:flex-row gap-3 flex-1">
                             <select
                                 value={selectedCategory}
@@ -115,7 +115,7 @@ export default function Products() {
                             </select>
                         </div>
 
-                        // View Mode Toggle
+                        {/* View Mode Toggle */}
                         <div className="flex gap-2 self-start sm:self-auto">
                             <button
                                 onClick={() => setViewMode('grid')}
@@ -133,7 +133,7 @@ export default function Products() {
                     </div>
                 </div>
 
-                // Results Count and Clear Search
+                {/* Results Count and Clear Search */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                     <p className="text-xs sm:text-sm dark:text-slate-800" style={{ color: "var(--fg)" }}>
                         {isLoading ? 'Loading products...' :
