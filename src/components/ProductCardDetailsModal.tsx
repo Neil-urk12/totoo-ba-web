@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import Modal from "./Modal";
+import DetailRow from "./DetailRow";
 import type { DisplayProduct } from "../types";
 
 interface ProductCardDetailsModalProps {
@@ -41,11 +42,3 @@ export default function ProductCardDetailsModal({ open, onClose, product }: Prod
     );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
-    return (
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4">
-            <span className="text-sm text-muted font-medium">{label}</span>
-            <span className="text-sm font-semibold">{value}</span>
-        </div>
-    );
-}

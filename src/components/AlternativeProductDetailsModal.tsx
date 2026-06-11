@@ -1,4 +1,5 @@
 import Modal from "./Modal";
+import DetailRow from "./DetailRow";
 import { formatCategoryText } from "../utils/formatters";
 
 interface AlternativeProductDetailsModalProps {
@@ -57,11 +58,3 @@ export default function AlternativeProductDetailsModal({ open, onClose, product 
     );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
-    return (
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-4">
-            <span className="text-sm text-muted font-medium min-w-[120px] shrink-0">{label}</span>
-            <span className="text-sm font-semibold text-left break-words overflow-wrap-anywhere">{value}</span>
-        </div>
-    );
-}
