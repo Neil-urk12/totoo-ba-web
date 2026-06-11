@@ -27,6 +27,7 @@ const Verify = lazy(() => import('./pages/Verify.tsx'))
 const Report = lazy(() => import('./pages/Report.tsx'))
 const NotFound = lazy(() => import('./pages/NotFound.tsx'))
 const CommunityReports = lazy(() => import('./pages/CommunityReports.tsx'))
+const Maintenance = lazy(() => import('./pages/Maintenance.tsx'))
 
 /**
  * React Query Client Configuration
@@ -73,87 +74,96 @@ const queryClient = new QueryClient({
  * 
  * @constant {Router}
  */
+const isMaintenanceMode = import.meta.env.VITE_MAINTENANCE_MODE === 'true'
+
 const routes = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
-    children: [
-      {
-        // Explicit index route - homepage content is rendered in App.tsx
-        index: true,
-        element: null,
-      },
-      {
-        path: 'products',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <Products />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: 'analytics',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <Analytics />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: 'verify',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <Verify />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: 'about',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <About />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: 'community-reports',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <CommunityReports />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: 'report',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <Report />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-      {
-        path: '*',
-        element: (
-          <Suspense fallback={<RouteLoadingSpinner />}>
-            <ErrorBoundary fallback={GenericErrorFallback}>
-              <NotFound />
-            </ErrorBoundary>
-          </Suspense>
-        )
-      },
-    ],
+    element: isMaintenanceMode ? (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Maintenance />
+      </Suspense>
+    ) : (
+      <App />
+    ),
+    ...(!isMaintenanceMode && {
+      children: [
+        {
+          index: true,
+          element: null,
+        },
+        {
+          path: 'products',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <Products />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: 'analytics',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <Analytics />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: 'verify',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <Verify />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: 'about',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <About />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: 'community-reports',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <CommunityReports />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: 'report',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <Report />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+        {
+          path: '*',
+          element: (
+            <Suspense fallback={<RouteLoadingSpinner />}>
+              <ErrorBoundary fallback={GenericErrorFallback}>
+                <NotFound />
+              </ErrorBoundary>
+            </Suspense>
+          )
+        },
+      ],
+    }),
   },
 ])
 
